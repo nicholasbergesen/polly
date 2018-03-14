@@ -1,0 +1,12 @@
+D:\working\Polly\PollyConsole\bin\Debug\PollyConsole.exe.config
+D:\working\Polly\PollyConsole\bin\Debug\PollyConsole.exe
+D:\working\Polly\PollyConsole\bin\Debug\PollyConsole.pdb
+D:\working\Polly\PollyConsole\bin\Debug\HtmlAgilityPack.dll
+D:\working\Polly\PollyConsole\bin\Debug\HtmlAgilityPack.pdb
+D:\working\Polly\PollyConsole\bin\Debug\HtmlAgilityPack.xml
+D:\working\Polly\PollyConsole\obj\Debug\PollyConsole.csprojResolveAssemblyReference.cache
+D:\working\Polly\PollyConsole\obj\Debug\PollyConsole.csproj.CoreCompileInputs.cache
+D:\working\Polly\PollyConsole\obj\Debug\PollyConsole.csproj.CopyComplete
+D:\working\Polly\PollyConsole\obj\Debug\PollyConsole.exe
+D:\working\Polly\PollyConsole\obj\Debug\PollyConsole.pdb
+D:\working\Polly\PollyConsole\bin\Debug\input.txt
