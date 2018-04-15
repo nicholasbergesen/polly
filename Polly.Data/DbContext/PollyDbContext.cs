@@ -12,7 +12,9 @@ namespace Polly.Data
     {
         public PollyDbContext()
             :base("DefaultConnection")
-        { }
+        {
+            Configuration.LazyLoadingEnabled = false;
+        }
 
         public DbSet<Website> Website { get; set; }
         public DbSet<DownloadData> DownloadData { get; set; }

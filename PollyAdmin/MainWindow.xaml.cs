@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +22,20 @@ namespace PollyAdmin
     /// </summary>
     public partial class MainWindow : Window
     {
+        public ObservableCollection<Website> Websites { get; set; }
+
+        public Website SelectedItem { get; set; }
+
         public MainWindow()
         {
+            Websites = new ObservableCollection<Website>(DataAccess.GetWebsites());
             InitializeComponent();
+            listBox.DataContext = Websites;
+        }
+
+        private void AddDataPoint_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

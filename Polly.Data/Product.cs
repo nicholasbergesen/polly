@@ -17,6 +17,7 @@ namespace Polly.Data
         [DataType(DataType.Currency)]
         public decimal Price { get; set; }
 
+        [MaxLength(150)]
         public string Name { get; set; }
 
         public string Description { get; set; }
