@@ -3,26 +3,40 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - Polly Admin</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
 </head>
 <body>
     <header>
-        <div class="container">
-            <h1>Polly Admin</h1>
-        </div>
-        <hr />
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">Polly Admin</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        @Html.ActionLink("Home", "Index", "Home", new { @class = "nav-item nav-link" })
+                        @*@Html.ActionLink("About", "About", "Home", new { @class = "nav-item nav-link" })
+                        @Html.ActionLink("Contact", "Contact", "Home", new { @class = "nav-item nav-link" })*@
+                    </div>
+                </div>
+            </div>
+        </nav>
     </header>
+
     <div class="container body-content">
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Nicholas &amp; Jonathan Bergesen</p>
-        </footer>
     </div>
 
+    <footer>
+        <div class="container">
+            <hr />
+            <p>&copy; @DateTime.Now.Year - Nicholas Bergesen</p>
+        </div>
+    </footer>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
