@@ -20,7 +20,7 @@ namespace Poly.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Index(WebsiteModel websiteModel)
+        public async Task<ActionResult> Index(WebsiteViewModel websiteModel)
         {
             Website website = new Website()
             {
@@ -38,7 +38,8 @@ namespace Poly.Admin.Controllers
                 MainImageXPath = websiteModel.MainImageXPath
             };
             await DataAccess.SaveWebsite(website);
-            return Index();
+
+            return RedirectToAction("Index");
         }
 
         public ActionResult About()

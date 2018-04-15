@@ -5,65 +5,51 @@
 }
 
 <div class="row">
-    @foreach (WebsiteModel website in Model.WebsiteModels)
+    @foreach (WebsiteViewModel website in Model.WebsiteModels)
     {
         <div class="col-md-12">
-            <h2 class="header" data-toggle="collapse" data-target="#@website.Name">@website.Name</h2>
-            <div id="@website.Name" class="collapse">
-                @using (Html.BeginForm("Index", "Home", new { website = website }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-                {
-                    @Html.AntiForgeryToken()
-                    <div>
-                        <label class="col-md-2" for="name">Domain:</label>
-                        <input class="col-md-5" type="url" id="name" value="@website.Domain" />
-                    </div>
-                    <div>
-                        <label class="col-md-2" for="userAgent">UserAgent:</label>
-                        <input class="col-md-5" type="text" id="userAgent" value="@website.UserAgent" />
-                    </div>
-                    <div>
-                        <label class="col-md-2" for="schedule">Schedule:</label>
-                        <input class="col-md-5" type="datetime" id="schedule" value="@website.Schedule.ToLongTimeString()" />
-                    </div>
-                    <h3 class="subheader">XPaths</h3>
-                    <div>
-                        <label class="col-md-2" for="schedule">Heading:</label>
-                        <input class="col-md-5" type="text" id="headingXPath" value="@website.HeadingXPath" />
-                    </div>
-                    <div>
-                        <label class="col-md-2" for="schedule">SubHeading:</label>
-                        <input class="col-md-5" type="text" id="subheadingXPath" value="@website.SubHeadingXPath" />
-                    </div>
-                    <div>
-                        <label class="col-md-2" for="schedule">Description:</label>
-                        <input class="col-md-5" type="text" id="descriptionXPath" value="@website.DescriptionXPath" />
-                    </div>
-                    <div>
-                        <label class="col-md-2" for="schedule">Category:</label>
-                        <input class="col-md-5" type="text" id="categoryXPath" value="@website.CategoryXPath" />
-                    </div>
-                    <div>
-                        <label class="col-md-2" for="schedule">BreadcrumbXPath:</label>
-                        <input class="col-md-5" type="text" id="breadcrumbXPath" value="@website.BreadcrumbXPath" />
-                    </div>
-                    <div>
-                        <label class="col-md-2" for="schedule">Price:</label>
-                        <input class="col-md-5" type="text" id="priceXPath" value="@website.PriceXPath" />
-                    </div>
-                    <div>
-                        <label class="col-md-2" for="schedule">Main Image:</label>
-                        <input class="col-md-5" type="text" id="imageXPath" value="@website.MainImageXPath" />
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="Save" class="btn btn-default" />
-                        </div>
-                    </div>
-                }
+            <h2 class="header" data-toggle="collapse" data-target="#@website.Id">@website.Name</h2>
+            <div id="@website.Id" class="collapse">
+                @{Html.RenderPartial("_Website", website);}
             </div>
         </div>
-    }
+                    }
+
+    <button onclick="createWebsite()" class="btn btn-dark m-2" id="addWebsite">Add Website</button>
+    <div class="col-md-12 remove" id="newWebsite">
+        <h2 class="header" data-toggle="collapse" data-target="#newItemTemp">New Website</h2>
+        <div id="newItemTemp" class="collapse">
+            @{var newWebsite = new WebsiteViewModel() { Schedule = DateTime.Parse("1900/01/01 00:00:00") };}
+            @{
+                Html.RenderPartial("_Website", newWebsite);
+            }
+        </div>
+    </div>
 </div>
-<div>
-    @Html.ActionLink("New", "Create", "Home")
-</div>
+
+@section Scripts {
+    <script>
+        function setUserAgent() {
+            $("#newItemTemp").find("#UserAgent").val(navigator.userAgent);
+            console.log($("#newItemTemp").find("#UserAgent"));
+        }
+
+        function createWebsite() {
+            var websiteSection = $("#newWebsite");
+            var addButton = $("#addWebsite");
+
+            websiteSection.toggleClass("remove");
+            addButton.toggleClass("btn-dark")
+            addButton.toggleClass("btn-secondary")
+
+            if (!websiteSection.hasClass("remove")) {
+                addButton.text("Undo");
+            }
+            else {
+                addButton.text("Add Website");
+            }
+
+            setUserAgent();
+        }
+    </script>
+}

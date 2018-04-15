@@ -8,14 +8,14 @@ namespace Poly.Admin.Models
 {
     public class HomeViewModel
     {
-        public List<WebsiteModel> WebsiteModels { get; set; }
+        public List<WebsiteViewModel> WebsiteModels { get; set; }
 
         private HomeViewModel(IEnumerable<Website> websites)
         {
-            WebsiteModels = new List<WebsiteModel>();
+            WebsiteModels = new List<WebsiteViewModel>();
             foreach (Website website in websites)
             {
-                WebsiteModels.Add(new WebsiteModel()
+                WebsiteModels.Add(new WebsiteViewModel()
                 {
                     Id = website.Id,
                     Name = website.Name,
@@ -37,22 +37,5 @@ namespace Poly.Admin.Models
         {
             return new HomeViewModel(websites);
         }
-    }
-
-    public class WebsiteModel
-    {
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public string Domain { get; set; }
-        public string UserAgent { get; set; }
-        public DateTime Schedule { get; set; }
-
-        public string HeadingXPath { get; set; }
-        public string SubHeadingXPath { get; set; }
-        public string DescriptionXPath { get; set; }
-        public string PriceXPath { get; set; }
-        public string CategoryXPath { get; set; }
-        public string BreadcrumbXPath { get; set; }
-        public string MainImageXPath { get; set; }
     }
 }
