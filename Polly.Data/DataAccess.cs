@@ -16,6 +16,14 @@ namespace Polly.Data
             }
         }
 
+        public static Website GetWebsiteById(int id)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return context.Website.FirstOrDefault(x => x.Id == id);
+            }
+        }
+
         public async static Task SaveWebsite(Website website)
         {
             using (PollyDbContext context = new PollyDbContext())
@@ -25,6 +33,15 @@ namespace Polly.Data
                 else
                     context.Entry(website).State = System.Data.Entity.EntityState.Modified;
 
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async static Task AddDownloadDataAsync(DownloadData downloadData)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                context.DownloadData.Add(downloadData);
                 await context.SaveChangesAsync();
             }
         }
