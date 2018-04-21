@@ -37,7 +37,7 @@ namespace Poly.Admin.Controllers
                 BreadcrumbXPath = websiteModel.BreadcrumbXPath,
                 MainImageXPath = websiteModel.MainImageXPath
             };
-            await DataAccess.SaveWebsite(website);
+            await DataAccess.SaveAsync(website);
 
             return RedirectToAction("Index");
         }

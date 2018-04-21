@@ -10,13 +10,16 @@ using System.Threading.Tasks;
 
 namespace Polly.Downloader
 {
-    public class Downloader
+    public abstract class Downloader
     {
         private Thread _mainDownloadThread;
         private Website _website;
 
         public event EventHandler OnStart;
         public event EventHandler OnEnd;
+        public event ProgressEventHandler OnProgress;
+
+        public delegate void ProgressEventHandler(object sender, ProgressEventArgs e);
 
         public Downloader(Website website)
         {
@@ -47,62 +50,67 @@ namespace Polly.Downloader
             int crawlDelay = robots.GetCrawlDelay();
             var websiteLinksToDownload = robots.GetSitemapLinks();
 
-            var filteredList = websiteLinksToDownload.Where(x => IsProduct(x.loc)).ToList();
+            var filteredList = websiteLinksToDownload.Where(FilterProducts()).ToList();
 
-            if (crawlDelay != 0)
-                crawlDelay = 100;
-            else
+            if (crawlDelay == default(int))
+                crawlDelay = 100; //10/s second default
+            else if (crawlDelay < 10)
                 crawlDelay = crawlDelay * 1000;
 
             HttpClient httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", _website.UserAgent);
 
-            int requestCounter = 0;
-            int requesttotal = 0;
+            int activeRequestCounter = 0;
+            int totalRequestCount = 0;
 
             foreach (tUrl websiteLink in filteredList)
             {
-                requestCounter++;
+                activeRequestCounter++;
                 Task.Run(async () =>
                 {
-                    string innerWebsiteLink = websiteLink.loc;
-                    var downloadData = new DownloadData()
-                    {
-                        Url = innerWebsiteLink,
-                        WebsiteId = _website.Id
-                    };
-
                     try
                     {
-                        downloadData.RawHtml = await httpClient.GetStringAsync(innerWebsiteLink);
-                        await DataAccess.AddDownloadDataAsync(downloadData);
+                        string downloadUrl = BuildDownloadUrl(websiteLink.loc);
+                        var downloadData = new DownloadData()
+                        {
+                            Url = downloadUrl,
+                            WebsiteId = _website.Id
+                        };
+
+                        downloadData.RawHtml = await httpClient.GetStringAsync(downloadUrl);
+                        await DataAccess.SaveAsync(downloadData);
                     }
                     finally
                     {
-                        requestCounter--;
+                        activeRequestCounter--;
                     }
                 });
 
-                double downloadRate = Math.Max(requesttotal / DateTime.Now.Subtract(startTime).TotalSeconds, 1);
-                int itemsRemaining = filteredList.Count - requesttotal++;
-                Console.WriteLine($"{requesttotal} of {filteredList.Count} { downloadRate:0.##}/s ETA: { DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }" );
-                Console.CursorLeft = 0;
-                Console.CursorTop = Console.CursorTop - 1;
+                RaiseOnProgress(totalRequestCount++, filteredList.Count, startTime);
                 Thread.Sleep(crawlDelay);
 
-                while (requestCounter > 30)
-                    Thread.Sleep(1000);
+                while (activeRequestCounter > 4)
+                    Thread.Sleep(500);
+
+                if (totalRequestCount % 50000 == 0)
+                {
+                    while (activeRequestCounter > 0)
+                    {
+                        Thread.Sleep(500);
+                    }
+
+                    httpClient.Dispose();
+                    httpClient = new HttpClient();
+                    httpClient.DefaultRequestHeaders.Add("User-Agent", _website.UserAgent);
+                }
             }
 
-            while (requestCounter > 0)
+            while (activeRequestCounter > 0)
                 Thread.Sleep(1000);
         }
 
-        private bool IsProduct(string url)
-        {
-            var sections = url.Split('/');
-            return !url.Contains("?") && sections.Length == 5 && sections[4].StartsWith("PLID");
-        }
+        protected abstract string BuildDownloadUrl(string loc);
+        protected abstract Func<tUrl, bool> FilterProducts();
 
         private void RaiseOnStart()
         {
@@ -111,11 +119,31 @@ namespace Polly.Downloader
             OnStart(this, new EventArgs());
         }
 
+        private void RaiseOnProgress(int requestCount, int totalSize, DateTime startTime)
+        {
+            if (OnProgress == null) return;
+
+            double downloadRate = Math.Max(requestCount / DateTime.Now.Subtract(startTime).TotalSeconds, 1);
+            int itemsRemaining = totalSize - requestCount;
+            string progressString = $"{requestCount} of {totalSize} { (requestCount / totalSize * 100):0.##}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
+            OnProgress(this, new ProgressEventArgs(progressString));
+        }
+
         private void RaiseOnEnd()
         {
             if (OnEnd == null) return;
 
             OnEnd(this, new EventArgs());
         }
+    }
+
+    public class ProgressEventArgs : EventArgs
+    {
+        public ProgressEventArgs(string progressString)
+        {
+            ProgressString = progressString;
+        }
+
+        public string ProgressString { get; set; }
     }
 }

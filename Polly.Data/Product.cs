@@ -17,16 +17,26 @@ namespace Polly.Data
         [DataType(DataType.Currency)]
         public decimal Price { get; set; }
 
-        [MaxLength(150)]
+        [MaxLength(300)]
         public string Name { get; set; }
 
         public string Description { get; set; }
 
-        public long WebsiteId { get; set; }
+        [MaxLength(500)]
+        public string Subtitle { get; set; }
 
-        [ForeignKey("WebsiteId")]
-        public virtual Website Website { get; set; }
+        [MaxLength(500)]
+        public string Breadcrumb { get; set; }
+
+        [MaxLength(500)]
+        public string Category { get; set; }
+
+        public long DownloadDataId { get; set; }
+
+        [ForeignKey("DownloadDataId")]
+        public virtual DownloadData DownloadData { get; set; }
 
         public ICollection<byte[]> Images { get; set; }
+        
     }
 }
