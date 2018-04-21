@@ -29,7 +29,11 @@ namespace Polly.Data
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return context.DownloadData.Where(x => x.ProcessDateTime == null).Include(x => x.Website).Take(batchSize).ToList();
+                return context.DownloadData
+                    .Where(x => x.ProcessDateTime == null)
+                    .Include(x => x.Website)
+                    .Include(x => x.Website.DataSourceType)
+                    .Take(batchSize).ToList();
             }
         }
 

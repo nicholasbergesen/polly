@@ -19,16 +19,16 @@ namespace Polly.Data.Migrations
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
 
-            //var datPointValues = Enum.GetValues(typeof(Data.DataPointTypeEnum));
+            var datTypeValues = Enum.GetValues(typeof(DataSourceTypeEnum));
 
-            //foreach (DataPointTypeEnum dataPointValue in datPointValues)
-            //{
-            //    context.DataPointType.AddOrUpdate(new DataPointType()
-            //    {
-            //        Id = dataPointValue,
-            //        Description = Enum.GetName(typeof(Data.DataPointTypeEnum), dataPointValue)
-            //    });
-            //}
+            foreach (DataSourceTypeEnum datType in datTypeValues)
+            {
+                context.DataSourceType.AddOrUpdate(new DataSourceType()
+                {
+                    Id = datType,
+                    Description = Enum.GetName(typeof(DataSourceTypeEnum), datType)
+                });
+            }
         }
     }
 }

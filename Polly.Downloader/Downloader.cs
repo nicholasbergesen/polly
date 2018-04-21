@@ -44,7 +44,6 @@ namespace Polly.Downloader
 
         private void Download()
         {
-            DateTime startTime = DateTime.Now;
             Robots robots = new Robots(_website.Domain, _website.UserAgent);
             robots.Load();
             int crawlDelay = robots.GetCrawlDelay();
@@ -62,6 +61,8 @@ namespace Polly.Downloader
 
             int activeRequestCounter = 0;
             int totalRequestCount = 0;
+
+            DateTime startTime = DateTime.Now;
 
             foreach (tUrl websiteLink in filteredList)
             {

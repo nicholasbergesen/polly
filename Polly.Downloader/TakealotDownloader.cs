@@ -9,7 +9,7 @@ namespace Polly.Downloader
 {
     public class TakealotDownloader : Downloader
     {
-        private const string TakealotApi = "https://api.takealot.com/rest/v-1-6-0/productline/";
+        private const string TakealotApi = "https://api.takealot.com/rest/v-1-6-0/productline";
 
         public TakealotDownloader(Website website)
             : base(website)

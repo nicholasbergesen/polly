@@ -31,7 +31,7 @@ namespace Polly.DownloadConsole
         {
             Console.WriteLine(e.ProgressString);
             Console.CursorLeft = 0;
-            Console.CursorTop = Console.CursorTop - 1; throw new NotImplementedException();
+            Console.CursorTop = Console.CursorTop - 1;
         }
 
         private static void Downloader_OnStart(object sender, EventArgs e)

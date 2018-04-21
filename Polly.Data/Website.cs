@@ -18,6 +18,11 @@ namespace Polly.Data
 
         public string UserAgent { get; set; }
 
+        [ForeignKey("DataSourceTypeId")]
+        public virtual DataSourceType DataSourceType { get; set; }
+
+        public DataSourceTypeEnum DataSourceTypeId { get; set; }
+
         public string HeadingXPath { get; set; }
 
         public string SubHeadingXPath { get; set; }

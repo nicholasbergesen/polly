@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess.cs" />
+    <Compile Include="DataSourceType.cs" />
     <Compile Include="DbContext\IdentityModels.cs" />
     <Compile Include="DownloadData.cs" />
     <Compile Include="Migrations\Configuration.cs" />
