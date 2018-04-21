@@ -59,15 +59,27 @@ namespace Poly.Admin.Tests
         #endregion
 
         [TestMethod]
-        public void TestMethod1()
+        public void TestTakealotProduct()
         {
-            Assert.IsTrue(IsProduct(@"https://www.takealot.com/shampooheads-professional-strawberry-kiss-detangler-spray-200ml/PLID42966109"));
+            Assert.IsTrue(IsTakealotProduct(@"https://www.takealot.com/shampooheads-professional-strawberry-kiss-detangler-spray-200ml/PLID42966109"));
         }
 
-        private bool IsProduct(string url)
+        [TestMethod]
+        public void TestLootProduct()
+        {
+            Assert.IsTrue(IsLootProduct(@"http://www.loot.co.za/product/hisense-hx49m2160nf-49-fhd-led-tv/ywhk-4448-g6a0"));
+        }
+
+        private bool IsTakealotProduct(string url)
         {
             var urlSections = url.Split('/');
             return urlSections.Length == 5;
+        }
+
+        private bool IsLootProduct(string url)
+        {
+            var sections = url.Split('/');
+            return !url.Contains("?") && sections.Length == 6 && sections[3] == "product";
         }
     }
 }

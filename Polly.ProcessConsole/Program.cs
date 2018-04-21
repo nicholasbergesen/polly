@@ -18,7 +18,7 @@ namespace Polly.ProcessConsole
         static void Main(string[] args)
         {
             var unprocessed = DataAccess.Unprocessed(100);
-            Parallel.ForEach(unprocessed, async (downloadData) => {
+            Parallel.ForEach(unprocessed, (downloadData) => {
                 downloadData.ProcessDateTime = DateTime.Now;
                 Product product;
                 if (downloadData.Website.DataSourceType.Id == DataSourceTypeEnum.Html)

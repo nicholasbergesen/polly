@@ -13,10 +13,11 @@ namespace Polly.DownloadConsole
     {
         static void Main(string[] args)
         {
-            var website = DataAccess.GetWebsiteById(1);
+            int websiteId = int.Parse(Console.ReadLine());
+            var website = DataAccess.GetWebsiteById(websiteId);
             Downloader.Downloader downloader = new TakealotDownloader(website);
             downloader.OnStart += Downloader_OnStart;
-            downloader.OnProgress += Downloader_OnProgress; ;
+            downloader.OnProgress += Downloader_OnProgress;
             downloader.OnEnd += Downloader_OnEnd;
             downloader.Start();
 
