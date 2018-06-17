@@ -12,7 +12,7 @@ namespace Polly.Downloader
         public LootDownloader(Website website)
             :base(website)
         {
-
+            if (website.Name != "Loot") throw new ArgumentException("This class only support downloading Loot");
         }
 
         protected override string BuildDownloadUrl(string loc)
@@ -28,7 +28,7 @@ namespace Polly.Downloader
         private bool IsProduct(string url)
         {
             var sections = url.Split('/');
-            return !url.Contains("?") && sections.Length == 5 && sections[4].StartsWith("PLID");
+            return !url.Contains("?") && sections.Length == 6 && sections[3] == "product";
         }
     }
 }

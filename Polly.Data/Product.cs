@@ -12,7 +12,7 @@ namespace Polly.Data
     {
         public long Id { get; set; }
 
-        public int UrlHash { get; set; }
+        public int ProductUniqueIdentifier { get; set; }
 
         [DataType(DataType.Currency)]
         public decimal Price { get; set; }

@@ -15,7 +15,15 @@ namespace Polly.DownloadConsole
         {
             int websiteId = int.Parse(Console.ReadLine());
             var website = DataAccess.GetWebsiteById(websiteId);
-            Downloader.Downloader downloader = new TakealotDownloader(website);
+            Downloader.Downloader downloader;
+
+            if (website.Name == "Takealot")
+                downloader = new TakealotDownloader(website);
+            else if(website.Name == "Loot")
+                downloader = new LootDownloader(website);
+            else
+                throw new ArgumentException("This class only support downloading Takealot");
+
             downloader.OnStart += Downloader_OnStart;
             downloader.OnProgress += Downloader_OnProgress;
             downloader.OnEnd += Downloader_OnEnd;

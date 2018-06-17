@@ -14,7 +14,7 @@ namespace Polly.Downloader
         public TakealotDownloader(Website website)
             : base(website)
         {
-            if (website.Name != "Takealot") throw new ArgumentException("This class only support downloading Takealot");
+            if (website.Name != "Takealot") throw new ArgumentException("This class only supports downloading Takealot");
         }
 
         protected override string BuildDownloadUrl(string loc)

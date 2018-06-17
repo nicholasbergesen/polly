@@ -49,7 +49,7 @@ namespace Polly.ProcessConsole
             product.Description = htmlDocument.DocumentNode.SelectSingleNode(downloadData.Website.DescriptionXPath).InnerText.Trim();
             if (decimal.TryParse(htmlDocument.DocumentNode.SelectSingleNode(downloadData.Website.PriceXPath).InnerText.Trim().Replace(",", ""), out decimal res))
                 product.Price = res;
-            product.UrlHash = downloadData.Url.GetHashCode();
+            product.ProductUniqueIdentifier = downloadData.Url.GetHashCode();
             if (downloadData.Website.SubHeadingXPath != null) product.Subtitle = htmlDocument.DocumentNode.SelectSingleNode(downloadData.Website.SubHeadingXPath)?.InnerText.Trim();
             if (downloadData.Website.BreadcrumbXPath != null) product.Breadcrumb = htmlDocument.DocumentNode.SelectSingleNode(downloadData.Website.BreadcrumbXPath)?.InnerText.Trim();
             if (downloadData.Website.CategoryXPath != null) product.Category = htmlDocument.DocumentNode.SelectSingleNode(downloadData.Website.CategoryXPath)?.InnerText.Trim();
@@ -67,7 +67,7 @@ namespace Polly.ProcessConsole
             product.Description = jsonObject.Response.description_text;
             product.Category = jsonObject.Response.categories.Select(x => x.name).Aggregate((i, j) => i + ", " + j);
             product.Price = jsonObject.Response.selling_price  / 100;
-            product.UrlHash = downloadData.Url.GetHashCode();
+            product.ProductUniqueIdentifier = jsonObject.Response.uri.GetHashCode();
 
             return product;
         }

@@ -13,7 +13,7 @@ namespace Polly.Downloader
     public abstract class Downloader
     {
         private Thread _mainDownloadThread;
-        private Website _website;
+        protected Website Website;
 
         public event EventHandler OnStart;
         public event EventHandler OnEnd;
@@ -23,7 +23,7 @@ namespace Polly.Downloader
 
         public Downloader(Website website)
         {
-            _website = website;
+            Website = website;
             _mainDownloadThread = new Thread(new ThreadStart(ThreadAction));
             _mainDownloadThread.Name = nameof(_mainDownloadThread);
         }
@@ -44,12 +44,12 @@ namespace Polly.Downloader
 
         private void Download()
         {
-            Robots robots = new Robots(_website.Domain, _website.UserAgent);
+            Robots robots = new Robots(Website.Domain, Website.UserAgent, enableErrorCorrection: true);
             robots.Load();
             int crawlDelay = robots.GetCrawlDelay();
             var websiteLinksToDownload = robots.GetSitemapLinks();
 
-            var filteredList = websiteLinksToDownload.Where(FilterProducts()).ToList();
+            var filteredList = websiteLinksToDownload.Where(FilterProducts()).ToList(); 
 
             if (crawlDelay == default(int))
                 crawlDelay = 100; //10/s second default
@@ -57,7 +57,7 @@ namespace Polly.Downloader
                 crawlDelay = crawlDelay * 1000;
 
             HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", _website.UserAgent);
+            httpClient.DefaultRequestHeaders.Add("User-Agent", Website.UserAgent);
 
             int activeRequestCounter = 0;
             int totalRequestCount = 0;
@@ -75,7 +75,7 @@ namespace Polly.Downloader
                         var downloadData = new DownloadData()
                         {
                             Url = downloadUrl,
-                            WebsiteId = _website.Id
+                            WebsiteId = Website.Id
                         };
 
                         downloadData.RawHtml = await httpClient.GetStringAsync(downloadUrl);
@@ -93,21 +93,31 @@ namespace Polly.Downloader
                 while (activeRequestCounter > 4)
                     Thread.Sleep(500);
 
-                if (totalRequestCount % 50000 == 0)
+                if (totalRequestCount % 10000 == 0)
                 {
-                    while (activeRequestCounter > 0)
-                    {
-                        Thread.Sleep(500);
-                    }
-
-                    httpClient.Dispose();
-                    httpClient = new HttpClient();
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", _website.UserAgent);
+                    httpClient = NewHttpClientInstance(httpClient, activeRequestCounter);
+                    startTime = DateTime.Now;
+                    recentRequests = 0;
                 }
             }
 
             while (activeRequestCounter > 0)
                 Thread.Sleep(1000);
+        }
+
+        int tryCount = 0;
+        private HttpClient NewHttpClientInstance(HttpClient httpClient, int activeRequestCounter)
+        {
+            while (activeRequestCounter > 0 && tryCount++ < 10)
+            {
+                Console.WriteLine($"Waiting for {activeRequestCounter} to finish before recreating httpClient instance");
+                Thread.Sleep(500);
+            }
+
+            httpClient.Dispose();
+            httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", Website.UserAgent);
+            return httpClient;
         }
 
         protected abstract string BuildDownloadUrl(string loc);
@@ -120,13 +130,16 @@ namespace Polly.Downloader
             OnStart(this, new EventArgs());
         }
 
+        int recentRequests = 0;
         private void RaiseOnProgress(int requestCount, int totalSize, DateTime startTime)
         {
+            recentRequests++;
+
             if (OnProgress == null) return;
 
-            double downloadRate = Math.Max(requestCount / DateTime.Now.Subtract(startTime).TotalSeconds, 1);
+            double downloadRate = Math.Max(requestCount / Math.Max(DateTime.Now.Subtract(startTime).TotalSeconds, 1), 1);
             int itemsRemaining = totalSize - requestCount;
-            string progressString = $"{requestCount} of {totalSize} { (requestCount / totalSize * 100):0.##}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
+            string progressString = $"{requestCount} of {totalSize} { (requestCount / totalSize)}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
             OnProgress(this, new ProgressEventArgs(progressString));
         }
 
@@ -147,4 +160,31 @@ namespace Polly.Downloader
 
         public string ProgressString { get; set; }
     }
+
+    //public byte[] Compress(byte[] inputData)
+    //{
+    //    using (var compressIntoMemoryStream = new MemoryStream())
+    //    {
+    //        using (var gzs = new GZipStream(compressIntoMemoryStream, CompressionMode.Compress))
+    //        {
+    //            gzs.Write(inputData, 0, inputData.Length);
+    //        }
+    //        return compressIntoMemoryStream.ToArray();
+    //    }
+    //}
+
+    //public byte[] Decompress(byte[] inputData)
+    //{
+    //    using (var compressedMemoryStream = new MemoryStream(inputData))
+    //    {
+    //        using (var decompressedMs = new MemoryStream())
+    //        {
+    //            using (var gzs = new GZipStream(compressedMemoryStream, CompressionMode.Decompress))
+    //            {
+    //                gzs.CopyTo(decompressedMs);
+    //            }
+    //            return decompressedMs.ToArray();
+    //        }
+    //    }
+    //}
 }
