@@ -131,17 +131,7 @@ namespace Polly.Downloader
         }
 
         int recentRequests = 0;
-        private void RaiseOnProgress(int requestCount, int totalSize, DateTime startTime)
-        {
-            recentRequests++;
-
-            if (OnProgress == null) return;
-
-            double downloadRate = Math.Max(requestCount / Math.Max(DateTime.Now.Subtract(startTime).TotalSeconds, 1), 1);
-            int itemsRemaining = totalSize - requestCount;
-            string progressString = $"{requestCount} of {totalSize} { (requestCount / totalSize)}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
-            OnProgress(this, new ProgressEventArgs(progressString));
-        }
+        
 
         private void RaiseOnEnd()
         {
@@ -161,30 +151,5 @@ namespace Polly.Downloader
         public string ProgressString { get; set; }
     }
 
-    //public byte[] Compress(byte[] inputData)
-    //{
-    //    using (var compressIntoMemoryStream = new MemoryStream())
-    //    {
-    //        using (var gzs = new GZipStream(compressIntoMemoryStream, CompressionMode.Compress))
-    //        {
-    //            gzs.Write(inputData, 0, inputData.Length);
-    //        }
-    //        return compressIntoMemoryStream.ToArray();
-    //    }
-    //}
-
-    //public byte[] Decompress(byte[] inputData)
-    //{
-    //    using (var compressedMemoryStream = new MemoryStream(inputData))
-    //    {
-    //        using (var decompressedMs = new MemoryStream())
-    //        {
-    //            using (var gzs = new GZipStream(compressedMemoryStream, CompressionMode.Decompress))
-    //            {
-    //                gzs.CopyTo(decompressedMs);
-    //            }
-    //            return decompressedMs.ToArray();
-    //        }
-    //    }
-    //}
+    
 }

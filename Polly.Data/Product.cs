@@ -37,6 +37,5 @@ namespace Polly.Data
         public virtual DownloadData DownloadData { get; set; }
 
         public ICollection<byte[]> Images { get; set; }
-        
     }
 }

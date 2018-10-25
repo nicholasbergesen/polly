@@ -66,7 +66,7 @@ namespace Polly.ProcessConsole
             product.Subtitle = jsonObject.Response.subtitle;
             product.Description = jsonObject.Response.description_text;
             product.Category = jsonObject.Response.categories.Select(x => x.name).Aggregate((i, j) => i + ", " + j);
-            product.Price = jsonObject.Response.selling_price  / 100;
+            product.Price = jsonObject.Response.selling_price / 100;
             product.ProductUniqueIdentifier = jsonObject.Response.uri.GetHashCode();
 
             return product;

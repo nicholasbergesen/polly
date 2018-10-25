@@ -37,6 +37,8 @@ namespace Polly.Data
 
         public string MainImageXPath { get; set; }
 
+        public string RobotsText { get; set; }
+
         public DateTime Schedule { get; set; }
 
         [Column(TypeName = "varbinary(max)")]

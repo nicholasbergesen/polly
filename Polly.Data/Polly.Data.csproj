@@ -70,6 +70,7 @@
     <Compile Include="DataSourceType.cs" />
     <Compile Include="DbContext\IdentityModels.cs" />
     <Compile Include="DownloadData.cs" />
+    <Compile Include="DownloadQueue.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="DbContext\PollyDbContext.cs" />
     <Compile Include="Product.cs" />

@@ -50,6 +50,49 @@ namespace Polly.Data
             }
         }
 
+        public static async Task<List<DownloadQueue>> GetDownloadQueueBatchAsync(long websiteId, int batchSize, int skip = 0)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await context.DownloadQueue
+                    .Where(x => x.WebsiteId == websiteId)
+                    .OrderBy(x => x.Id)
+                    .Skip(skip)
+                    .Take(batchSize).ToListAsync();
+            }
+        }
+
+        public static async Task<int> DownloadQueueCountAsync(long websiteId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await context.DownloadQueue
+                     .CountAsync(x => x.WebsiteId == websiteId);
+            }
+        }
+
+        public async static Task SaveAsync(DownloadQueue downloadQueue)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                if (downloadQueue.Id == default(long))
+                    context.DownloadQueue.Add(downloadQueue);
+                else
+                    context.Entry(downloadQueue).State = System.Data.Entity.EntityState.Modified;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async static Task SaveAsync(List<DownloadQueue> downloadQueue)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                context.DownloadQueue.AddRange(downloadQueue);
+                await context.SaveChangesAsync();
+            }
+        }
+
         public async static Task SaveAsync(Website website)
         {
             using (PollyDbContext context = new PollyDbContext())

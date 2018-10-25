@@ -1,11 +1,15 @@
 ﻿using Polly.Data;
 using Polly.Downloader;
+using RobotsSharpParser;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using static Polly.Downloader.Downloader;
 
 namespace Polly.DownloadConsole
 {
@@ -13,45 +17,133 @@ namespace Polly.DownloadConsole
     {
         static void Main(string[] args)
         {
+            ServicePointManager.DefaultConnectionLimit = 100;
             int websiteId = int.Parse(Console.ReadLine());
+            Download(websiteId).Wait();
+            Console.ReadLine();
+        }
+
+        private static async Task Download(int websiteId)
+        {
             var website = DataAccess.GetWebsiteById(websiteId);
-            Downloader.Downloader downloader;
 
-            if (website.Name == "Takealot")
-                downloader = new TakealotDownloader(website);
-            else if(website.Name == "Loot")
-                downloader = new LootDownloader(website);
-            else
-                throw new ArgumentException("This class only support downloading Takealot");
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", website.UserAgent);
+            int crawlDelay = GetCrawlDelay(website);
 
-            downloader.OnStart += Downloader_OnStart;
-            downloader.OnProgress += Downloader_OnProgress;
-            downloader.OnEnd += Downloader_OnEnd;
-            downloader.Start();
-
-            while(downloader.IsAlive)
-            {
-                if (Console.ReadLine() == "stop")
-                    return;
-            }
-        }
-
-        private static void Downloader_OnProgress(object sender, ProgressEventArgs e)
-        {
-            Console.WriteLine(e.ProgressString);
-            Console.CursorLeft = 0;
-            Console.CursorTop = Console.CursorTop - 1;
-        }
-
-        private static void Downloader_OnStart(object sender, EventArgs e)
-        {
+            DateTime startTime = DateTime.Now;
             Console.WriteLine($"[{DateTime.Now}] Started");
+
+            List<Task> activeTasks = new List<Task>();
+            int batchSize = 10000;
+            int batchPosition = 111608;
+            int requestCount = 111608;
+            await Task.Run(async () =>
+            {
+                var downloadBatch = await DataAccess.GetDownloadQueueBatchAsync(website.Id, batchSize, batchPosition);
+                int totalSize = await DataAccess.DownloadQueueCountAsync(website.Id);
+
+                while (downloadBatch.Count > 0)
+                {
+                    var next = downloadBatch.FirstOrDefault();
+                    downloadBatch.Remove(next);
+                    //await Task.Delay(crawlDelay);
+                    var downloadTask = httpClient.GetStringAsync(next.DownloadUrl);
+                    activeTasks.Add(HandleDownloadTask(downloadTask, next.DownloadUrl, website.Id));
+
+                    if (activeTasks.Count >= Environment.ProcessorCount)
+                    {
+                        //await Task.Delay(crawlDelay);
+                        var whenallTask = Task.WhenAll(activeTasks.Where(x => x != null).ToArray());
+                        activeTasks.Clear();
+                    }
+
+                    if (downloadBatch.Count == 0)
+                    {
+                        batchPosition += batchSize;
+                        downloadBatch = await DataAccess.GetDownloadQueueBatchAsync(website.Id, batchSize, batchPosition);
+                    }
+                    WriteOutput(RaiseOnProgress(requestCount++, totalSize, startTime));
+                }
+
+                Console.WriteLine($"[{DateTime.Now}] Stopped");
+                Console.WriteLine($"Press any key to close console.");
+            });
         }
 
-        private static void Downloader_OnEnd(object sender, EventArgs e)
+        private static async Task HandleDownloadTask(Task<string> downloadTask, string downloadUrl, long websiteId)
         {
-            Console.WriteLine($"[{DateTime.Now}] Stopped");
-            Console.WriteLine($"Press any key to close console.");
+            string html;
+            try
+            {
+                html = await downloadTask;
+            }
+            catch
+            {
+                html = null;
+            }
+            var downloadData = new DownloadData()
+            {
+                RawHtml = html,
+                Url = downloadUrl,
+                WebsiteId = websiteId,
+            };
+            await DataAccess.SaveAsync(downloadData);
         }
+
+        public static string RaiseOnProgress(int requestCount, int totalSize, DateTime startTime)
+        {
+            double downloadRate = Math.Max(requestCount / Math.Max(DateTime.Now.Subtract(startTime).TotalSeconds, 1), 1);
+            int itemsRemaining = totalSize - requestCount;
+            return $"{requestCount} of {totalSize} { (requestCount * 1.00 / totalSize * 1.00):0.####}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
+        }
+
+        private static void WriteOutput(string output)
+        {
+            Console.CursorLeft = 0;
+            Console.CursorTop = Math.Max(Console.CursorTop - 1, 0);
+            Console.WriteLine(output);
+        }
+
+        private static int GetCrawlDelay(Website website)
+        {
+            Robots robots = new Robots(website.Domain, website.UserAgent, enableErrorCorrection: true);
+            robots.Load();
+            int crawlDelay = robots.GetCrawlDelay();
+
+            if (crawlDelay == default(int))
+                crawlDelay = 100; //10/s second default
+            else if (crawlDelay < 10)
+                crawlDelay = crawlDelay * 1000;
+            return crawlDelay;
+        }
+
+        //public static byte[] Compress(byte[] inputData)
+        //{
+        //    using (var compressIntoMemoryStream = new MemoryStream())
+        //    {
+        //        using (var gzs = new GZipStream(compressIntoMemoryStream, CompressionMode.Compress))
+        //        {
+        //            gzs.Write(inputData, 0, inputData.Length);
+        //        }
+        //        return compressIntoMemoryStream.ToArray();
+        //    }
+        //}
+
+        //public static byte[] Decompress(byte[] inputData)
+        //{
+        //    using (var compressedMemoryStream = new MemoryStream(inputData))
+        //    {
+        //        using (var decompressedMs = new MemoryStream())
+        //        {
+        //            using (var gzs = new GZipStream(compressedMemoryStream, CompressionMode.Decompress))
+        //            {
+        //                gzs.CopyTo(decompressedMs);
+        //            }
+        //            return decompressedMs.ToArray();
+        //        }
+        //    }
+        //}
     }
 }
+
