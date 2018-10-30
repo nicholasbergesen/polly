@@ -9,7 +9,7 @@ namespace Polly.DownloadConsole
         [TestMethod]
         public void TestProgress()
         {
-            string test = Program.RaiseOnProgress(10, 10, 50, 1000, DateTime.Now);
+            string test = Program.RaiseOnProgress(10, 1000, DateTime.Now);
         }
     }
 }

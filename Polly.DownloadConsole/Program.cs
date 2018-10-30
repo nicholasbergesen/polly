@@ -1,14 +1,10 @@
 ﻿using Polly.Data;
-using Polly.Downloader;
 using RobotsSharpParser;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Polly.DownloadConsole
@@ -25,21 +21,21 @@ namespace Polly.DownloadConsole
 
         private static async Task Download(int websiteId)
         {
-            var website = DataAccess.GetWebsiteById(websiteId);
-
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", website.UserAgent);
-            int crawlDelay = GetCrawlDelay(website);
-
-            DateTime startTime = DateTime.Now;
-            Console.WriteLine($"[{DateTime.Now}] Started");
-
-            List<Task> activeTasks = new List<Task>();
-            int batchSize = 10000;
-            int batchPosition = 111608;
-            int requestCount = 111608;
-            await Task.Run(async () =>
+            try
             {
+                var website = DataAccess.GetWebsiteById(websiteId);
+
+                HttpClient httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("User-Agent", website.UserAgent);
+                int crawlDelay = GetCrawlDelay(website);
+
+                DateTime startTime = DateTime.Now;
+                Console.WriteLine($"[{DateTime.Now}] Started");
+
+                List<Task> activeTasks = new List<Task>(Environment.ProcessorCount);
+                int batchSize = 10000;
+                int batchPosition = 111608;
+                int requestCount = 111608;
                 var downloadBatch = await DataAccess.GetDownloadQueueBatchAsync(website.Id, batchSize, batchPosition);
                 int totalSize = await DataAccess.DownloadQueueCountAsync(website.Id);
 
@@ -68,7 +64,9 @@ namespace Polly.DownloadConsole
 
                 Console.WriteLine($"[{DateTime.Now}] Stopped");
                 Console.WriteLine($"Press any key to close console.");
-            });
+            }
+            catch (Exception)
+            { }
         }
 
         private static async Task HandleDownloadTask(Task<string> downloadTask, string downloadUrl, long websiteId)

@@ -58,7 +58,8 @@ namespace Polly.Data
                     .Where(x => x.WebsiteId == websiteId)
                     .OrderBy(x => x.Id)
                     .Skip(skip)
-                    .Take(batchSize).ToListAsync();
+                    .Take(batchSize)
+                    .ToListAsync();
             }
         }
 

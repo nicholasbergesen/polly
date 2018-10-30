@@ -20,7 +20,7 @@ namespace Polly.Data
 
         public DateTime AddedDate { get; set; }
 
-        [DataType(DataType.Url)]
+        [DataType(DataType.Url), MaxLength(2000)]
         public string DownloadUrl { get; set; }
 
         public int Priority { get; set; }
@@ -29,5 +29,7 @@ namespace Polly.Data
 
         [ForeignKey("WebsiteId")]
         public virtual Website Website { get; set; }
+
+        public int UrlHash { get; set; }
     }
 }

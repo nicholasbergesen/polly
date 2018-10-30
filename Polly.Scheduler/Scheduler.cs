@@ -44,40 +44,49 @@ namespace Polly.SchedulerConsole
 
         private async Task QueueLinks()
         {
-            Robots robots = new Robots(Website.Domain, Website.UserAgent, enableErrorCorrection: true);
-            robots.Load();
-            robots.OnPorgress += Robots_OnPorgress;
-            var websiteLinksToDownload = await robots.GetSitemapLinksAsync();
-
-            var filteredList = websiteLinksToDownload.Where(FilterProducts()).ToList();
-
-            int totalRequestCount = 0;
-            DateTime startTime = DateTime.Now;
-            List<Task> saveTasks = new List<Task>();
-            List<DownloadQueue> batch = new List<DownloadQueue>();
-            foreach (tUrl websiteLink in filteredList)
+            try
             {
-                string downloadUrl = BuildDownloadUrl(websiteLink.loc);
-                var downloadQueue = new DownloadQueue()
-                {
-                    AddedDate = DateTime.Now,
-                    DownloadUrl = downloadUrl,
-                    WebsiteId = Website.Id,
-                    Priority = 5,
-                };
+                Robots robots = new Robots(Website.Domain, Website.UserAgent, enableErrorCorrection: true);
+                robots.Load();
+                robots.OnPorgress += Robots_OnPorgress;
+                var websiteLinksToDownload = await robots.GetSitemapLinksAsync();
 
-                batch.Add(downloadQueue);
-                totalRequestCount++;
+                var filteredList = websiteLinksToDownload.Where(FilterProducts()).ToList();
 
-                if (batch.Count >= 100000)
+                int totalRequestCount = 0;
+                DateTime startTime = DateTime.Now;
+                List<Task> saveTasks = new List<Task>();
+                List<DownloadQueue> batch = new List<DownloadQueue>();
+                int cTest = 0;
+                foreach (tUrl websiteLink in filteredList)
                 {
-                    await DataAccess.SaveAsync(batch);
-                    RaiseOnProgress(totalRequestCount, filteredList.Count, startTime);
-                    batch.Clear();
+                    var downloadQueue = new DownloadQueue()
+                    {
+                        AddedDate = DateTime.Now,
+                        DownloadUrl = BuildDownloadUrl(websiteLink.loc),
+                        WebsiteId = Website.Id,
+                        Priority = 5,
+                    };
+
+                    batch.Add(downloadQueue);
+                    cTest++;
+                    totalRequestCount++;
+
+                    if (cTest == 1000)
+                    {
+                        await DataAccess.SaveAsync(batch);
+                        RaiseOnProgress(totalRequestCount, filteredList.Count, startTime);
+                        batch.Clear();
+                        cTest = 0;
+                    }
                 }
-            }
 
-            await DataAccess.SaveAsync(batch);
+                await DataAccess.SaveAsync(batch);
+            }
+            catch(Exception e)
+            {
+
+            }
         }
 
         private void Robots_OnPorgress(object sender, RobotsSharpParser.ProgressEventArgs e)
@@ -101,7 +110,7 @@ namespace Polly.SchedulerConsole
 
             double downloadRate = Math.Max(requestCount / Math.Max(DateTime.Now.Subtract(startTime).TotalSeconds, 1), 1);
             int itemsRemaining = totalSize - requestCount;
-            string progressString = $"{requestCount} of {totalSize} { (requestCount / totalSize)}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
+            string progressString = $"{requestCount} of {totalSize} {(requestCount * 1.0 / totalSize * 100.00):#.00}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
             OnProgress(this, new ProgressEventArgs(progressString));
         }
 
