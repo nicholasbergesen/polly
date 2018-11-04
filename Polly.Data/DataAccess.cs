@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Polly.Data
@@ -25,15 +23,21 @@ namespace Polly.Data
             }
         }
 
-        public static IEnumerable<DownloadData> Unprocessed(int batchSize)
+        public static IEnumerable<DownloadData> Unprocessed()
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return context.DownloadData
-                    .Where(x => x.ProcessDateTime == null)
-                    .Include(x => x.Website)
-                    .Include(x => x.Website.DataSourceType)
-                    .Take(batchSize).ToList();
+                return (from unprocessed in context.DownloadData
+                        where unprocessed.ProcessDateTime == null
+                        select unprocessed).ToList();
+
+
+                //return context.DownloadData
+                //    .Where(x => x.ProcessDateTime == null)
+                //    .Include(x => x.Website)
+                //    .Include(x => x.Website.DataSourceType)
+                //    .Take(batchSize)
+                //    .ToList();
             }
         }
 
@@ -85,6 +89,15 @@ namespace Polly.Data
             }
         }
 
+        public async static Task DeleteAsync(DownloadQueue downloadQueue)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                context.Entry(downloadQueue).State = EntityState.Deleted;
+                await context.SaveChangesAsync();
+            }
+        }
+
         public async static Task SaveAsync(List<DownloadQueue> downloadQueue)
         {
             using (PollyDbContext context = new PollyDbContext())
@@ -116,6 +129,15 @@ namespace Polly.Data
                 else
                     context.Entry(downloadData).State = System.Data.Entity.EntityState.Modified;
 
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async static Task DeleteAsync(DownloadData downloadData)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                context.Entry(downloadData).State = EntityState.Deleted;
                 await context.SaveChangesAsync();
             }
         }

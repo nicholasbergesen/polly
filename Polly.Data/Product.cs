@@ -23,9 +23,6 @@ namespace Polly.Data
         public string Description { get; set; }
 
         [MaxLength(500)]
-        public string Subtitle { get; set; }
-
-        [MaxLength(500)]
         public string Breadcrumb { get; set; }
 
         [MaxLength(500)]

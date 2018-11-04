@@ -58,7 +58,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TakealotJson1.7.0.cs" />
-    <Compile Include="TakealotJson1.6.0.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

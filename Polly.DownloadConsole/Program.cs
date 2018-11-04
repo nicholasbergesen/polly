@@ -45,7 +45,7 @@ namespace Polly.DownloadConsole
                     downloadBatch.Remove(next);
                     //await Task.Delay(crawlDelay);
                     var downloadTask = httpClient.GetStringAsync(next.DownloadUrl);
-                    activeTasks.Add(HandleDownloadTask(downloadTask, next.DownloadUrl, website.Id));
+                    activeTasks.Add(HandleDownloadTask(downloadTask, next, website.Id));
 
                     if (activeTasks.Count >= Environment.ProcessorCount)
                     {
@@ -69,7 +69,7 @@ namespace Polly.DownloadConsole
             { }
         }
 
-        private static async Task HandleDownloadTask(Task<string> downloadTask, string downloadUrl, long websiteId)
+        private static async Task HandleDownloadTask(Task<string> downloadTask, DownloadQueue downloadQueue, long websiteId)
         {
             string html;
             try
@@ -83,17 +83,18 @@ namespace Polly.DownloadConsole
             var downloadData = new DownloadData()
             {
                 RawHtml = html,
-                Url = downloadUrl,
+                Url = downloadQueue.DownloadUrl,
                 WebsiteId = websiteId,
             };
             await DataAccess.SaveAsync(downloadData);
+            await DataAccess.DeleteAsync(downloadQueue);
         }
 
         public static string RaiseOnProgress(int requestCount, int totalSize, DateTime startTime)
         {
             double downloadRate = Math.Max(requestCount / Math.Max(DateTime.Now.Subtract(startTime).TotalSeconds, 1), 1);
             int itemsRemaining = totalSize - requestCount;
-            return $"{requestCount} of {totalSize} { (requestCount * 1.00 / totalSize * 1.00):0.####}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
+            return $"{requestCount} of {totalSize} { (requestCount * 1.00 / totalSize * 1.00 * 100):0.####}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
         }
 
         private static void WriteOutput(string output)
