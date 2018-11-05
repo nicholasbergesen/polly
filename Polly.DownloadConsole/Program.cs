@@ -1,11 +1,10 @@
 ﻿using Polly.Data;
 using RobotsSharpParser;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
+using System.Threading;
+using System.Linq;
 
 namespace Polly.DownloadConsole
 {
@@ -15,79 +14,67 @@ namespace Polly.DownloadConsole
         {
             ServicePointManager.DefaultConnectionLimit = 100;
             int websiteId = int.Parse(Console.ReadLine());
-            Download(websiteId).Wait();
+            Download(websiteId);
+            Console.WriteLine("Done");
             Console.ReadLine();
         }
 
-        private static async Task Download(int websiteId)
+        private static void Download(int websiteId)
         {
-            try
+            var website = DataAccess.GetWebsiteById(websiteId);
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", website.UserAgent);
+            int crawlDelay = GetCrawlDelay(website);
+            Thread[] activeThreads = new Thread[Environment.ProcessorCount];
+            DateTime startTime = DateTime.Now;
+            Console.WriteLine($"[{DateTime.Now}] Started");
+            var downloadQueueIds = DataAccess.GetDownloadQueueIdsAsync(website.Id);
+
+            int totalSize = downloadQueueIds.Count;
+
+            for (int i = 0; i < Environment.ProcessorCount; i++)
             {
-                var website = DataAccess.GetWebsiteById(websiteId);
-
-                HttpClient httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("User-Agent", website.UserAgent);
-                int crawlDelay = GetCrawlDelay(website);
-
-                DateTime startTime = DateTime.Now;
-                Console.WriteLine($"[{DateTime.Now}] Started");
-
-                List<Task> activeTasks = new List<Task>(Environment.ProcessorCount);
-                int batchSize = 10000;
-                int batchPosition = 111608;
-                int requestCount = 111608;
-                var downloadBatch = await DataAccess.GetDownloadQueueBatchAsync(website.Id, batchSize, batchPosition);
-                int totalSize = await DataAccess.DownloadQueueCountAsync(website.Id);
-
-                while (downloadBatch.Count > 0)
+                Thread newThread = new Thread(new ThreadStart(() =>
                 {
-                    var next = downloadBatch.FirstOrDefault();
-                    downloadBatch.Remove(next);
-                    //await Task.Delay(crawlDelay);
-                    var downloadTask = httpClient.GetStringAsync(next.DownloadUrl);
-                    activeTasks.Add(HandleDownloadTask(downloadTask, next, website.Id));
-
-                    if (activeTasks.Count >= Environment.ProcessorCount)
+                    try
                     {
-                        //await Task.Delay(crawlDelay);
-                        var whenallTask = Task.WhenAll(activeTasks.Where(x => x != null).ToArray());
-                        activeTasks.Clear();
+                        while (downloadQueueIds.TryDequeue(out long nextQueueId))
+                        {
+                            var downloadQueueItem = DataAccess.GetDownloadQueueItemByIdAsync(nextQueueId);
+                            string html;
+                            try
+                            {
+                                html = httpClient.GetStringAsync(downloadQueueItem.DownloadUrl).Result;
+                            }
+                            catch
+                            {
+                                DataAccess.DeleteAsync(nextQueueId);
+                                continue;
+                            }
+                            var downloadData = new DownloadData()
+                            {
+                                RawHtml = html,
+                                Url = downloadQueueItem.DownloadUrl,
+                                WebsiteId = websiteId,
+                            };
+                            DataAccess.SaveAsync(downloadData);
+                            DataAccess.DeleteAsync(downloadQueueItem);
+                        }
                     }
-
-                    if (downloadBatch.Count == 0)
-                    {
-                        batchPosition += batchSize;
-                        downloadBatch = await DataAccess.GetDownloadQueueBatchAsync(website.Id, batchSize, batchPosition);
-                    }
-                    WriteOutput(RaiseOnProgress(requestCount++, totalSize, startTime));
-                }
-
-                Console.WriteLine($"[{DateTime.Now}] Stopped");
-                Console.WriteLine($"Press any key to close console.");
+                    catch (Exception e)
+                    { }
+                }));
+                activeThreads[i] = newThread;
+                activeThreads[i].Start();
             }
-            catch (Exception)
-            { }
-        }
 
-        private static async Task HandleDownloadTask(Task<string> downloadTask, DownloadQueue downloadQueue, long websiteId)
-        {
-            string html;
-            try
+            while (activeThreads.Any(x => x.IsAlive))
             {
-                html = await downloadTask;
+                WriteOutput(RaiseOnProgress(totalSize - downloadQueueIds.Count, totalSize, startTime));
+                Thread.Sleep(1000);
             }
-            catch
-            {
-                html = null;
-            }
-            var downloadData = new DownloadData()
-            {
-                RawHtml = html,
-                Url = downloadQueue.DownloadUrl,
-                WebsiteId = websiteId,
-            };
-            await DataAccess.SaveAsync(downloadData);
-            await DataAccess.DeleteAsync(downloadQueue);
+            Console.WriteLine($"[{DateTime.Now}] Stopped");
+            Console.WriteLine($"Press any key to close console.");
         }
 
         public static string RaiseOnProgress(int requestCount, int totalSize, DateTime startTime)

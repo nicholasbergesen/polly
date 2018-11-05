@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -67,6 +68,40 @@ namespace Polly.Data
             }
         }
 
+        public static async Task<DownloadQueue> GetNextDownloadQueueItemAsync(long websiteId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await (from downloadQueue in context.DownloadQueue
+                              where downloadQueue.WebsiteId == websiteId
+                              orderby downloadQueue.Id
+                              select downloadQueue)
+                             .FirstOrDefaultAsync();
+            }
+        }
+
+        public static DownloadQueue GetDownloadQueueItemByIdAsync(long Id)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return (from downloadQueue in context.DownloadQueue
+                        where downloadQueue.Id == Id
+                        select downloadQueue)
+                        .FirstOrDefault();
+            }
+        }
+
+        public static ConcurrentQueue<long> GetDownloadQueueIdsAsync(long websiteId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return new ConcurrentQueue<long>(from downloadQueue in context.DownloadQueue
+                                                 where downloadQueue.WebsiteId == websiteId
+                                                 orderby downloadQueue.Id
+                                                 select downloadQueue.Id);
+            }
+        }
+
         public static async Task<int> DownloadQueueCountAsync(long websiteId)
         {
             using (PollyDbContext context = new PollyDbContext())
@@ -89,12 +124,24 @@ namespace Polly.Data
             }
         }
 
-        public async static Task DeleteAsync(DownloadQueue downloadQueue)
+        public async static void DeleteAsync(DownloadQueue downloadQueue)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
+                context.Configuration.AutoDetectChangesEnabled = false;
+                context.DownloadQueue.Attach(downloadQueue);
                 context.Entry(downloadQueue).State = EntityState.Deleted;
-                await context.SaveChangesAsync();
+                context.SaveChanges();
+            }
+        }
+
+        public static void DeleteAsync(long downloadQueueId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                DownloadQueue deleetme = new DownloadQueue() { Id = downloadQueueId };
+                context.Entry(deleetme).State = EntityState.Deleted;
+                context.SaveChanges();
             }
         }
 
@@ -114,22 +161,22 @@ namespace Polly.Data
                 if (website.Id == default(long))
                     context.Website.Add(website);
                 else
-                    context.Entry(website).State = System.Data.Entity.EntityState.Modified;
+                    context.Entry(website).State = EntityState.Modified;
 
                 await context.SaveChangesAsync();
             }
         }
 
-        public async static Task SaveAsync(DownloadData downloadData)
+        public async static void SaveAsync(DownloadData downloadData)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
                 if (downloadData.Id == default(long))
                     context.DownloadData.Add(downloadData);
                 else
-                    context.Entry(downloadData).State = System.Data.Entity.EntityState.Modified;
+                    context.Entry(downloadData).State = EntityState.Modified;
 
-                await context.SaveChangesAsync();
+                context.SaveChanges();
             }
         }
 
