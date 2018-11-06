@@ -20,6 +20,7 @@ namespace Polly.Data
         public DbSet<DownloadData> DownloadData { get; set; }
         public DbSet<DownloadQueue> DownloadQueue { get; set; }
         public DbSet<Product> Product { get; set; }
+        public DbSet<PriceHistory> PriceHistory { get; set; }
         public DbSet<DataSourceType> DataSourceType { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

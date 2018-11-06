@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -24,34 +25,48 @@ namespace Polly.Data
             }
         }
 
-        public static IEnumerable<DownloadData> Unprocessed()
+        public static void AddToDownloadQueue(string url, int websiteId, int priority)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return (from unprocessed in context.DownloadData
-                        where unprocessed.ProcessDateTime == null
-                        select unprocessed).ToList();
-
-
-                //return context.DownloadData
-                //    .Where(x => x.ProcessDateTime == null)
-                //    .Include(x => x.Website)
-                //    .Include(x => x.Website.DataSourceType)
-                //    .Take(batchSize)
-                //    .ToList();
+                context.DownloadQueue.Add(new DownloadQueue()
+                {
+                    AddedDate = DateTime.Now,
+                    WebsiteId = websiteId,
+                    DownloadUrl = url,
+                    Priority = priority,
+                    UrlHash = url.GetHashCode(),
+                });
+                context.SaveChanges();
             }
         }
 
-        public async static Task SaveAsync(Product product)
+        public static void SaveAsync(Product product)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
                 if (product.Id == default(long))
                     context.Product.Add(product);
                 else
-                    context.Entry(product).State = System.Data.Entity.EntityState.Modified;
+                    context.Entry(product).State = EntityState.Modified;
 
-                await context.SaveChangesAsync();
+                context.SaveChanges();
+            }
+        }
+
+        public static Product FetchProductOrDefault(string uniqueIdentifier)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                int uniqueHash = uniqueIdentifier.GetHashCode();
+                return context.Product
+                    .Include(x => x.PriceHistory)
+                    .FirstOrDefault(x => x.UniqueIdentifierHash == uniqueHash)
+                    ?? new Product()
+                    {
+                        UniqueIdentifier = uniqueIdentifier,
+                        UniqueIdentifierHash = uniqueHash
+                    };
             }
         }
 
@@ -61,7 +76,7 @@ namespace Polly.Data
             {
                 return await context.DownloadQueue
                     .Where(x => x.WebsiteId == websiteId)
-                    .OrderBy(x => x.Id)
+                    .OrderBy(x => x.Priority)
                     .Skip(skip)
                     .Take(batchSize)
                     .ToListAsync();
@@ -95,19 +110,29 @@ namespace Polly.Data
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return new ConcurrentQueue<long>(from downloadQueue in context.DownloadQueue
-                                                 where downloadQueue.WebsiteId == websiteId
-                                                 orderby downloadQueue.Id
-                                                 select downloadQueue.Id);
+                return new ConcurrentQueue<long>((from downloadQueue in context.DownloadQueue
+                                                  where downloadQueue.WebsiteId == websiteId
+                                                  orderby downloadQueue.Priority
+                                                  select downloadQueue.Id).Take(100000));
             }
         }
 
-        public static async Task<int> DownloadQueueCountAsync(long websiteId)
+        public static ConcurrentQueue<long> GetDownloadDataIdsAsync(long websiteId)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return await context.DownloadQueue
-                     .CountAsync(x => x.WebsiteId == websiteId);
+                return new ConcurrentQueue<long>((from downloadQueue in context.DownloadData
+                                                  where downloadQueue.WebsiteId == websiteId
+                                                  select downloadQueue.Id));
+            }
+        }
+
+        public static int DownloadQueueCountAsync(long websiteId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return context.DownloadQueue
+                     .Count(x => x.WebsiteId == websiteId);
             }
         }
 
@@ -124,7 +149,7 @@ namespace Polly.Data
             }
         }
 
-        public async static void DeleteAsync(DownloadQueue downloadQueue)
+        public static void DeleteAsync(DownloadQueue downloadQueue)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
@@ -167,7 +192,7 @@ namespace Polly.Data
             }
         }
 
-        public async static void SaveAsync(DownloadData downloadData)
+        public static void SaveAsync(DownloadData downloadData)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
@@ -180,12 +205,30 @@ namespace Polly.Data
             }
         }
 
-        public async static Task DeleteAsync(DownloadData downloadData)
+        public static void DeleteAsync(DownloadData downloadData)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
                 context.Entry(downloadData).State = EntityState.Deleted;
-                await context.SaveChangesAsync();
+                context.SaveChanges();
+            }
+        }
+
+        public static int UnprocessedCount()
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return context.DownloadData.Count();
+            }
+        }
+
+        public static DownloadData GetNextDownloadData(long id)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return context.DownloadData
+                    .Include(x => x.Website)
+                    .FirstOrDefault(x => x.Id == id);
             }
         }
     }

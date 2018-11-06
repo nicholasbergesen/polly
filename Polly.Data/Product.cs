@@ -10,15 +10,25 @@ namespace Polly.Data
 {
     public class Product
     {
+        public Product()
+        {
+            PriceHistory = new List<PriceHistory>();
+        }
+
         public long Id { get; set; }
 
-        public int ProductUniqueIdentifier { get; set; }
+        public int UniqueIdentifierHash { get; set; }
 
-        [DataType(DataType.Currency)]
-        public decimal Price { get; set; }
+        [MaxLength(80)]
+        public string UniqueIdentifier { get; set; }
 
-        [MaxLength(300)]
-        public string Name { get; set; }
+        [DataType(DataType.Url), MaxLength(2000)]
+        public string Url { get; set; }
+
+        public DateTime LastChecked { get; set; }
+
+        [MaxLength(500)]
+        public string Title { get; set; }
 
         public string Description { get; set; }
 
@@ -28,11 +38,9 @@ namespace Polly.Data
         [MaxLength(500)]
         public string Category { get; set; }
 
-        public long DownloadDataId { get; set; }
+        [MaxLength(500)]
+        public string Image { get; set; }
 
-        [ForeignKey("DownloadDataId")]
-        public virtual DownloadData DownloadData { get; set; }
-
-        public ICollection<byte[]> Images { get; set; }
+        public virtual ICollection<PriceHistory> PriceHistory { get; set; }
     }
 }

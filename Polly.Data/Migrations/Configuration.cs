@@ -6,22 +6,22 @@ namespace Polly.Data.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Polly.Data.PollyDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<PollyDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
         }
 
-        protected override void Seed(Polly.Data.PollyDbContext context)
+        protected override void Seed(PollyDbContext context)
         {
             //  This method will be called after migrating to the latest version.
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
 
-            var datTypeValues = Enum.GetValues(typeof(DataSourceTypeEnum));
+            var dataTypeValues = Enum.GetValues(typeof(DataSourceTypeEnum));
 
-            foreach (DataSourceTypeEnum datType in datTypeValues)
+            foreach (DataSourceTypeEnum datType in dataTypeValues)
             {
                 context.DataSourceType.AddOrUpdate(new DataSourceType()
                 {

@@ -31,7 +31,5 @@ namespace Polly.Data
 
         [ForeignKey("WebsiteId")]
         public virtual Website Website { get; set; }
-
-        public DateTime? ProcessDateTime { get; set; }
     }
 }

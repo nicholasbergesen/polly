@@ -74,7 +74,7 @@ namespace Polly.Downloader
     {
         public Loyalty_Prices[] loyalty_prices { get; set; }
         public object promotion_qty { get; set; }
-        public int product_id { get; set; }
+        public int? product_id { get; set; }
         public string add_to_cart_text { get; set; }
         public int product_line_id { get; set; }
         public bool is_add_to_wishlist_available { get; set; }
@@ -82,9 +82,9 @@ namespace Polly.Downloader
         public object multibuy_label { get; set; }
         public bool is_free_shipping_available { get; set; }
         public bool multibuy_display { get; set; }
-        public bool is_add_to_cart_available { get; set; }
+        public bool? is_add_to_cart_available { get; set; }
         public float[] prices { get; set; }
-        public object listing_price { get; set; }
+        public decimal? listing_price { get; set; }
         public object promotion_qty_display_text { get; set; }
     }
 
@@ -151,13 +151,13 @@ namespace Polly.Downloader
 
     public class Data_Layer
     {
-        public int sku { get; set; }
-        public decimal totalPrice { get; set; }
+        public int? sku { get; set; }
+        public decimal? totalPrice { get; set; }
         public string name { get; set; }
         public string productlineSku { get; set; }
         public string departmentname { get; set; }
         public int[] categoryid { get; set; }
-        public int departmentid { get; set; }
+        public int? departmentid { get; set; }
         public string pageType { get; set; }
         public int quantity { get; set; }
         public string _event { get; set; }
@@ -193,7 +193,7 @@ namespace Polly.Downloader
         public object brand { get; set; }
         public Author[] authors { get; set; }
         public int id { get; set; }
-        public int reviews { get; set; }
+        public int? reviews { get; set; }
         public Format[] formats { get; set; }
         public string slug { get; set; }
     }
@@ -319,7 +319,7 @@ namespace Polly.Downloader
 
     public class Reviews
     {
-        public int count { get; set; }
+        public int? count { get; set; }
         public string tab_title { get; set; }
         public object star_rating { get; set; }
         public string href { get; set; }

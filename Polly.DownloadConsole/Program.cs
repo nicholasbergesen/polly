@@ -25,14 +25,15 @@ namespace Polly.DownloadConsole
             HttpClient httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", website.UserAgent);
             int crawlDelay = GetCrawlDelay(website);
-            Thread[] activeThreads = new Thread[Environment.ProcessorCount];
+            int threads = 20;// Environment.ProcessorCount;
+            Thread[] activeThreads = new Thread[threads];
             DateTime startTime = DateTime.Now;
             Console.WriteLine($"[{DateTime.Now}] Started");
             var downloadQueueIds = DataAccess.GetDownloadQueueIdsAsync(website.Id);
 
             int totalSize = downloadQueueIds.Count;
 
-            for (int i = 0; i < Environment.ProcessorCount; i++)
+            for (int i = 0; i < threads; i++)
             {
                 Thread newThread = new Thread(new ThreadStart(() =>
                 {
@@ -59,6 +60,18 @@ namespace Polly.DownloadConsole
                             };
                             DataAccess.SaveAsync(downloadData);
                             DataAccess.DeleteAsync(downloadQueueItem);
+
+                            if (downloadQueueIds.IsEmpty)
+                            {
+                                lock (_lock)
+                                {
+                                    if (downloadQueueIds.IsEmpty)
+                                    {
+                                        downloadQueueIds = DataAccess.GetDownloadQueueIdsAsync(website.Id);
+                                        startTime = DateTime.Now;
+                                    }
+                                }
+                            }
                         }
                     }
                     catch (Exception e)
@@ -76,6 +89,8 @@ namespace Polly.DownloadConsole
             Console.WriteLine($"[{DateTime.Now}] Stopped");
             Console.WriteLine($"Press any key to close console.");
         }
+
+        private static object _lock = new object();
 
         public static string RaiseOnProgress(int requestCount, int totalSize, DateTime startTime)
         {

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Polly.Data
 {
@@ -23,6 +19,7 @@ namespace Polly.Data
         [DataType(DataType.Url), MaxLength(2000)]
         public string DownloadUrl { get; set; }
 
+        [Index("PriorityIndex", IsUnique = false)]
         public int Priority { get; set; }
 
         public long WebsiteId { get; set; }
