@@ -24,7 +24,7 @@ namespace Polly.ProcessConsole
             int threads = 4;
             Thread[] activeThreads = new Thread[threads];
             var dataIds = DataAccess.GetDownloadDataIdsAsync(1);
-            int totalSize = dataIds.Count;
+            int totalSize1 = dataIds.Count;
             var token = source.Token;
             for (int i = 0; i < threads; i++)
             {
@@ -68,8 +68,8 @@ namespace Polly.ProcessConsole
                 Console.CursorLeft = 0;
                 Console.CursorTop = 1;
                 var unprocessedCount = DataAccess.UnprocessedCount();
-                Console.WriteLine(RaiseOnProgress(totalSize - unprocessedCount, totalSize, startTime));
-                Thread.Sleep(2000);
+                Console.WriteLine(RaiseOnProgress(totalSize1 - unprocessedCount, totalSize1, startTime));
+                Thread.Sleep(10000);
             }
             Console.WriteLine($"[{DateTime.Now}] Stopped");
             Console.WriteLine($"Press any key to close console.");

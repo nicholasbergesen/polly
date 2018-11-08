@@ -13,8 +13,8 @@ namespace Polly.DailyUpdater
 {
     class Program
     {
-        private const string TakealotApiPromition = "https://api.takealot.com/rest/v-1-8-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start=0&detail=listing&filter=Available:true&filter=Promotions:56232"; //56222
-        private const string TakealotApiPromitionInterpolation = "https://api.takealot.com/rest/v-1-8-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={0}&detail=listing&filter=Available:true&filter=Promotions:56232";
+        private const string TakealotApiPromition = "https://api.takealot.com/rest/v-1-8-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start=0&detail=listing&filter=Available:true&filter=Promotions:56236"; //56222
+        private const string TakealotApiPromitionInterpolation = "https://api.takealot.com/rest/v-1-8-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={0}&detail=listing&filter=Available:true&filter=Promotions:56236";
         private const string TakealotProductDetails = "https://api.takealot.com/rest/v-1-7-0/product-details/";
 
         static void Main(string[] args)

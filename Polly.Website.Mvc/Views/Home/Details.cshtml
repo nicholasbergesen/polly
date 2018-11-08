@@ -1,0 +1,75 @@
+﻿@model Polly.Data.Product
+
+<h2>@Html.DisplayFor(model => model.Title)</h2>
+
+<div class="list-inline">
+    <a href="@Model.Url" class="right">View on Takealot</a>
+    <h5>Last Checked: @Model.LastChecked.ToLongDateString()</h5>
+</div>
+
+<hr />
+<div class="col-md-12">
+    <div class="col-md-4">
+        <img src="@Model.Image" width="250" />
+    </div>
+    <div class="col-md-8">
+        <h4>Description:</h4>
+        @if (string.IsNullOrEmpty(Model.Description))
+        {
+            <p>No description available.</p>
+        }
+        else
+        {
+            <p>@Model.Description</p>
+        }
+    </div>
+</div>
+
+
+<hr />
+<h4>Price history</h4>
+<table class="table">
+    <tr>
+        <th>
+            Date
+        </th>
+        <th>
+            Price
+        </th>
+        <th>
+            Original price
+        </th>
+        <th>
+            Discount amount
+        </th>
+    </tr>
+    @foreach (var item in Model.PriceHistory.OrderBy(x => x.TimeStamp))
+    {
+        <tr>
+            <td>
+                @item.TimeStamp.ToShortDateString()
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OriginalPrice)
+            </td>
+            <td>
+                @if (item.OriginalPrice.HasValue && item.Price < item.OriginalPrice.Value)
+                {
+                    decimal discount = 1 - (item.Price / item.OriginalPrice.Value) * 100;
+                    var val = string.Format("{0:0.00}%", discount);
+                    @val;
+                }
+            </td>
+        </tr>
+    }
+</table>
+<div>
+    @{Html.RenderPartial("_PriceHistoryGraph", Model.PriceHistory); }
+</div>
+<br />
+<div>
+    @Html.ActionLink("Back", "Index")
+</div>

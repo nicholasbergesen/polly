@@ -1,0 +1,1 @@
+{"version":3,"file":"script.js","sourceRoot":"","sources":["scripts/main.ts","scripts/productService.ts"],"names":[],"mappings":"ACAA;IAAA;IAYA,CAAC;IAAD,cAAC;AAAD,CAAC,AAZD,IAYC;AAED;IAAA;IAOA,CAAC;IAAD,mBAAC;AAAD,CAAC,AAPD,IAOC;AAED;IAAA;QACY,QAAG,GAAW,cAAc,CAAC;IAKzC,CAAC;IAHU,mCAAU,GAAjB,UAAkB,EAAU;QACxB,OAAO,IAAI,OAAO,EAAE,CAAC;IACzB,CAAC;IACL,qBAAC;AAAD,CAAC,AAND,IAMC"}
