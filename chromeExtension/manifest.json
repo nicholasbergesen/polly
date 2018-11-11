@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "Polly Price",
+  "version": "1.0",
+  "description": "Show price history",
+  "permissions": [
+    "http://nicholasb.ddns.net/*",
+    "activeTab",
+    "declarativeContent",
+    "storage"
+  ],
+  "background": {
+    "scripts": [
+      "background.js",
+      "jquery.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.takealot.com/deals"
+      ],
+      "js": [
+        "jquery.js",
+        "contentScript.js"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "favicon16.png",
+    "24": "favicon24.png",
+    "32": "favicon32.png",
+    "64": "favicon64.png"
+  }
+}

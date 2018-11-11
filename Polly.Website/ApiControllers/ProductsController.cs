@@ -8,21 +8,20 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Polly.Data;
 
-namespace Polly.Website.Api.Controllers
+namespace Polly.Website.Controllers
 {
-    [RoutePrefix("api/product")]
+    [RoutePrefix("api/products")]
     public class ProductsController : ApiController
     {
         private PollyDbContext db = new PollyDbContext();
 
-        [HttpGet]
-        [ResponseType(typeof(decimal))]
-        [Route("{productId}")]
-        public async Task<decimal> GetLastProductPrice(string productId)
+        [Route("{productId}/{currentPrice}")]
+        public async Task<decimal> GetLastProductPrice(string productId, decimal currentPrice)
         {
             return await (from product in db.Product
                           where product.UniqueIdentifier == productId
                           select (from price in product.PriceHistory
+                                  where price.Price != currentPrice
                                   orderby price.TimeStamp descending
                                   select price.Price)
                                   .FirstOrDefault())

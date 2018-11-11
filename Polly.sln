@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.consoleTests", "Polly
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.DailyUpdater", "Polly.DailyUpdater\Polly.DailyUpdater.csproj", "{34D3761B-7E35-4ECB-B555-08AB91A5F0D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.Website", "Polly.Website.Mvc\Polly.Website.csproj", "{044D10BC-8F38-46E0-8C23-998F14AA07AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.Website", "Polly.Website\Polly.Website.csproj", "{044D10BC-8F38-46E0-8C23-998F14AA07AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
