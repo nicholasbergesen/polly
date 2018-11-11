@@ -17,19 +17,18 @@ namespace Polly.Data
 
         public long Id { get; set; }
 
-        public int UniqueIdentifierHash { get; set; }
-
-        [MaxLength(80)]
+        [Index(IsUnique = true), MaxLength(80)]
         public string UniqueIdentifier { get; set; }
 
-        [DataType(DataType.Url), MaxLength(2000)]
+        [Index, DataType(DataType.Url), MaxLength(850)]
         public string Url { get; set; }
 
         public DateTime LastChecked { get; set; }
 
-        [MaxLength(500)]
+        [Index, MaxLength(500)]
         public string Title { get; set; }
 
+        [DataType(DataType.Html)]
         public string Description { get; set; }
 
         [MaxLength(500)]
@@ -38,7 +37,7 @@ namespace Polly.Data
         [MaxLength(500)]
         public string Category { get; set; }
 
-        [MaxLength(500)]
+        [MaxLength(500), DataType(DataType.ImageUrl)]
         public string Image { get; set; }
 
         public virtual ICollection<PriceHistory> PriceHistory { get; set; }

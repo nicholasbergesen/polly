@@ -10,6 +10,7 @@ namespace Polly.Data.Migrations
     {
         public Configuration()
         {
+            CommandTimeout = 6000;
             AutomaticMigrationsEnabled = true;
         }
 

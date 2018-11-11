@@ -75,6 +75,26 @@
     <Compile Include="Migrations\201811061925124_Renme.Designer.cs">
       <DependentUpon>201811061925124_Renme.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201811081425492_Indexes.cs" />
+    <Compile Include="Migrations\201811081425492_Indexes.Designer.cs">
+      <DependentUpon>201811081425492_Indexes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811081750312_Index2.cs" />
+    <Compile Include="Migrations\201811081750312_Index2.Designer.cs">
+      <DependentUpon>201811081750312_Index2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811081805158_UniqueIndex.cs" />
+    <Compile Include="Migrations\201811081805158_UniqueIndex.Designer.cs">
+      <DependentUpon>201811081805158_UniqueIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811081809124_MoreIndexes.cs" />
+    <Compile Include="Migrations\201811081809124_MoreIndexes.Designer.cs">
+      <DependentUpon>201811081809124_MoreIndexes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811081815218_shortedul.cs" />
+    <Compile Include="Migrations\201811081815218_shortedul.Designer.cs">
+      <DependentUpon>201811081815218_shortedul.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="DbContext\PollyDbContext.cs" />
     <Compile Include="PriceHistory.cs" />
@@ -91,6 +111,21 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201811061925124_Renme.resx">
       <DependentUpon>201811061925124_Renme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811081425492_Indexes.resx">
+      <DependentUpon>201811081425492_Indexes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811081750312_Index2.resx">
+      <DependentUpon>201811081750312_Index2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811081805158_UniqueIndex.resx">
+      <DependentUpon>201811081805158_UniqueIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811081809124_MoreIndexes.resx">
+      <DependentUpon>201811081809124_MoreIndexes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811081815218_shortedul.resx">
+      <DependentUpon>201811081815218_shortedul.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

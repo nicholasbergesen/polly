@@ -33,11 +33,26 @@ namespace Polly.Data
         [DataType(DataType.Currency)]
         public decimal? OriginalPrice { get; set; }
 
+        [DataType(DataType.Currency)]
+        public decimal? DiscountAmount{ get; set; }
+
+        public decimal? DiscountPercentage { get; set; }
+
+        [DataType(DataType.Currency)]
+        public decimal? PriceChangeAmount { get; set; }
+
+        public decimal? PriceChangePercent { get; set; }
+
         public DateTime TimeStamp { get; private set; }
 
         public long? ProductId { get; set; }
 
         [ForeignKey("ProductId")]
         public virtual Product Product { get; set; }
+
+        public long? PreviousPriceHistoryId { get; set; }
+
+        [ForeignKey("PreviousPriceHistoryId")]
+        public virtual PriceHistory PreviousPriceHistory { get; set; }
     }
 }

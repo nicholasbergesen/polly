@@ -41,7 +41,23 @@ namespace Polly.Data
             }
         }
 
-        public static void SaveAsync(Product product)
+        public static async Task SaveAsync(List<PriceHistory> priceHistories)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                foreach (var priceHistory in priceHistories)
+                {
+                    if (priceHistory.Id == default(long))
+                        context.PriceHistory.Add(priceHistory);
+                    else
+                        context.Entry(priceHistory).State = EntityState.Modified;
+                }
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public static async Task SaveAsync(Product product)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
@@ -50,7 +66,20 @@ namespace Polly.Data
                 else
                     context.Entry(product).State = EntityState.Modified;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public static async Task SaveAsync(PriceHistory priceHistory)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                if (priceHistory.Id == default(long))
+                    context.PriceHistory.Add(priceHistory);
+                else
+                    context.Entry(priceHistory).State = EntityState.Modified;
+
+                await context.SaveChangesAsync();
             }
         }
 
@@ -58,15 +87,9 @@ namespace Polly.Data
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                int uniqueHash = uniqueIdentifier.GetHashCode();
                 return context.Product
                     .Include(x => x.PriceHistory)
-                    .FirstOrDefault(x => x.UniqueIdentifierHash == uniqueHash)
-                    ?? new Product()
-                    {
-                        UniqueIdentifier = uniqueIdentifier,
-                        UniqueIdentifierHash = uniqueHash
-                    };
+                    .FirstOrDefault(x => x.UniqueIdentifier == uniqueIdentifier);
             }
         }
 
@@ -95,25 +118,25 @@ namespace Polly.Data
             }
         }
 
-        public static DownloadQueue GetDownloadQueueItemByIdAsync(long Id)
+        public static async Task<string> GetDownloadQueueItemByIdAsync(long Id)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return (from downloadQueue in context.DownloadQueue
-                        where downloadQueue.Id == Id
-                        select downloadQueue)
-                        .FirstOrDefault();
+                return await (from downloadQueue in context.DownloadQueue
+                              where downloadQueue.Id == Id
+                              select downloadQueue.DownloadUrl)
+                        .FirstOrDefaultAsync();
             }
         }
 
-        public static ConcurrentQueue<long> GetDownloadQueueIdsAsync(long websiteId)
+        public static ConcurrentQueue<long> GetDownloadQueueIds(long websiteId)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return new ConcurrentQueue<long>((from downloadQueue in context.DownloadQueue
-                                                  where downloadQueue.WebsiteId == websiteId
-                                                  orderby downloadQueue.Priority
-                                                  select downloadQueue.Id).Take(100000));
+                return new ConcurrentQueue<long>(from downloadQueue in context.DownloadQueue
+                                                 where downloadQueue.WebsiteId == websiteId
+                                                 orderby downloadQueue.Priority
+                                                 select downloadQueue.Id);
             }
         }
 
@@ -136,6 +159,17 @@ namespace Polly.Data
             }
         }
 
+        public static async Task<PriceHistory> FetchProductLastPrice(long productId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await (from priceHistory in context.PriceHistory
+                              where priceHistory.ProductId == productId
+                              orderby priceHistory.Id descending
+                              select priceHistory).FirstOrDefaultAsync();
+            }
+        }
+
         public async static Task SaveAsync(DownloadQueue downloadQueue)
         {
             using (PollyDbContext context = new PollyDbContext())
@@ -149,24 +183,24 @@ namespace Polly.Data
             }
         }
 
-        public static void DeleteAsync(DownloadQueue downloadQueue)
+        public static async Task DeleteAsync(DownloadQueue downloadQueue)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
                 context.Configuration.AutoDetectChangesEnabled = false;
                 context.DownloadQueue.Attach(downloadQueue);
                 context.Entry(downloadQueue).State = EntityState.Deleted;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public static void DeleteAsync(long downloadQueueId)
+        public static async Task DeleteAsync(long downloadQueueId)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
                 DownloadQueue deleetme = new DownloadQueue() { Id = downloadQueueId };
                 context.Entry(deleetme).State = EntityState.Deleted;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -192,7 +226,7 @@ namespace Polly.Data
             }
         }
 
-        public static void SaveAsync(DownloadData downloadData)
+        public static async Task SaveAsync(DownloadData downloadData)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
@@ -201,16 +235,16 @@ namespace Polly.Data
                 else
                     context.Entry(downloadData).State = EntityState.Modified;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public static void DeleteAsync(DownloadData downloadData)
+        public static async Task DeleteAsync(DownloadData downloadData)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
                 context.Entry(downloadData).State = EntityState.Deleted;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -222,13 +256,11 @@ namespace Polly.Data
             }
         }
 
-        public static DownloadData GetNextDownloadData(long id)
+        public static async Task<DownloadData> GetNextDownloadDataAsync(long id)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return context.DownloadData
-                    .Include(x => x.Website)
-                    .FirstOrDefault(x => x.Id == id);
+                return await context.DownloadData.FindAsync(id);
             }
         }
     }

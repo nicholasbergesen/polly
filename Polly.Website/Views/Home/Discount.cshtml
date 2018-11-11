@@ -1,0 +1,41 @@
+﻿
+@model IEnumerable<Polly.Website.Models.DiscountProduct>
+
+@{
+    ViewBag.Title = "Products";
+}
+
+<h2>Products</h2>
+<div>
+    @using (Html.BeginForm())
+    {
+
+        <p>
+            @Html.TextBox("SearchString")
+            <input type="submit" value="Search" class="text-left" />
+        </p>
+    }
+</div>
+<table class="table">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @item.Product.Title
+            </td>
+            <td>
+                @{decimal discount = ((item.LastPrice.OriginalPrice.Value - item.LastPrice.Price) / item.LastPrice.OriginalPrice.Value) * 100;
+                    var val = string.Format("{0:0.00}%", discount);
+                    @val;
+                }
+            </td>
+            <td>
+                @item.Product.LastChecked.ToShortDateString()
+            </td>
+            <td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id = item.Product.Id })
+            </td>
+        </tr>
+    }
+</table>

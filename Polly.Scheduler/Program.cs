@@ -22,6 +22,7 @@ namespace Polly.SchedulerConsole
             scheduler.OnStart += Scheduler_OnStart;
             scheduler.OnEnd += Scheduler_OnEnd;
             scheduler.Start();
+            Console.ReadLine();
         }
 
         private static void Scheduler_OnEnd(object sender, EventArgs e)

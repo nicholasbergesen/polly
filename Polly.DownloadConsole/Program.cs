@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Linq;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Polly.DownloadConsole
 {
@@ -12,80 +14,70 @@ namespace Polly.DownloadConsole
     {
         static void Main(string[] args)
         {
-            ServicePointManager.DefaultConnectionLimit = 100;
+            Console.CancelKeyPress += Console_CancelKeyPress;
+            ServicePointManager.DefaultConnectionLimit = 200;
             int websiteId = int.Parse(Console.ReadLine());
-            Download(websiteId);
-            Console.WriteLine("Done");
+            Download(websiteId).Wait();
             Console.ReadLine();
         }
 
-        private static void Download(int websiteId)
+        static CancellationTokenSource source = new CancellationTokenSource();
+
+        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            source.Cancel();
+            e.Cancel = true;
+        }
+
+        static CancellationToken token = source.Token;
+
+        private static async Task Download(int websiteId)
         {
             var website = DataAccess.GetWebsiteById(websiteId);
             HttpClient httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", website.UserAgent);
-            int crawlDelay = GetCrawlDelay(website);
-            int threads = 20;// Environment.ProcessorCount;
-            Thread[] activeThreads = new Thread[threads];
+            int threads = 16;
+            Task[] tasks = new Task[threads];
             DateTime startTime = DateTime.Now;
             Console.WriteLine($"[{DateTime.Now}] Started");
-            var downloadQueueIds = DataAccess.GetDownloadQueueIdsAsync(website.Id);
+            var downloadQueueIds = DataAccess.GetDownloadQueueIds(website.Id);
 
             int totalSize = downloadQueueIds.Count;
 
             for (int i = 0; i < threads; i++)
             {
-                Thread newThread = new Thread(new ThreadStart(() =>
+                Task newTask = Task.Run(async () =>
                 {
-                    try
+                    while (downloadQueueIds.TryDequeue(out long nextQueueId) && !token.IsCancellationRequested)
                     {
-                        while (downloadQueueIds.TryDequeue(out long nextQueueId))
+                        var downloadUrl = await DataAccess.GetDownloadQueueItemByIdAsync(nextQueueId);
+                        string html;
+                        var response = await httpClient.GetAsync(downloadUrl);
+                        if (response.IsSuccessStatusCode)
+                            html = await response.Content.ReadAsStringAsync();
+                        else
                         {
-                            var downloadQueueItem = DataAccess.GetDownloadQueueItemByIdAsync(nextQueueId);
-                            string html;
-                            try
-                            {
-                                html = httpClient.GetStringAsync(downloadQueueItem.DownloadUrl).Result;
-                            }
-                            catch
-                            {
-                                DataAccess.DeleteAsync(nextQueueId);
-                                continue;
-                            }
-                            var downloadData = new DownloadData()
-                            {
-                                RawHtml = html,
-                                Url = downloadQueueItem.DownloadUrl,
-                                WebsiteId = websiteId,
-                            };
-                            DataAccess.SaveAsync(downloadData);
-                            DataAccess.DeleteAsync(downloadQueueItem);
-
-                            if (downloadQueueIds.IsEmpty)
-                            {
-                                lock (_lock)
-                                {
-                                    if (downloadQueueIds.IsEmpty)
-                                    {
-                                        downloadQueueIds = DataAccess.GetDownloadQueueIdsAsync(website.Id);
-                                        startTime = DateTime.Now;
-                                    }
-                                }
-                            }
+                            await DataAccess.DeleteAsync(nextQueueId);
+                            continue;
                         }
+
+                        await SaveProductFromJson(html);
+                        await DataAccess.DeleteAsync(nextQueueId);
                     }
-                    catch (Exception e)
-                    { }
-                }));
-                activeThreads[i] = newThread;
-                activeThreads[i].Start();
+                }, token);
+                tasks[i] = newTask;
             }
 
-            while (activeThreads.Any(x => x.IsAlive))
+            var runningTasks = Task.WhenAll(tasks);
+
+            while (!runningTasks.IsCompleted)
             {
                 WriteOutput(RaiseOnProgress(totalSize - downloadQueueIds.Count, totalSize, startTime));
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
             }
+
+            await runningTasks;
+
             Console.WriteLine($"[{DateTime.Now}] Stopped");
             Console.WriteLine($"Press any key to close console.");
         }
@@ -106,45 +98,49 @@ namespace Polly.DownloadConsole
             Console.WriteLine(output);
         }
 
-        private static int GetCrawlDelay(Website website)
+        private static async Task SaveProductFromJson(string httpResponse)
         {
-            Robots robots = new Robots(website.Domain, website.UserAgent, enableErrorCorrection: true);
-            robots.Load();
-            int crawlDelay = robots.GetCrawlDelay();
+            if (string.IsNullOrEmpty(httpResponse))
+                return;
 
-            if (crawlDelay == default(int))
-                crawlDelay = 100; //10/s second default
-            else if (crawlDelay < 10)
-                crawlDelay = crawlDelay * 1000;
-            return crawlDelay;
+            TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
+            bool hasPurchasePrice = !jsonObject.event_data.documents.product.purchase_price.HasValue;
+            if (hasPurchasePrice)
+                return;
+
+            decimal price = jsonObject.event_data.documents.product.purchase_price.Value;
+            decimal? originalPrice = jsonObject.event_data.documents.product.original_price;
+
+            if (price >= originalPrice)//prevent bad data
+                originalPrice = null;
+
+            Data.Product product = DataAccess.FetchProductOrDefault(jsonObject.data_layer.prodid);
+            if (product != null)
+            {
+                var lastPrice = await DataAccess.FetchProductLastPrice(product.Id);
+                if (lastPrice.Price == price)
+                    return;
+                await DataAccess.SaveAsync(new PriceHistory(price, originalPrice) { ProductId = product.Id });
+                return;
+            }
+
+            product = new Data.Product()
+            {
+                UniqueIdentifier = jsonObject.data_layer.prodid
+            };
+            product.PriceHistory.Add(new PriceHistory(price, originalPrice) { ProductId = product.Id });
+
+            product.Breadcrumb = jsonObject.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
+            product.Title = jsonObject.title;
+            product.Description = jsonObject.description?.html;
+            product.Category = jsonObject.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
+            if (jsonObject.gallery.images.Any())
+                product.Image = jsonObject.gallery.images[0].Replace("{size}", "pdpxl");
+            product.Url = jsonObject.desktop_href;
+            product.LastChecked = jsonObject.meta.date_retrieved;
+
+            await DataAccess.SaveAsync(product);
         }
-
-        //public static byte[] Compress(byte[] inputData)
-        //{
-        //    using (var compressIntoMemoryStream = new MemoryStream())
-        //    {
-        //        using (var gzs = new GZipStream(compressIntoMemoryStream, CompressionMode.Compress))
-        //        {
-        //            gzs.Write(inputData, 0, inputData.Length);
-        //        }
-        //        return compressIntoMemoryStream.ToArray();
-        //    }
-        //}
-
-        //public static byte[] Decompress(byte[] inputData)
-        //{
-        //    using (var compressedMemoryStream = new MemoryStream(inputData))
-        //    {
-        //        using (var decompressedMs = new MemoryStream())
-        //        {
-        //            using (var gzs = new GZipStream(compressedMemoryStream, CompressionMode.Decompress))
-        //            {
-        //                gzs.CopyTo(decompressedMs);
-        //            }
-        //            return decompressedMs.ToArray();
-        //        }
-        //    }
-        //}
     }
 }
 
