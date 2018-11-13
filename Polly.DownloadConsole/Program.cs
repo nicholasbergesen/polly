@@ -120,7 +120,7 @@ namespace Polly.DownloadConsole
                 var lastPrice = await DataAccess.FetchProductLastPrice(product.Id);
                 if (lastPrice.Price == price)
                     return;
-                await DataAccess.SaveAsync(new PriceHistory(price, originalPrice) { ProductId = product.Id });
+                await DataAccess.SaveAsync(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
                 return;
             }
 
@@ -128,7 +128,7 @@ namespace Polly.DownloadConsole
             {
                 UniqueIdentifier = jsonObject.data_layer.prodid
             };
-            product.PriceHistory.Add(new PriceHistory(price, originalPrice) { ProductId = product.Id });
+            product.PriceHistory.Add(new PriceHistory(null, price, originalPrice) { ProductId = product.Id });
 
             product.Breadcrumb = jsonObject.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
             product.Title = jsonObject.title;

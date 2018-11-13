@@ -60,11 +60,20 @@ namespace Polly.DailyUpdater
                                 }
                                 else
                                 {
-                                    var priceHistory = new PriceHistory(price, originalPrice)
+                                    var priceHistory = new PriceHistory(lastPrice, price, originalPrice)
                                     {
-                                        ProductId = domainProduct.Id
+                                        ProductId = domainProduct.Id,
                                     };
-                                    await DataAccess.SaveAsync(priceHistory);
+                                    domainProduct.LastChecked = DateTime.Now;
+                                    await Task.WhenAll(DataAccess.SaveAsync(priceHistory),
+                                    DataAccess.SaveAsync(domainProduct),
+                                    DataAccess.SaveAsync(new DownloadQueue()
+                                    {
+                                        DownloadUrl = string.Format(TakealotProductDetails, product.id),
+                                        Priority = 100,
+                                        WebsiteId = 1,
+                                        AddedDate = DateTime.Now
+                                    }));
                                 }
                             }
                             else
@@ -76,7 +85,7 @@ namespace Polly.DailyUpdater
                                     UniqueIdentifier = product.id,
                                     Title = product.title,
                                 };
-                                domainProduct.PriceHistory.Add(new PriceHistory(price, originalPrice));
+                                domainProduct.PriceHistory.Add(new PriceHistory(null, price, originalPrice));
                                 domainProduct.Url = product.uri;
                                 domainProduct.LastChecked = DateTime.Now;
 
@@ -114,8 +123,10 @@ namespace Polly.DailyUpdater
 
         public static async Task<IEnumerable<Productline>> GetPromotionProducts(int promotionId, int rows, int start)
         {
-            var responseString = await httpClient.GetStringAsync(string.Format(TakealotApiPromitionProduct, promotionId, rows, start));
-            return JsonConvert.DeserializeObject<TakealotPromotionProduct>(responseString).results.productlines;
+            var response = await httpClient.GetAsync(string.Format(TakealotApiPromitionProduct, promotionId, rows, start));
+            if(response.IsSuccessStatusCode)
+                return JsonConvert.DeserializeObject<TakealotPromotionProduct>(await response.Content.ReadAsStringAsync()).results.productlines;
+            return new List<Productline>();
         }
 
         public static async Task<Prod.TakealotJson> GetProduct(string downloadUrl)

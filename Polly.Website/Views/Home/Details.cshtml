@@ -37,7 +37,16 @@
             Price
         </th>
         <th>
-            Discount
+            Price Change
+        </th>
+        <th>
+            Price Change %
+        </th>
+        <th>
+            Discount Amount
+        </th>
+        <th>
+            Discount %
         </th>
         <th>
             Original price
@@ -53,12 +62,16 @@
             <strong>@Html.DisplayFor(modelItem => item.Price)</strong>
         </td>
         <td>
-            @if (item.OriginalPrice.HasValue && item.Price < item.OriginalPrice.Value)
-            {
-                decimal discount = ((item.OriginalPrice.Value - item.Price) / item.OriginalPrice.Value) * 100;
-                var val = string.Format("{0:0.00}%", discount);
-                @val;
-            }
+            @Html.DisplayFor(modelItem => item.PriceChangeAmount)
+        </td>
+        <td>
+            @item.PriceChangePercent
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DiscountAmount)
+        </td>
+        <td>
+            @item.DiscountPercentage
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.OriginalPrice)

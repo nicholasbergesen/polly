@@ -11,7 +11,7 @@ namespace Polly.SchedulerConsole
     {
         public static void Main(string[] args)
         {
-            var website = DataAccess.GetWebsiteById(int.Parse(args[0]));
+            var website = DataAccess.GetWebsiteById(1);
             Scheduler scheduler;
             if (website.Name == "Takealot")
                 scheduler = new TakealotScheduler(website);
