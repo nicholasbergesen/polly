@@ -24,12 +24,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Polly", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Pollychron", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="https://nicholasb.ddns.net:444">Football</a></li>
-                    <li>@Html.ActionLink("Discounts", "Discount", "Home")</li>
+                    @*<li>@Html.ActionLink("Discounts", "Discount", "Home")</li>*@
                 </ul>
                 @*<ul class="nav navbar-nav">
                         <li>@Html.ActionLink("Home", "Index", "Home")</li>
@@ -43,7 +42,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Polly</p>
+            <p>&copy; @DateTime.Now.Year - Pollychron</p>
         </footer>
     </div>
 

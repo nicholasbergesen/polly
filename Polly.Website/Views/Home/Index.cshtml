@@ -4,15 +4,15 @@
     ViewBag.Title = "Products";
 }
 
-<h2>Products</h2>
-<div>
+<h2></h2>
+<div class="col-md-12">
     @using (Html.BeginForm())
     {
 
-        <p>
-            @Html.TextBox("SearchString")
-            <input type="submit" value="Search" class="text-left" />
-        </p>
+    <p class="col-md-12">
+        <input type="text" class="col-md-12" placeholder="PLID52093077" id="SearchString" name="SearchString" />
+        <input type="submit" value="Search" />
+    </p>
     }
 </div>
 <table class="table">

@@ -93,6 +93,16 @@ namespace Polly.Data
             }
         }
 
+        public static async Task<Product> FetchProductOrDefault(long productId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await context.Product
+                    .Include(x => x.PriceHistory)
+                    .FirstAsync (x => x.Id == productId);
+            }
+        }
+
         public static async Task<List<DownloadQueue>> GetDownloadQueueBatchAsync(long websiteId, int batchSize, int skip = 0)
         {
             using (PollyDbContext context = new PollyDbContext())
@@ -140,6 +150,18 @@ namespace Polly.Data
             }
         }
 
+        public static ConcurrentQueue<long> GetDownloadQueueProductIds()
+        {
+            var today = DateTime.Today;
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return new ConcurrentQueue<long>(from product in context.Product
+                                                 where product.LastChecked < today
+                                                 orderby product.LastChecked
+                                                 select product.Id);
+            }
+        }
+
         public static ConcurrentQueue<long> GetDownloadDataIdsAsync(long websiteId)
         {
             using (PollyDbContext context = new PollyDbContext())
@@ -174,10 +196,13 @@ namespace Polly.Data
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                if (downloadQueue.Id == default(long))
+                var downloadItemExists = await context.DownloadQueue.FirstOrDefaultAsync(x => x.DownloadUrl == downloadQueue.DownloadUrl);
+                if (downloadItemExists != null)
+                    return;
+                else if (downloadQueue.Id == default(long))
                     context.DownloadQueue.Add(downloadQueue);
                 else
-                    context.Entry(downloadQueue).State = System.Data.Entity.EntityState.Modified;
+                    context.Entry(downloadQueue).State = EntityState.Modified;
 
                 await context.SaveChangesAsync();
             }

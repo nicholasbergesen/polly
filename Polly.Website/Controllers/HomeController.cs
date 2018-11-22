@@ -18,30 +18,48 @@ namespace Polly.Website.Controllers
         // GET: Products
         public async Task<ActionResult> Index()
         {
+            //var t = await (from product in db.Product
+            //              select (from price in product.PriceHistory
+            //                      orderby price.TimeStamp descending
+            //                      select price)
+            //                      .FirstOrDefault())
+            //               .FirstOrDefaultAsync();
+
+            //var top20 = (from priceHistory in db.PriceHistory
+            //             orderby priceHistory.DiscountPercentage descending
+            //             select (from product in priceHistory.Product)
+
+            //var top20ProductIds = db.PriceHistory
+            //    .Where(x => x.DiscountPercentage.HasValue)
+            //    .OrderBy(x => x.DiscountPercentage.Value)
+            //    .Select(x => x.ProductId.Value)
+            //    .Take(20);
+
             var first = await db.Product.FirstAsync();
             var last = await db.Product.OrderByDescending(x => x.Id).FirstAsync();
             long[] numbers = new long[20];
             Random rand = new Random();
             for (int i = 0; i < numbers.Length; i++)
             {
-                numbers[i] = (long)rand.Next((int)first.Id, (int)last.Id);
+                numbers[i] = rand.Next((int)first.Id, (int)last.Id);
             }
-
             return View(await db.Product.Where(x => numbers.Contains(x.Id)).ToListAsync());
+            //return View(await db.Product.Where(x => top20ProductIds.Contains(x.Id)).ToListAsync());
         }
 
         // GET: Discounts
-        public ActionResult Discount()
+        public async Task<ActionResult> Discount()
         {
-            var discountProducts = (from product in db.Product join
-                                   priceHistory in db.PriceHistory on product.Id equals priceHistory.ProductId
-                                   where priceHistory.OriginalPrice.HasValue
-                                   select new DiscountProduct
-                                   {
-                                       Product = product,
-                                       LastPrice = priceHistory
-                                   })
-                                   .Take(20).ToList();
+            var discountProducts = await (from product in db.Product
+                                    join priceHistory in db.PriceHistory on product.Id equals priceHistory.ProductId
+                                    where priceHistory.OriginalPrice.HasValue
+                                    orderby priceHistory.DiscountPercentage descending
+                                    select new DiscountProduct
+                                    {
+                                        Product = product,
+                                        LastPrice = priceHistory
+                                    })
+                                   .Take(20).ToListAsync();
 
             return View(discountProducts);
         }
@@ -54,11 +72,11 @@ namespace Polly.Website.Controllers
                 products = (from product in db.Product
                             where product.UniqueIdentifier == searchString
                             select product).Take(20).ToList();
-            else if(searchString.StartsWith("https://www.takealot.com"))
+            else if (searchString.StartsWith("https://www.takealot.com"))
                 products = (from product in db.Product
                             where product.Url == searchString
                             select product).Take(20).ToList();
-            else if(searchString.Count(x => x == ' ') > 1)
+            else if (searchString.Count(x => x == ' ') > 1)
                 products = (from product in db.Product
                             where product.Title.Substring(0, searchString.Length) == searchString
                             select product).Take(20).ToList();

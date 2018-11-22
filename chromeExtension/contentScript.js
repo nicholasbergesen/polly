@@ -12,14 +12,29 @@ window.addEventListener('load', function () {
         var currentPrice = $(parentElement).find(".price").find("span")[1].innerText;
         currentPrice = currentPrice.replace(',', '');
         $.ajax({
-            url: "https://nicholasb.ddns.net/api/products/" + productId + "/" + currentPrice,
+            url: "https://www.pollychron.com/api2/products/" + productId + "/" + currentPrice,
             success: function (result) {
+                console.log(result);
+                var priceLink = document.createElement("a");
+                priceLink.setAttribute('href', result.Url);
+                priceLink.setAttribute('target', '_blank');
                 var priceNode = document.createElement("span");
-                var textNode = document.createTextNode("R " + result);
+                if(result.Price != 0) {
+                    var discount = (result.Price - currentPrice) / result.Price * 100;
+                    var textNode = document.createTextNode("R " + result.Price + " (" + Math.round(discount) + "%)");
+                    priceLink.setAttribute('style', 'top:200; left: 130px; z-index:1000; display: block; position:absolute;');
+                }
+                else {
+                    var textNode = document.createTextNode("No recent change");
+                    priceLink.setAttribute('style', 'top:200; left: 110px; z-index:1000; display: block; position:absolute;');
+                }
                 priceNode.style.color = "blue";
                 priceNode.style.cssFloat = "right";
+                priceNode.setAttribute('onMouseOver', "this.style.color='green'");
+                priceNode.setAttribute('onMouseOut', "this.style.color='blue'");
                 priceNode.appendChild(textNode);
-                parentElement.childNodes[3].appendChild(priceNode);
+                priceLink.appendChild(priceNode);
+                parentElement.childNodes[3].appendChild(priceLink);
             }
         });
     }

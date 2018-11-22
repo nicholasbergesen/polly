@@ -15,7 +15,7 @@ namespace Polly.DailyUpdater
     {
         private const string TakealotApiPromition = "https://api.takealot.com/rest/v-1-8-0/promotions";
         private const string TakealotApiPromitionProduct = "https://api.takealot.com/rest/v-1-8-0/productlines/search?filter=Promotions:{0}&rows={1}&start={2}";
-        private const string TakealotProductDetails = "https://api.takealot.com/rest/v-1-7-0/product-details/{0}";
+        private const string TakealotProductDetails = "https://api.takealot.com/rest/v-1-7-0/product-details/{0}?platform=desktop";
 
         private static HttpClient httpClient = new HttpClient();
 

@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
-  "name": "Polly",
-  "version": "1.1.1.1",
-  "description": "Show price history",
+  "name": "PP",
+  "version": "0.0.0.2",
+  "description": "Private Pollychron",
   "permissions": [
-    "http://nicholasb.ddns.net/*",
+    "https://www.pollychron.com/*",
     "activeTab",
     "declarativeContent",
     "storage"
@@ -20,7 +20,7 @@
     {
       "matches": [
         "https://www.takealot.com/deals",
-		"https://www.takealot.com/deals/*",
+        "https://www.takealot.com/deals/*",
 		"https://www.takealot.com/deals?*"
       ],
       "js": [
@@ -33,6 +33,7 @@
     "16": "favicon16.png",
     "24": "favicon24.png",
     "32": "favicon32.png",
-    "64": "favicon64.png"
+    "64": "favicon64.png",
+    "128": "favicon128.png"
   }
 }

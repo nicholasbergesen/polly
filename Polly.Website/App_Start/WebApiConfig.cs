@@ -14,7 +14,7 @@ namespace Polly.Website
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
+                routeTemplate: "api2/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
 
