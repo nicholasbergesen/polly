@@ -16,6 +16,14 @@ namespace Polly.Data
                 TimeStamp = DateTime.Now;
         }
 
+        public PriceHistory(Product product)
+        {
+            ProductId = product.Id;
+
+            if (TimeStamp == default(DateTime))
+                TimeStamp = DateTime.Now;
+        }
+
         public PriceHistory(PriceHistory previousPriceHistory, decimal price, decimal? originalPrice = null)
         {
             Price = price;

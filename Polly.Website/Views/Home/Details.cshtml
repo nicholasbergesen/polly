@@ -52,7 +52,7 @@
             Original price
         </th>
     </tr>
-    @foreach (var item in Model.PriceHistory.OrderBy(x => x.TimeStamp))
+    @foreach (var item in Model.PriceHistory.OrderByDescending(x => x.TimeStamp))
     {
     <tr>
         <td>

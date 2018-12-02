@@ -1,0 +1,1 @@
+select * from Product where [UniqueIdentifier] <> SubString([Url], (Len([URL]) - LEN([UniqueIdentifier]) + 1), Len([UniqueIdentifier]))

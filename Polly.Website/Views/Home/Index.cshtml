@@ -5,16 +5,39 @@
 }
 
 <h2></h2>
-<div class="col-md-12">
-    @using (Html.BeginForm())
-    {
+@using (Html.BeginForm())
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div id="custom-search-input">
+                    <div class="input-group col-md-12">
+                        <input type="text" class="form-control input-lg" placeholder="PLID12345678" id="SearchString" name="SearchString" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-info btn-lg" type="button">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
-    <p class="col-md-12">
-        <input type="text" class="col-md-12" placeholder="PLID52093077" id="SearchString" name="SearchString" />
-        <input type="submit" value="Search" />
-    </p>
-    }
-</div>
+@*<div class="col-md-12">
+        @using (Html.BeginForm())
+        {
+        <p class="col-md-12">
+            <center>
+                <input type="text" class="searchbar col-md-12" placeholder="PLID12345678" id="SearchString" name="SearchString" />
+                <input type="submit" class="btn" value="Search" />
+            </center>
+        </p>
+        }
+    </div>*@
+@if (Model != null)
+{
 <table class="table">
     @foreach (var item in Model)
     {
@@ -32,3 +55,4 @@
         </tr>
     }
 </table>
+}

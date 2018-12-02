@@ -16,7 +16,7 @@ namespace Polly.Website.Controllers
         private PollyDbContext db = new PollyDbContext();
 
         // GET: Products
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
             //var t = await (from product in db.Product
             //              select (from price in product.PriceHistory
@@ -35,16 +35,29 @@ namespace Polly.Website.Controllers
             //    .Select(x => x.ProductId.Value)
             //    .Take(20);
 
-            var first = await db.Product.FirstAsync();
-            var last = await db.Product.OrderByDescending(x => x.Id).FirstAsync();
-            long[] numbers = new long[20];
-            Random rand = new Random();
-            for (int i = 0; i < numbers.Length; i++)
-            {
-                numbers[i] = rand.Next((int)first.Id, (int)last.Id);
-            }
-            return View(await db.Product.Where(x => numbers.Contains(x.Id)).ToListAsync());
+            //var first = await db.Product.FirstAsync();
+            //var last = await db.Product.OrderByDescending(x => x.Id).FirstAsync();
+            //long[] numbers = new long[20];
+            //Random rand = new Random();
+            //for (int i = 0; i < numbers.Length; i++)
+            //{
+            //    numbers[i] = rand.Next((int)first.Id, (int)last.Id);
+            //}
+            //return View(await db.Product.Where(x => numbers.Contains(x.Id)).ToListAsync());
             //return View(await db.Product.Where(x => top20ProductIds.Contains(x.Id)).ToListAsync());
+
+
+            //var first = await db.Product.FirstAsync();
+            //var last = await db.Product.OrderByDescending(x => x.Id).FirstAsync();
+            //long[] numbers = new long[20];
+            //Random rand = new Random();
+            //for (int i = 0; i < numbers.Length; i++)
+            //{
+            //    numbers[i] = rand.Next((int)first.Id, (int)last.Id);
+            //}
+            //return View(await db.Product.Where(x => numbers.Contains(x.Id)).ToListAsync());
+
+            return View();
         }
 
         // GET: Discounts
@@ -76,14 +89,16 @@ namespace Polly.Website.Controllers
                 products = (from product in db.Product
                             where product.Url == searchString
                             select product).Take(20).ToList();
-            else if (searchString.Count(x => x == ' ') > 1)
-                products = (from product in db.Product
-                            where product.Title.Substring(0, searchString.Length) == searchString
-                            select product).Take(20).ToList();
             else
-                products = (from product in db.Product
-                            where product.Title.Contains(searchString)
-                            select product).Take(20).ToList();
+                products = new List<Product>();
+            //else if (searchString.Count(x => x == ' ') > 1)
+            //    products = (from product in db.Product
+            //                where product.Title.Substring(0, searchString.Length) == searchString
+            //                select product).Take(20).ToList();
+            //else
+            //    products = (from product in db.Product
+            //                where product.Title.Contains(searchString)
+            //                select product).Take(20).ToList();
 
             if (products.Count == 1)
                 return RedirectToAction("Details", new { id = products[0].Id });

@@ -27,7 +27,7 @@ namespace Polly.Website.Controllers
             ApiProd returnPrice;
             if (!productPrices.TryGetValue(productId, out returnPrice))
             {
-                var twoWeeksAgo = DateTime.Today.Subtract(TimeSpan.FromDays(14));
+                var twoWeeksAgo = DateTime.Today.Subtract(TimeSpan.FromDays(31));
 
                 var productdb = await (from product in db.Product
                                        where product.UniqueIdentifier == productId
@@ -45,6 +45,23 @@ namespace Polly.Website.Controllers
                         returnPrice = new ApiProd() { Price = recentPrices.Where(x => x.Price < (currentPrice * 10)).Max(x => x.Price), Url = "https://www.pollychron.com/Home/Details/" + productdb.Id };
                     else
                         returnPrice = new ApiProd() { Price = recentPrices.Max(x => x.Price), Url = "https://www.pollychron.com/Home/Details/" + productdb.Id };
+
+                    var lastPrice = productdb.PriceHistory.Last();
+                    if(lastPrice.Price != currentPrice)
+                    {
+                        await Task.Delay(100);
+                        var downloadUrl = BuildDownloadUrl(productId);
+                        using (HttpClient httpClient = new HttpClient())
+                        {
+                            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");
+                            var downloadresponse = await httpClient.GetAsync(downloadUrl);
+                            if (downloadresponse.IsSuccessStatusCode)
+                            {
+                                var html = await downloadresponse.Content.ReadAsStringAsync();
+                                await SaveProductFromJson(html);
+                            }
+                        }
+                    }
 
                     productPrices.Add(productId, returnPrice);
                 }

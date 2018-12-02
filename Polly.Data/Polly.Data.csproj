@@ -54,6 +54,9 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="SimpleInjector, Version=4.4.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.4.4.0\lib\net45\SimpleInjector.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -67,10 +70,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess.cs" />
-    <Compile Include="DataSourceType.cs" />
+    <Compile Include="Models\DataSourceType.cs" />
     <Compile Include="DbContext\IdentityModels.cs" />
-    <Compile Include="DownloadData.cs" />
-    <Compile Include="DownloadQueue.cs" />
+    <Compile Include="Models\DownloadData.cs" />
+    <Compile Include="Models\DownloadQueue.cs" />
     <Compile Include="Migrations\201811061925124_Renme.cs" />
     <Compile Include="Migrations\201811061925124_Renme.Designer.cs">
       <DependentUpon>201811061925124_Renme.cs</DependentUpon>
@@ -97,10 +100,17 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="DbContext\PollyDbContext.cs" />
-    <Compile Include="PriceHistory.cs" />
-    <Compile Include="Product.cs" />
+    <Compile Include="Models\PriceHistory.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Repositories\PriceHistoryRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Website.cs" />
+    <Compile Include="Models\Website.cs" />
+    <Compile Include="RegisterDI.cs" />
+    <Compile Include="Repositories\IDownloadQueueRepository.cs" />
+    <Compile Include="Repositories\IPriceHistoryRepository.cs" />
+    <Compile Include="Repositories\IProductRepository.cs" />
+    <Compile Include="Repositories\DownloadQueueRepository.cs" />
+    <Compile Include="Repositories\ProductRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

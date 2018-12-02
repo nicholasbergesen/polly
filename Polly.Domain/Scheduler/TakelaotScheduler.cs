@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Polly.Domain
 {
-    interface IProduct
+    public class TakelaotScheduler : ITakealotScheduler
     {
     }
 }

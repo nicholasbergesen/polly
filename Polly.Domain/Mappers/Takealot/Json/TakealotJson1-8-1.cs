@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Polly.DownloadConsole
+namespace Polly.Domain
 {
     public class TakealotJson
     {
