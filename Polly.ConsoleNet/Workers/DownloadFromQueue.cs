@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 
 namespace Polly.ConsoleNet
 {
-    public class DownloadFromQueue : IAsyncWorker
+    public class DownloadFromQueue : AsyncWorkerBase
     {
         private const int TaskCount = 4;
 
-        private int totalQueueCount;
+        private int _totalQueueCount;
         private DateTime _start;
         private ConcurrentQueue<long> _downloadQueue;
 
-        IDownloadQueueRepository _downloadQueueRepository;
-        IDownloader _downloader;
-        ITakealotProcessor _takealotProcessor;
-        readonly Task[] tasks = new Task[TaskCount];
+        private IDownloadQueueRepository _downloadQueueRepository;
+        private IDownloader _downloader;
+        private ITakealotProcessor _takealotProcessor;
+        private readonly Task[] _tasks = new Task[TaskCount];
 
         public DownloadFromQueue(IDownloadQueueRepository downloadQueueRepository,
             IDownloader downloader,
@@ -30,44 +30,49 @@ namespace Polly.ConsoleNet
             _downloadQueueRepository = downloadQueueRepository;
             _downloader = downloader;
             _takealotProcessor = takealotProcessor;
+
+            OnProgress += DownloadFromQueue_OnProgress;
+            OnStart += DownloadFromQueue_OnStart;
+            OnEnd += DownloadFromQueue_OnEnd;
         }
 
-        public async Task DoWorkAsync(CancellationToken token)
+        public override async Task DoWorkInternalAsync(CancellationToken token)
         {
-            totalQueueCount = await _downloadQueueRepository.DownloadQueueCountAsync();
             _downloadQueue = new ConcurrentQueue<long>(await _downloadQueueRepository.GetDownloadQueueItems());
+            _totalQueueCount = await _downloadQueueRepository.DownloadQueueCountAsync();
 
-            _start = DateTime.Now;
             for (int i = 0; i < TaskCount; i++)
-            {
-                tasks[i] = Task.Run(async () =>
-                {
-                    while (_downloadQueue.TryDequeue(out long id))
-                    {
-                        var downloadItem = await _downloadQueueRepository.FetchByIdAsync(id);
-                        var downloadResult = await _downloader.DownloadAsync(downloadItem.DownloadUrl);
-                        if (!string.IsNullOrWhiteSpace(downloadResult))
-                            await _takealotProcessor.HandleResultStringAsync(downloadResult);
+                _tasks[i] = Task.Run(DownloadAndProcess, token);
 
-                        await _downloadQueueRepository.RemoveAsync(downloadItem);
-                    }
-                }, token);
-            }
-            var allTasks = Task.WhenAll(tasks);
+            await Task.WhenAll(_tasks);
+        }
 
-            while (!allTasks.IsCompleted)
+        private async Task DownloadAndProcess()
+        {
+            while (_downloadQueue.TryDequeue(out long id))
             {
-                await Task.Delay(300);
-                Console.WriteLine(RaiseOnProgress(totalQueueCount - _downloadQueue.Count, totalQueueCount, _start));
+                var downloadItem = await _downloadQueueRepository.FetchByIdAsync(id);
+                var downloadResult = await _downloader.DownloadAsync(downloadItem.DownloadUrl);
+                if (!string.IsNullOrWhiteSpace(downloadResult))
+                    await _takealotProcessor.HandleResultStringAsync(downloadResult);
+
+                await _downloadQueueRepository.RemoveAsync(downloadItem);
             }
         }
 
-        public static string RaiseOnProgress(int requestCount, int totalSize, DateTime startTime)
+        private void DownloadFromQueue_OnEnd(object sender, EventArgs e)
         {
-            Console.CursorTop = 0;
-            double downloadRate = Math.Max(requestCount / Math.Max(DateTime.Now.Subtract(startTime).TotalSeconds, 1), 1);
-            int itemsRemaining = totalSize - requestCount;
-            return $"{requestCount} of {totalSize} { (requestCount * 1.00 / totalSize * 1.00 * 100):0.####}% { downloadRate:0.##}/s ETA:{ DateTime.Now.AddSeconds(itemsRemaining / downloadRate) }        ";
+            Console.WriteLine("Finished");
+        }
+
+        private void DownloadFromQueue_OnStart(object sender, EventArgs e)
+        {
+            _start = DateTime.Now;
+        }
+
+        private void DownloadFromQueue_OnProgress(object sender, ProgressEventArgs e)
+        {
+            Console.WriteLine(e.ProgressString);
         }
     }
 }
