@@ -11,5 +11,6 @@ namespace Polly.Data
         Task<int> DownloadQueueCountAsync();
         Task<DownloadQueue> FetchByIdAsync(long id);
         Task RemoveAsync(DownloadQueue downloadQueue);
+        Task SaveAsync(IEnumerable<DownloadQueue> saveBatch);
     }
 }

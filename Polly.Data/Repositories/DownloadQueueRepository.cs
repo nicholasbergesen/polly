@@ -54,6 +54,15 @@ namespace Polly.Data
             }
         }
 
+        public async Task SaveAsync(IEnumerable<DownloadQueue> saveBatch)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                context.DownloadQueue.AddRange(saveBatch);
+                await context.SaveChangesAsync();
+            }
+        }
+
         public async Task<int> DownloadQueueCountAsync()
         {
             using (PollyDbContext context = new PollyDbContext())

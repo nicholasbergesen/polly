@@ -9,7 +9,8 @@ namespace Polly.ConsoleNet
 {
     public abstract class AsyncWorkerBase : IAsyncWorker
     {
-        public abstract Task DoWorkInternalAsync(CancellationToken token);
+        protected abstract Task DoWorkInternalAsync(CancellationToken token);
+        public override abstract string ToString();
 
         public async Task DoWorkAsync(CancellationToken token)
         {

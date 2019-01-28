@@ -36,7 +36,7 @@ namespace Polly.ConsoleNet
             OnEnd += DownloadFromQueue_OnEnd;
         }
 
-        public override async Task DoWorkInternalAsync(CancellationToken token)
+        protected override async Task DoWorkInternalAsync(CancellationToken token)
         {
             _downloadQueue = new ConcurrentQueue<long>(await _downloadQueueRepository.GetDownloadQueueItems());
             _totalQueueCount = await _downloadQueueRepository.DownloadQueueCountAsync();
@@ -73,6 +73,11 @@ namespace Polly.ConsoleNet
         private void DownloadFromQueue_OnProgress(object sender, ProgressEventArgs e)
         {
             Console.WriteLine(e.ProgressString);
+        }
+
+        public override string ToString()
+        {
+            return "DownloadFromQueue";
         }
     }
 }
