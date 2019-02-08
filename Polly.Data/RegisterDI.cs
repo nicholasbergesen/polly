@@ -9,6 +9,8 @@ namespace Polly.Data
             container.Register<IProductRepository, ProductRepository>();
             container.Register<IDownloadQueueRepository, DownloadQueueRepository>();
             container.Register<IPriceHistoryRepository, PriceHistoryRepository>();
+            container.Register<ICategoryRepository, CategoryRepository>();
+            container.Register<IProductCategoryRepository, ProductCategoryRepository>();
         }
     }
 }

@@ -83,7 +83,7 @@ namespace Polly.SchedulerConsole
 
                 await DataAccess.SaveAsync(batch);
             }
-            catch(Exception e)
+            catch(Exception)
             {
 
             }

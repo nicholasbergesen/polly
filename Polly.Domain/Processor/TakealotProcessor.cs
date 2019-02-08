@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Polly.Data;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,12 +10,18 @@ namespace Polly.Domain
     {
         IPriceHistoryRepository _priceHistoryRepository;
         IProductRepository _productRepository;
+        ICategoryRepository _categoryRepository;
+        IProductCategoryRepository _productCategoryRepository;
 
         public TakealotProcessor(IProductRepository productRepository,
-            IPriceHistoryRepository priceHistoryRepository)
+            IPriceHistoryRepository priceHistoryRepository,
+            ICategoryRepository categoryRepository,
+            IProductCategoryRepository productCategoryRepository)
         {
             _productRepository = productRepository;
             _priceHistoryRepository = priceHistoryRepository;
+            _productCategoryRepository = productCategoryRepository;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task HandleResultStringAsync(string downloadResult)
@@ -32,6 +39,8 @@ namespace Polly.Domain
 
             var product = await _productRepository.FetchByUniqueIdAsync(uniqueIdentifier);
             bool isNew = product == null;
+            HashSet<int> categoryIds = new HashSet<int>();
+
             if (isNew)
             {
                 product = new Data.Product();
@@ -39,11 +48,23 @@ namespace Polly.Domain
                 product.Breadcrumb = takealotObject.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
                 product.Title = takealotObject.title;
                 product.Description = takealotObject.description?.html;
-                product.Category = takealotObject.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
                 if (takealotObject.gallery.images.Any())
                     product.Image = takealotObject.gallery.images[0].Replace("{size}", "pdpxl");
                 product.Url = takealotObject.desktop_href;
+                product.Category = takealotObject.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
+                if (product.Category != null)
+                {
+                    var categories = product.Category.Split(',');
+                    foreach (string description in categories)
+                    {
+                        if (!_categoryRepository.TryGet(description, out Category category))
+                            category = await _categoryRepository.Create(description);
+
+                        categoryIds.Add(category.Id);
+                    }
+                }
             }
+
             product.LastChecked = takealotObject.meta.date_retrieved;
 
             await _productRepository.SaveAsync(product);
@@ -51,7 +72,10 @@ namespace Polly.Domain
             if (isNew)
             {
                 await _priceHistoryRepository.SaveAsync(new PriceHistory(null, price, originalPrice) { ProductId = product.Id });
-            }
+                await _productCategoryRepository.SaveAsync(categoryIds.Select(x => {
+                    return new ProductCategory() { CategoryId = x, ProductId = product.Id };
+                }));
+                }
             else
             {
                 var lastPrice = await _priceHistoryRepository.FetchLastPriceForProductId(product.Id);

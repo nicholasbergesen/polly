@@ -38,19 +38,32 @@ namespace Polly.ConsoleNet
 
         protected override async Task DoWorkInternalAsync(CancellationToken token)
         {
+            RaiseOnStart();
+
             _downloadQueue = new ConcurrentQueue<long>(await _downloadQueueRepository.GetDownloadQueueItems());
             _totalQueueCount = await _downloadQueueRepository.DownloadQueueCountAsync();
 
             for (int i = 0; i < TaskCount; i++)
-                _tasks[i] = Task.Run(DownloadAndProcess, token);
+                _tasks[i] = DownloadAndProcess(token);
 
-            await Task.WhenAll(_tasks);
+            var runningTasks = Task.WhenAll(_tasks);
+            while (!runningTasks.IsCompleted)
+            {
+                RaiseOnProgress(_totalQueueCount - _downloadQueue.Count, _totalQueueCount, _start);
+                await Task.Delay(1000);
+            }
+            await runningTasks;
+
+            RaiseOnEnd();
         }
 
-        private async Task DownloadAndProcess()
+        private async Task DownloadAndProcess(CancellationToken token)
         {
             while (_downloadQueue.TryDequeue(out long id))
             {
+                if (token.IsCancellationRequested)
+                    return;
+
                 var downloadItem = await _downloadQueueRepository.FetchByIdAsync(id);
                 var downloadResult = await _downloader.DownloadAsync(downloadItem.DownloadUrl);
                 if (!string.IsNullOrWhiteSpace(downloadResult))
@@ -62,7 +75,7 @@ namespace Polly.ConsoleNet
 
         private void DownloadFromQueue_OnEnd(object sender, EventArgs e)
         {
-            Console.WriteLine("Finished");
+            Console.WriteLine("Complete.");
         }
 
         private void DownloadFromQueue_OnStart(object sender, EventArgs e)
@@ -72,6 +85,8 @@ namespace Polly.ConsoleNet
 
         private void DownloadFromQueue_OnProgress(object sender, ProgressEventArgs e)
         {
+            Console.CursorLeft = 0;
+            Console.CursorTop = 0;
             Console.WriteLine(e.ProgressString);
         }
 

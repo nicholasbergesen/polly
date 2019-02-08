@@ -45,7 +45,7 @@ namespace Polly.ConsoleNet
 
             double rate = Math.Max(count / Math.Max(DateTime.Now.Subtract(startTime).TotalSeconds, 1), 1);
             int remaining = total - count;
-            string progressString = $"{count} of {total} {(count * 1.0 / total * 100.00):#.00}% { rate:0.##}/s ETA:{ DateTime.Now.AddSeconds(remaining / rate) }        ";
+            string progressString = $"{count} of {total} {(count * 1.00 / total * 1.00 * 100):0.####}% { rate:0.##}/s ETA:{ DateTime.Now.AddSeconds(remaining / rate) }        ";
 
             OnProgress(this, new ProgressEventArgs(progressString));
         }

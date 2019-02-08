@@ -5,17 +5,9 @@ VisualStudioVersion = 15.0.27428.2011
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.Data", "Polly.Data\Polly.Data.csproj", "{DFBDFF1C-89F7-49BD-87D3-23BC33B2E2BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poly.Admin", "Poly.Admin\Poly.Admin.csproj", "{E4155058-3D48-4223-B5A7-7D97C20526AA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poly.Admin.Tests", "Poly.Admin.Tests\Poly.Admin.Tests.csproj", "{3ADCF43E-FD44-44BD-86BE-B46D1A163046}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.SchedulerConsole", "Polly.Scheduler\Polly.SchedulerConsole.csproj", "{A895FB20-72F5-4E67-A39F-C872984FF1EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.DailyUpdater", "Polly.DailyUpdater\Polly.DailyUpdater.csproj", "{34D3761B-7E35-4ECB-B555-08AB91A5F0D8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.Website", "Polly.Website\Polly.Website.csproj", "{044D10BC-8F38-46E0-8C23-998F14AA07AC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.Updater", "Polly.Updater\Polly.Updater.csproj", "{A8DA2A32-7B60-4A48-BEAB-7AE46DBD0E30}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.ConsoleNet", "Polly.ConsoleNet\Polly.ConsoleNet.csproj", "{E8DFF4C3-4B3D-4DDB-9FA8-2F571BE6C60C}"
 EndProject
@@ -31,30 +23,14 @@ Global
 		{DFBDFF1C-89F7-49BD-87D3-23BC33B2E2BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFBDFF1C-89F7-49BD-87D3-23BC33B2E2BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFBDFF1C-89F7-49BD-87D3-23BC33B2E2BF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E4155058-3D48-4223-B5A7-7D97C20526AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4155058-3D48-4223-B5A7-7D97C20526AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4155058-3D48-4223-B5A7-7D97C20526AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4155058-3D48-4223-B5A7-7D97C20526AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3ADCF43E-FD44-44BD-86BE-B46D1A163046}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3ADCF43E-FD44-44BD-86BE-B46D1A163046}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3ADCF43E-FD44-44BD-86BE-B46D1A163046}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3ADCF43E-FD44-44BD-86BE-B46D1A163046}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A895FB20-72F5-4E67-A39F-C872984FF1EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A895FB20-72F5-4E67-A39F-C872984FF1EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A895FB20-72F5-4E67-A39F-C872984FF1EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A895FB20-72F5-4E67-A39F-C872984FF1EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{34D3761B-7E35-4ECB-B555-08AB91A5F0D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{34D3761B-7E35-4ECB-B555-08AB91A5F0D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{34D3761B-7E35-4ECB-B555-08AB91A5F0D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{34D3761B-7E35-4ECB-B555-08AB91A5F0D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{044D10BC-8F38-46E0-8C23-998F14AA07AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{044D10BC-8F38-46E0-8C23-998F14AA07AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{044D10BC-8F38-46E0-8C23-998F14AA07AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{044D10BC-8F38-46E0-8C23-998F14AA07AC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8DA2A32-7B60-4A48-BEAB-7AE46DBD0E30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8DA2A32-7B60-4A48-BEAB-7AE46DBD0E30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8DA2A32-7B60-4A48-BEAB-7AE46DBD0E30}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8DA2A32-7B60-4A48-BEAB-7AE46DBD0E30}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E8DFF4C3-4B3D-4DDB-9FA8-2F571BE6C60C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E8DFF4C3-4B3D-4DDB-9FA8-2F571BE6C60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8DFF4C3-4B3D-4DDB-9FA8-2F571BE6C60C}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -16,7 +16,7 @@ namespace Polly.Domain
         private CancellationTokenSource _tokenSource;
         private HttpClient _httpClient = new HttpClient();
         private IDownloadQueueRepository _downloadQueueRepository;
-        private IProductRepository _ProductRepository;
+        //private IProductRepository _ProductRepository;
         private IDownloader _downloader;
 
         public event ProgressEventHandler OnProgress;
@@ -24,6 +24,7 @@ namespace Polly.Domain
 
         public TakealotFullQueueProcessor(IDownloadQueueRepository downloadQueueRepository, IDownloader downloader)
         {
+            _tokenSource = new CancellationTokenSource();
             _downloadQueueRepository = downloadQueueRepository;
             _downloader = downloader;
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");

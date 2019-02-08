@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Polly.Data</RootNamespace>
     <AssemblyName>Polly.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,6 +71,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess.cs" />
+    <Compile Include="Migrations\201902012134003_AddCategories.cs" />
+    <Compile Include="Migrations\201902012134003_AddCategories.Designer.cs">
+      <DependentUpon>201902012134003_AddCategories.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902012137375_LimitDescriptionCategory.cs" />
+    <Compile Include="Migrations\201902012137375_LimitDescriptionCategory.Designer.cs">
+      <DependentUpon>201902012137375_LimitDescriptionCategory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ProductCategory.cs" />
+    <Compile Include="Models\Category.cs" />
     <Compile Include="Models\DataSourceType.cs" />
     <Compile Include="DbContext\IdentityModels.cs" />
     <Compile Include="Models\DownloadData.cs" />
@@ -102,6 +113,9 @@
     <Compile Include="DbContext\PollyDbContext.cs" />
     <Compile Include="Models\PriceHistory.cs" />
     <Compile Include="Models\Product.cs" />
+    <Compile Include="Repositories\CategoryRepository.cs" />
+    <Compile Include="Repositories\ICategoryRepository.cs" />
+    <Compile Include="Repositories\IProductCategoryRepository.cs" />
     <Compile Include="Repositories\PriceHistoryRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Website.cs" />
@@ -110,6 +124,7 @@
     <Compile Include="Repositories\IPriceHistoryRepository.cs" />
     <Compile Include="Repositories\IProductRepository.cs" />
     <Compile Include="Repositories\DownloadQueueRepository.cs" />
+    <Compile Include="Repositories\ProductCategoryRepository.cs" />
     <Compile Include="Repositories\ProductRepository.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +151,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201811081815218_shortedul.resx">
       <DependentUpon>201811081815218_shortedul.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902012134003_AddCategories.resx">
+      <DependentUpon>201902012134003_AddCategories.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902012137375_LimitDescriptionCategory.resx">
+      <DependentUpon>201902012137375_LimitDescriptionCategory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

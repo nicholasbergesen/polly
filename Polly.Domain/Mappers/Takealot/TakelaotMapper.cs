@@ -4,9 +4,9 @@ namespace Polly.Domain
 {
     public class TakelaotMapper : MapperBase, ITakealotMapper
     {
-        IDownloadQueueRepository _downloadQueueRepository;
-        IPriceHistoryRepository _priceHistoryRepository;
-        IProductRepository _productRepository;
+        //IDownloadQueueRepository _downloadQueueRepository;
+        //IPriceHistoryRepository _priceHistoryRepository;
+        //IProductRepository _productRepository;
 
         public TakelaotMapper(Ilogger logger)
             :base(logger)

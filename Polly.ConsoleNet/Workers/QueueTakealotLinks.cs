@@ -12,15 +12,22 @@ namespace Polly.ConsoleNet
     public class QueueTakealotLinks : AsyncWorkerBase
     {
         ITakealotScheduler _takealotScheduler;
-        Website _websiteContext;
+        //Website _websiteContext;
 
         public QueueTakealotLinks(ITakealotScheduler takealotScheduler)
         {
             _takealotScheduler = takealotScheduler;
+            _takealotScheduler.OnProgress += _takealotScheduler_OnProgress;
+            OnProgress += QueueTakealotLinks_OnProgress;
+            OnStart += QueueTakealotLinks_OnStart;
+            OnEnd += QueueTakealotLinks_OnEnd;
+        }
 
-            OnProgress += QueueTakealotLinks_OnProgress; ;
-            OnStart += QueueTakealotLinks_OnStart; ;
-            OnEnd += QueueTakealotLinks_OnEnd; ;
+        private void _takealotScheduler_OnProgress(object sender, Domain.ProgressEventArgs e)
+        {
+            Console.CursorTop = 0;
+            Console.CursorLeft = 0;
+            Console.WriteLine(e.ProgressString);
         }
 
         private void QueueTakealotLinks_OnEnd(object sender, EventArgs e)
@@ -38,6 +45,7 @@ namespace Polly.ConsoleNet
 
         protected override async Task DoWorkInternalAsync(CancellationToken token)
         {
+            Console.Clear();
             await _takealotScheduler.QueueDownloadLinks();
         }
 

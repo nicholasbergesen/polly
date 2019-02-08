@@ -10,6 +10,7 @@ namespace Polly.Data
         public Product()
         {
             PriceHistory = new List<PriceHistory>();
+            ProductCategory = new List<ProductCategory>();
         }
 
         public long Id { get; set; }
@@ -38,5 +39,7 @@ namespace Polly.Data
         public string Image { get; set; }
 
         public virtual ICollection<PriceHistory> PriceHistory { get; set; }
+
+        public virtual ICollection<ProductCategory> ProductCategory { get; set; }
     }
 }

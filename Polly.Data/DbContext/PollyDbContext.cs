@@ -22,6 +22,8 @@ namespace Polly.Data
         public DbSet<Product> Product { get; set; }
         public DbSet<PriceHistory> PriceHistory { get; set; }
         public DbSet<DataSourceType> DataSourceType { get; set; }
+        public DbSet<Category> Category { get; set; }
+        public DbSet<ProductCategory> ProductCategory { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

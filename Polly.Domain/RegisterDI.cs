@@ -12,6 +12,7 @@ namespace Polly.Domain
             container.Register<IDownloader, TakealotDownloader>();
             container.Register<ITakealotMapper, TakelaotMapper>();
             container.Register<ITakealotProcessor, TakealotProcessor>();
+            container.Register<ITakealotScheduler, TakelaotScheduler>();
         }
     }
 }
