@@ -71,44 +71,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess.cs" />
-    <Compile Include="Migrations\201902012134003_AddCategories.cs" />
-    <Compile Include="Migrations\201902012134003_AddCategories.Designer.cs">
-      <DependentUpon>201902012134003_AddCategories.cs</DependentUpon>
+    <Compile Include="Migrations\201902142005213_NewDatabase.cs" />
+    <Compile Include="Migrations\201902142005213_NewDatabase.Designer.cs">
+      <DependentUpon>201902142005213_NewDatabase.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201902012137375_LimitDescriptionCategory.cs" />
-    <Compile Include="Migrations\201902012137375_LimitDescriptionCategory.Designer.cs">
-      <DependentUpon>201902012137375_LimitDescriptionCategory.cs</DependentUpon>
+    <Compile Include="Migrations\201902142058408_ManualIndexes1.cs" />
+    <Compile Include="Migrations\201902142058408_ManualIndexes1.Designer.cs">
+      <DependentUpon>201902142058408_ManualIndexes1.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\ProductCategory.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\DataSourceType.cs" />
-    <Compile Include="DbContext\IdentityModels.cs" />
     <Compile Include="Models\DownloadData.cs" />
     <Compile Include="Models\DownloadQueue.cs" />
-    <Compile Include="Migrations\201811061925124_Renme.cs" />
-    <Compile Include="Migrations\201811061925124_Renme.Designer.cs">
-      <DependentUpon>201811061925124_Renme.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811081425492_Indexes.cs" />
-    <Compile Include="Migrations\201811081425492_Indexes.Designer.cs">
-      <DependentUpon>201811081425492_Indexes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811081750312_Index2.cs" />
-    <Compile Include="Migrations\201811081750312_Index2.Designer.cs">
-      <DependentUpon>201811081750312_Index2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811081805158_UniqueIndex.cs" />
-    <Compile Include="Migrations\201811081805158_UniqueIndex.Designer.cs">
-      <DependentUpon>201811081805158_UniqueIndex.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811081809124_MoreIndexes.cs" />
-    <Compile Include="Migrations\201811081809124_MoreIndexes.Designer.cs">
-      <DependentUpon>201811081809124_MoreIndexes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811081815218_shortedul.cs" />
-    <Compile Include="Migrations\201811081815218_shortedul.Designer.cs">
-      <DependentUpon>201811081815218_shortedul.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="DbContext\PollyDbContext.cs" />
     <Compile Include="Models\PriceHistory.cs" />
@@ -134,29 +109,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201811061925124_Renme.resx">
-      <DependentUpon>201811061925124_Renme.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201902142005213_NewDatabase.resx">
+      <DependentUpon>201902142005213_NewDatabase.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811081425492_Indexes.resx">
-      <DependentUpon>201811081425492_Indexes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811081750312_Index2.resx">
-      <DependentUpon>201811081750312_Index2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811081805158_UniqueIndex.resx">
-      <DependentUpon>201811081805158_UniqueIndex.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811081809124_MoreIndexes.resx">
-      <DependentUpon>201811081809124_MoreIndexes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811081815218_shortedul.resx">
-      <DependentUpon>201811081815218_shortedul.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902012134003_AddCategories.resx">
-      <DependentUpon>201902012134003_AddCategories.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902012137375_LimitDescriptionCategory.resx">
-      <DependentUpon>201902012137375_LimitDescriptionCategory.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201902142058408_ManualIndexes1.resx">
+      <DependentUpon>201902142058408_ManualIndexes1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -54,9 +54,10 @@ namespace Polly.Data
         [DataType(DataType.Currency)]
         public decimal? OriginalPrice { get; set; }
 
-        [DataType(DataType.Currency)]
+        [Index("IX_PriceHistory_DiscountAmount_PreviousPriceHistoryId", Order = 1), DataType(DataType.Currency)]
         public decimal? DiscountAmount{ get; set; }
 
+        //IX_PriceHistory_DiscountPercentage added as script for "INCLUDE" sql feature
         public decimal? DiscountPercentage { get; set; }
 
         [DataType(DataType.Currency)]
@@ -66,11 +67,13 @@ namespace Polly.Data
 
         public DateTime TimeStamp { get; private set; }
 
+        [Index("IX_PriceHistory_ProductId")]
         public long? ProductId { get; set; }
 
         [ForeignKey("ProductId")]
         public virtual Product Product { get; set; }
 
+        [Index("IX_PriceHistory_PreviousPriceHistoryId"), Index("IX_PriceHistory_DiscountAmount_PreviousPriceHistoryId", Order = 2)]
         public long? PreviousPriceHistoryId { get; set; }
 
         [ForeignKey("PreviousPriceHistoryId")]

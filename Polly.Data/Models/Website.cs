@@ -18,7 +18,7 @@ namespace Polly.Data
 
         public string UserAgent { get; set; }
 
-        [ForeignKey("DataSourceTypeId")]
+        [ForeignKey("DataSourceTypeId")]//possible index required, check stats
         public virtual DataSourceType DataSourceType { get; set; }
 
         public DataSourceTypeEnum DataSourceTypeId { get; set; }

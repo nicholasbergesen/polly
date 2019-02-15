@@ -13,17 +13,19 @@ namespace Polly.Data
             ProductCategory = new List<ProductCategory>();
         }
 
+        [Key]
         public long Id { get; set; }
 
-        [Index(IsUnique = true), MaxLength(80)]
+        [Index(name: "IX_Product_UniqueIdentifier", IsUnique = true), MaxLength(80)]
         public string UniqueIdentifier { get; set; }
 
-        [Index, DataType(DataType.Url), MaxLength(850)]
+        [Index("IX_Product_URL"), DataType(DataType.Url), MaxLength(850)]
         public string Url { get; set; }
 
+        [Index("IX_Product_LastChecked")]
         public DateTime LastChecked { get; set; }
 
-        [Index, MaxLength(500)]
+        [Index("IX_Product_Title"), MaxLength(500)]
         public string Title { get; set; }
 
         [DataType(DataType.Html)]

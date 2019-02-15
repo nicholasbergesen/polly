@@ -7,13 +7,13 @@ namespace Polly.Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class LimitDescriptionCategory : IMigrationMetadata
+    public sealed partial class NewDatabase : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(LimitDescriptionCategory));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(NewDatabase));
         
         string IMigrationMetadata.Id
         {
-            get { return "201902012137375_LimitDescriptionCategory"; }
+            get { return "201902142005213_NewDatabase"; }
         }
         
         string IMigrationMetadata.Source
