@@ -34,7 +34,7 @@ namespace Polly.Domain
             Console.WriteLine("Parsing Robots.txt...");
             Robots robots = new Robots(Domain, UserAgent, enableErrorCorrection: true);
             await robots.LoadAsync();
-            robots.OnPorgress += Robots_OnPorgress;
+            robots.OnProgress += Robots_OnProgress;
             var websiteLinksToDownload = await robots.GetSitemapLinksAsync();
             var filteredList = websiteLinksToDownload.Where(FilterProducts()).ToList();
 
@@ -63,7 +63,7 @@ namespace Polly.Domain
             await _downloadQueueRepository.SaveAsync(_saveBatch);
         }
 
-        private void Robots_OnPorgress(object sender, RobotsSharpParser.ProgressEventArgs e)
+        private void Robots_OnProgress(object sender, RobotsSharpParser.ProgressEventArgs e)
         {
             RaiseOnProgress(e.ProgressMessage);
         }

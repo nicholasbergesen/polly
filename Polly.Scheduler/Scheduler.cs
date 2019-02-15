@@ -48,7 +48,7 @@ namespace Polly.SchedulerConsole
             {
                 Robots robots = new Robots(Website.Domain, Website.UserAgent, enableErrorCorrection: true);
                 robots.Load();
-                robots.OnPorgress += Robots_OnPorgress;
+                robots.OnProgress += Robots_OnProgress;
                 var websiteLinksToDownload = await robots.GetSitemapLinksAsync();
 
                 var filteredList = websiteLinksToDownload.Where(FilterProducts()).ToList();
@@ -89,7 +89,7 @@ namespace Polly.SchedulerConsole
             }
         }
 
-        private void Robots_OnPorgress(object sender, RobotsSharpParser.ProgressEventArgs e)
+        private void Robots_OnProgress(object sender, RobotsSharpParser.ProgressEventArgs e)
         {
             RaiseOnProgress($"Links from robots:{e.ProgressMessage}");
         }
