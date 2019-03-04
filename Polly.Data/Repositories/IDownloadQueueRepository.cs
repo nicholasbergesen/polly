@@ -8,6 +8,7 @@ namespace Polly.Data
     {
         Task<IReadOnlyList<long>> GetTopDownloadQueueItems(int size);
         Task<IReadOnlyList<long>> GetDownloadQueueItems();
+        Task RemoveAsync(long downloadQueue);
         Task<int> DownloadQueueCountAsync();
         Task<DownloadQueue> FetchByIdAsync(long id);
         Task RemoveAsync(DownloadQueue downloadQueue);

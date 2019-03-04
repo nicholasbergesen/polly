@@ -13,11 +13,11 @@ using Polly.Website.Controllers.Json;
 
 namespace Polly.Website.Controllers
 {
-
-    [RoutePrefix("api2/products")]
+    [RoutePrefix("api/products")]
     public class ProductsController : ApiController
     {
         private static Dictionary<string, ApiProd> productPrices = new Dictionary<string, ApiProd>();
+        private static Dictionary<string, ApiPriceHistory> productPriceHistory = new Dictionary<string, ApiPriceHistory>();
 
         private PollyDbContext db = new PollyDbContext();
 
@@ -27,7 +27,7 @@ namespace Polly.Website.Controllers
             ApiProd returnPrice;
             if (!productPrices.TryGetValue(productId, out returnPrice))
             {
-                var twoWeeksAgo = DateTime.Today.Subtract(TimeSpan.FromDays(31));
+                var thirtyoneDays = DateTime.Today.Subtract(TimeSpan.FromDays(31));
 
                 var productdb = await (from product in db.Product
                                        where product.UniqueIdentifier == productId
@@ -37,18 +37,24 @@ namespace Polly.Website.Controllers
 
                 if (productdb != null)
                 {
-                    var recentPrices = productdb.PriceHistory.Where(x => twoWeeksAgo < x.TimeStamp && x.Price != currentPrice);
+                    var recentPrices = productdb.PriceHistory.Where(x => thirtyoneDays < x.TimeStamp && x.Price != currentPrice);
                     //1000% increase represents a 90% discount, anything more is considered junk data
                     if (!recentPrices.Any())
-                        returnPrice = new ApiProd() { Price = 0, Url = "https://www.pollychron.com/Home/Details/" + productdb.Id };
+                        returnPrice = new ApiProd() { Price = 0, Url = "https://www.priceboar.com/Home/Details/" + productdb.Id, Status = Status.NoPrices };
                     else if (recentPrices.Any(x => x.Price < (currentPrice * 10)))
-                        returnPrice = new ApiProd() { Price = recentPrices.Where(x => x.Price < (currentPrice * 10)).Max(x => x.Price), Url = "https://www.pollychron.com/Home/Details/" + productdb.Id };
+                        returnPrice = new ApiProd() { Price = recentPrices.Where(x => x.Price < (currentPrice * 10)).Max(x => x.Price),
+                            Url = "https://www.priceboar.com/Home/Details/" + productdb.Id, Status = Status.HasValidPrice };
                     else
-                        returnPrice = new ApiProd() { Price = recentPrices.Max(x => x.Price), Url = "https://www.pollychron.com/Home/Details/" + productdb.Id };
+                        returnPrice = new ApiProd() { Price = recentPrices.Max(x => x.Price),
+                            Url = "https://www.priceboar.com/Home/Details/" + productdb.Id,
+                            Status = Status.HasValidPrice
+                        };
 
                     var lastPrice = productdb.PriceHistory.Last();
                     if(lastPrice.Price != currentPrice)
                     {
+                        returnPrice.Status = Status.RequiresUpdate;
+
                         await Task.Delay(100);
                         var downloadUrl = BuildDownloadUrl(productId);
                         using (HttpClient httpClient = new HttpClient())
@@ -76,8 +82,7 @@ namespace Polly.Website.Controllers
                         {
                             var html = await downloadresponse.Content.ReadAsStringAsync();
                             var prod = await SaveProductFromJson(html);
-                            returnPrice = new ApiProd() { Price = 0, Url = "https://www.pollychron.com/Home/Details/" + prod.Id };
-
+                            returnPrice = new ApiProd() { Price = 0, Url = "https://www.priceboar.com/Home/Details/" + prod.Id, Status = Status.RequiresUpdate };
                         }
                     }
                 }
@@ -93,10 +98,63 @@ namespace Polly.Website.Controllers
             return response;
         }
 
+        [Route("pricehistory/{productId}")]
+        public async Task<ApiPriceHistory> GetPriceHistory(string productId)
+        {
+            if (productPriceHistory.TryGetValue(productId, out ApiPriceHistory apiPriceHistory))
+                return apiPriceHistory;
+
+            var productdb = await (from product in db.Product
+                                   where product.UniqueIdentifier == productId
+                                   select product)
+                                     .Include(x => x.PriceHistory)
+                                     .FirstOrDefaultAsync();
+
+            ApiPriceHistory prices = new ApiPriceHistory();
+
+            foreach (var price in productdb.PriceHistory)
+            {
+                prices.Price.Add(price.Price);
+                prices.Date.Add(price.TimeStamp.ToShortDateString());
+            }
+
+            productPriceHistory.Add(productId, prices);
+
+            return prices;
+        }
+
+        //add a private key on send and check on receive
+        [HttpPost]
+        [Route("sendTakealotJson")]
+        public async Task SendTakelotJson(string data)
+        {
+            await SaveProductFromJson(data);
+        }
+
+        private static class Status
+        {
+            public const string NoPrices = "NoPrices";
+
+            public static string HasValidPrice = "HasValidPrice";
+            public static string RequiresUpdate = "RequiresUpdate";
+        }
+
         public class ApiProd
         {
             public decimal Price { get; set; }
             public string Url { get; set; }
+            public string Status { get; set; }
+        }
+
+        public class ApiPriceHistory
+        {
+            public ApiPriceHistory()
+            {
+                Price = new List<decimal>();
+                Date = new List<string>();
+            }
+            public ICollection<decimal> Price { get; set; }
+            public ICollection<string> Date { get; set; }
         }
 
         private const string TakealotApi = "https://api.takealot.com/rest/v-1-8-0/product-details";

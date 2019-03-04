@@ -40,7 +40,7 @@ namespace Polly.Domain
                 tasks[i] = CreateDownloadTask(downloadQueueIds, _tokenSource.Token);
 
             var runningTasks = Task.WhenAll(tasks);
-            var totalSize = _downloadQueueRepository.DownloadQueueCountAsync();
+            var totalSize = downloadQueueIds.Count;
             while (!runningTasks.IsCompleted)
             {
                 //RaiseOnProgress(totalSize - downloadQueueIds.Count, totalSize, startTime);

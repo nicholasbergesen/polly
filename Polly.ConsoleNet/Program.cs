@@ -17,6 +17,7 @@ namespace Polly.ConsoleNet
             _container = new Container();
             Domain.RegisterDI.Register(_container);
             Data.RegisterDI.Register(_container);
+            //_container.Register<Data.IDownloadQueueRepository, DownloadQueueFileRepository>();
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
@@ -57,7 +58,7 @@ namespace Polly.ConsoleNet
 
             if (int.TryParse(Console.ReadLine(), out int menuOption)
                 && menuOption > 0
-                && menuOption < 2)
+                && menuOption < 3)
                 return menuOption;
 
             Console.Clear();

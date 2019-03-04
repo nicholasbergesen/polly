@@ -79,5 +79,15 @@ namespace Polly.Data
                 await context.SaveChangesAsync();
             }
         }
+
+        public Task RemoveAsync(string downloadQueue)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task RemoveAsync(long downloadQueue)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Polly.ConsoleNet
 {
     public class DownloadFromQueue : AsyncWorkerBase
     {
-        private const int TaskCount = 4;
+        private const int TaskCount = 5;
 
         private int _totalQueueCount;
         private DateTime _start;
@@ -35,6 +35,42 @@ namespace Polly.ConsoleNet
             OnStart += DownloadFromQueue_OnStart;
             OnEnd += DownloadFromQueue_OnEnd;
         }
+
+        //protected override async Task DoWorkInternalAsync(CancellationToken token)
+        //{
+        //    RaiseOnStart();
+
+        //    _downloadQueue = new ConcurrentQueue<string>(await _downloadQueueRepository.GetDownloadQueueItems());
+        //    _totalQueueCount = _downloadQueue.Count;
+
+        //    for (int i = 0; i < TaskCount; i++)
+        //        _tasks[i] = DownloadAndProcess(token);
+
+        //    var runningTasks = Task.WhenAll(_tasks);
+        //    while (!runningTasks.IsCompleted)
+        //    {
+        //        RaiseOnProgress(_totalQueueCount - _downloadQueue.Count, _totalQueueCount, _start);
+        //        await Task.Delay(1000);
+        //    }
+        //    await runningTasks;
+
+        //    RaiseOnEnd();
+        //}
+
+        //private async Task DownloadAndProcess(CancellationToken token)
+        //{
+        //    while (_downloadQueue.TryDequeue(out string downloadUrl))
+        //    {
+        //        if (token.IsCancellationRequested)
+        //            return;
+
+        //        var downloadResult = await _downloader.DownloadAsync(downloadUrl);
+        //        if (!string.IsNullOrWhiteSpace(downloadResult))
+        //            await _takealotProcessor.HandleResultStringAsync(downloadResult);
+
+        //        await _downloadQueueRepository.RemoveAsync(downloadUrl);
+        //    }
+        //}
 
         protected override async Task DoWorkInternalAsync(CancellationToken token)
         {

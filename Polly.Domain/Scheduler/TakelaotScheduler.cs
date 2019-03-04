@@ -3,6 +3,7 @@ using RobotsSharpParser;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -41,23 +42,27 @@ namespace Polly.Domain
             Console.WriteLine("Saving Robots.txt...");
             _start = DateTime.Now;
             int totalRequestCount = 0;
-            foreach (tUrl websiteLink in filteredList)
-            {
-                _saveBatch.Add(new DownloadQueue()
+            //using (StreamWriter sr = new StreamWriter("downloadLinks.txt"))
+            //{
+                foreach (tUrl websiteLink in filteredList)
                 {
-                    AddedDate = DateTime.Now,
-                    DownloadUrl = BuildDownloadUrl(websiteLink.loc),
-                    WebsiteId = WebsiteId,
-                    Priority = 5,
-                });
-                totalRequestCount++;
+                    _saveBatch.Add(new DownloadQueue()
+                    {
+                        AddedDate = DateTime.Now,
+                        DownloadUrl = BuildDownloadUrl(websiteLink.loc),
+                        WebsiteId = WebsiteId,
+                        Priority = 5,
+                    });
+                    //await sr.WriteLineAsync($"{WebsiteId},{BuildDownloadUrl(websiteLink.loc)}");
+                    totalRequestCount++;
 
-                if (_saveBatch.Count == BatchSaveCount)
-                {
-                    await _downloadQueueRepository.SaveAsync(_saveBatch);
-                    _saveBatch.Clear();
-                    RaiseOnProgress(totalRequestCount, filteredList.Count, _start);
-                }
+                    if (totalRequestCount % BatchSaveCount == 0)
+                    {
+                        await _downloadQueueRepository.SaveAsync(_saveBatch);
+                        _saveBatch.Clear();
+                        RaiseOnProgress(totalRequestCount, filteredList.Count, _start);
+                    }
+               // }
             }
 
             await _downloadQueueRepository.SaveAsync(_saveBatch);

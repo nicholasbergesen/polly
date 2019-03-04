@@ -79,9 +79,10 @@ namespace Polly.Domain
             else
             {
                 var lastPrice = await _priceHistoryRepository.FetchLastPriceForProductId(product.Id);
-                if (lastPrice.Price == price)
+                if (price != lastPrice?.Price)
+                    await _priceHistoryRepository.SaveAsync(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
+                else
                     return;
-                await _priceHistoryRepository.SaveAsync(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
             }
         }
     }
