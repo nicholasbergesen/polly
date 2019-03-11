@@ -134,7 +134,6 @@ namespace Polly.Website.Controllers
         private static class Status
         {
             public const string NoPrices = "NoPrices";
-
             public static string HasValidPrice = "HasValidPrice";
             public static string RequiresUpdate = "RequiresUpdate";
         }

@@ -52,9 +52,15 @@ namespace Polly.ConsoleNet
             throw new NotImplementedException();
         }
 
-        public Task SaveAsync(IEnumerable<DownloadQueue> saveBatch)
+        public async Task SaveAsync(IEnumerable<DownloadQueue> saveBatch)
         {
-            throw new NotImplementedException();
+            using (StreamWriter sr = new StreamWriter("downloadLinks.txt", append: true))
+            {
+                foreach (var downloadItem in saveBatch)
+                {
+                    await sr.WriteLineAsync($"{downloadItem.WebsiteId},{downloadItem.DownloadUrl}");
+                }
+            }
         }
 
         Task<IReadOnlyList<long>> IDownloadQueueRepository.GetDownloadQueueItems()

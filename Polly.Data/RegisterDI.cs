@@ -7,7 +7,7 @@ namespace Polly.Data
         public static void Register(Container container)
         {
             container.Register<IProductRepository, ProductRepository>();
-            container.Register<IDownloadQueueRepository, DownloadQueueRepository>();
+            //container.Register<IDownloadQueueRepository, DownloadQueueRepository>();
             container.Register<IPriceHistoryRepository, PriceHistoryRepository>();
             container.Register<ICategoryRepository, CategoryRepository>();
             container.Register<IProductCategoryRepository, ProductCategoryRepository>();
