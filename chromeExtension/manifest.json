@@ -16,7 +16,7 @@
         "https://www.takealot.com/deals",
         "https://www.takealot.com/deals*",
         "https://www.takealot.com/*/PLID*",
-        "https://www.takealot.com/wishlist"
+        "https://www.takealot.com/wishlist*"
       ],
       "js": [
         "jquery.min.js",

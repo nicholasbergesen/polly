@@ -1,4 +1,5 @@
-const apiUrl = "https://www.priceboar.com/api/products/";
+const apiUrl = "https://priceboar.com/api2/";
+const apiProducts = apiUrl + "products/";
 
 window.addEventListener('load', function () {
     let dailyDealItems = $('.daily-deal-item');
@@ -25,7 +26,7 @@ function showDailyDealPrice(parentElement) {
     currentPrice = currentPrice.replace(',', '');
     let udpatesRequired = new Array();
     $.ajax({
-        url: apiUrl + productId + "/" + currentPrice,
+        url: apiProducts + productId + "/" + currentPrice,
         success: function (result) {
             let priceLink = createPriceNode(result, currentPrice);
             parentElement.childNodes[3].appendChild(priceLink);
@@ -40,7 +41,7 @@ function showDailyDealPrice(parentElement) {
             url: updateUrl,
             success: function (takealotJSON) {
                 $.ajax({
-                    url: "https://priceboar.com/api2/",
+                    url: apiUrl,
                     type: "POST",
                     data: takealotJSON
                 });
@@ -82,7 +83,7 @@ function updateProductHtml(parentElement) {
     currentPrice = currentPrice.replace(',', '').replace('R', '');
     let udpatesRequired = new Array();
     $.ajax({
-        url: apiUrl + productId + "/" + currentPrice,
+        url: apiProducts + productId + "/" + currentPrice,
         success: function (result) {
             let priceLink = createSimplePriceNode(result, currentPrice);
             let realPrice = document.getElementById("#realPrice");
@@ -98,7 +99,7 @@ function updateProductHtml(parentElement) {
             url: updateUrl,
             success: function (takealotJSON) {
                 $.ajax({
-                    url: "https://priceboar.com/api2/",
+                    url: apiUrl,
                     type: "POST",
                     data: takealotJSON
                 });
@@ -119,7 +120,7 @@ function addChartToPage() {
     mainPage.insertBefore(chartElement, mainPage.childNodes[1]);
 
     $.ajax({
-        url: apiUrl + "pricehistory/" + productId,
+        url: apiProducts + "pricehistory/" + productId,
         success: function (result) {
             createChartNode(result.Price, result.Date);
         }
@@ -205,7 +206,7 @@ function addPriceColumnToWishlist(wishlistTable) {
     //header
     let tr = realTable.rows[0];
     let th = document.createElement('th');
-    th.setAttribute('class', 'col-price'); 
+    th.setAttribute('class', 'col-price');
     th.innerHTML = "Price Boar";
     tr.appendChild(th);
 
@@ -214,7 +215,7 @@ function addPriceColumnToWishlist(wishlistTable) {
         let productId = getProductIdFromUrl($(realTable.rows[i].cells[2]).find("a")[0].getAttribute("href"));
         let currentPrice = realTable.rows[i].cells[5].innerText.replace(',', '').replace('R', '').replace(' ', '');
         $.ajax({
-            url: apiUrl + productId + "/" + currentPrice,
+            url: apiProducts + productId + "/" + currentPrice,
             success: function (result) {
                 let display = "unchanged";
                 if(result.Price > 0){
