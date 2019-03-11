@@ -1,4 +1,4 @@
-const apiUrl = "https://www.priceboar.com/api/products/";
+const apiUrl = "https://priceboar.com/api2/products/";
 
 window.addEventListener('load', function () {
     let dailyDealItems = $('.daily-deal-item');
@@ -205,7 +205,7 @@ function addPriceColumnToWishlist(wishlistTable) {
     //header
     let tr = realTable.rows[0];
     let th = document.createElement('th');
-    th.setAttribute('class', 'col-price'); 
+    th.setAttribute('class', 'col-price');
     th.innerHTML = "Price Boar";
     tr.appendChild(th);
 
