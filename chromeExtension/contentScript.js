@@ -1,4 +1,4 @@
-const apiUrl = "https://priceboar.com/api2/";
+const apiUrl = "https://priceboar.com/api/";
 const apiProducts = apiUrl + "products/";
 
 window.addEventListener('load', function () {
