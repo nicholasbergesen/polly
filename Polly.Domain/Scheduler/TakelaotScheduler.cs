@@ -42,8 +42,7 @@ namespace Polly.Domain
             Console.WriteLine("Saving Robots.txt...");
             _start = DateTime.Now;
             int totalRequestCount = 0;
-            //using (StreamWriter sr = new StreamWriter("downloadLinks.txt"))
-            //{
+            
                 foreach (tUrl websiteLink in filteredList)
                 {
                     _saveBatch.Add(new DownloadQueue()
@@ -53,7 +52,6 @@ namespace Polly.Domain
                         WebsiteId = WebsiteId,
                         Priority = 5,
                     });
-                    //await sr.WriteLineAsync($"{WebsiteId},{BuildDownloadUrl(websiteLink.loc)}");
                     totalRequestCount++;
 
                     if (totalRequestCount % BatchSaveCount == 0)
@@ -62,7 +60,6 @@ namespace Polly.Domain
                         _saveBatch.Clear();
                         RaiseOnProgress(totalRequestCount, filteredList.Count, _start);
                     }
-               // }
             }
 
             await _downloadQueueRepository.SaveAsync(_saveBatch);

@@ -17,7 +17,7 @@ namespace Polly.ConsoleNet
             _container = new Container();
             Domain.RegisterDI.Register(_container);
             Data.RegisterDI.Register(_container);
-            //_container.Register<Data.IDownloadQueueRepository, DownloadQueueFileRepository>();
+            _container.Register<Data.IDownloadQueueRepository, DownloadQueueFileRepository>();
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
@@ -31,6 +31,7 @@ namespace Polly.ConsoleNet
         {
             { 1, _container.GetInstance<QueueTakealotLinks>() },
             { 2, _container.GetInstance<DownloadFromQueue>() },
+            { 3, _container.GetInstance<Upload>() },
         };
 
         static void Main(string[] args)
@@ -41,7 +42,8 @@ namespace Polly.ConsoleNet
         private static async Task MainAsync(string[] args)
         {
             Console.Clear();
-            await MenuItems[GetMenuOption()].DoWorkAsync(source.Token);
+            var instance = MenuItems[GetMenuOption()];
+            await instance.DoWorkAsync(source.Token);
             Console.WriteLine("Done.");
             Console.ReadLine();
         }
@@ -50,6 +52,7 @@ namespace Polly.ConsoleNet
         {
             Console.WriteLine("1.Populate download queue from Takealot robots.");
             Console.WriteLine("2.Download From queue.");
+            Console.WriteLine("3.Upload");
             //Console.WriteLine("3.Populate download queue with products older than 2 days.");
             //Console.WriteLine("4.Run Downloader (PriceOnly).");
             //Console.WriteLine("5.Run Downloader (PriceAndProduct).");
@@ -58,7 +61,7 @@ namespace Polly.ConsoleNet
 
             if (int.TryParse(Console.ReadLine(), out int menuOption)
                 && menuOption > 0
-                && menuOption < 3)
+                && menuOption < 4)
                 return menuOption;
 
             Console.Clear();
