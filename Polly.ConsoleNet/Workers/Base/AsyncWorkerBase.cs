@@ -50,8 +50,20 @@ namespace Polly.ConsoleNet
             OnProgress(this, new ProgressEventArgs(progressString));
         }
 
+        protected void RaiseOnProgress(int count, DateTime startTime)
+        {
+            if (OnProgress == null) return;
+
+            double rate = Math.Max(count / Math.Max(DateTime.Now.Subtract(startTime).TotalSeconds, 1), 1);
+            string progressString = $"{count} {rate:0.##}/s       ";
+
+            OnProgress(this, new ProgressEventArgs(progressString));
+        }
+
         protected void RaiseOnProgress(string progressMessage)
         {
+            if (OnProgress == null) return;
+
             OnProgress(this, new ProgressEventArgs(progressMessage));
         }
 

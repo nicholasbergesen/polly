@@ -124,11 +124,18 @@ namespace Polly.Website.Controllers
         }
 
         //add a private key on send and check on receive
-        [HttpPost]
-        [Route("sendTakealotJson")]
-        public async Task SendTakelotJson(string data)
+        [HttpPost, Route("sendTakealotJson/{key}")]
+        public async Task<HttpResponseMessage> SendTakelotJson([FromUri] string key, [FromBody] TakealotJson data)
         {
-            await SaveProductFromJson(data);
+            if (key == "19c45699-a11a-43d1-a2fd-07feea88afdf")
+                await SaveProductFromJsonObject(data);
+            else
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+
+            if (data != null)
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            else
+                return new HttpResponseMessage(HttpStatusCode.NoContent);
         }
 
         private static class Status
@@ -163,12 +170,8 @@ namespace Polly.Website.Controllers
             return string.Concat(TakealotApi, "/", productId, "?platform=desktop");
         }
 
-        private async Task<Data.Product> SaveProductFromJson(string httpResponse)
+        private async Task<Data.Product> SaveProductFromJsonObject(TakealotJson jsonObject)
         {
-            if (string.IsNullOrEmpty(httpResponse))
-                return null;
-
-            TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
             bool hasPurchasePrice = !jsonObject.event_data.documents.product.purchase_price.HasValue;
             if (hasPurchasePrice)
                 return null;
@@ -207,6 +210,15 @@ namespace Polly.Website.Controllers
             await DataAccess.SaveAsync(product);
 
             return product;
+        }
+
+        private async Task<Data.Product> SaveProductFromJson(string httpResponse)
+        {
+            if (string.IsNullOrEmpty(httpResponse))
+                return null;
+
+            TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
+            return await SaveProductFromJsonObject(jsonObject);
         }
 
         protected override void Dispose(bool disposing)

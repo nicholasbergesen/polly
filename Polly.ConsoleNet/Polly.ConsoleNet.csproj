@@ -82,6 +82,7 @@
     <Compile Include="Workers\Base\AsyncWorkerBase.cs" />
     <Compile Include="Workers\DownloadFromQueue.cs" />
     <Compile Include="Workers\QueueTakealotLinks.cs" />
+    <Compile Include="Workers\Upload.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
