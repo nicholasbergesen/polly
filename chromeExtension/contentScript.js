@@ -3,7 +3,7 @@ const apiProducts = apiUrl + "products/";
 
 window.addEventListener('load', function () {
     let dailyDealItems = $('.daily-deal-item');
-    let buyBox = $('.buybox-content');
+    let buyBox = $('.pdp-module_sidebar-buybox_1m6Sm');
     let wishlist = $("#wishlist");
 
     if(dailyDealItems.length > 0) {
@@ -76,10 +76,9 @@ function createPriceNode(result, currentPrice) {
 ///PRODUCT
 function updateProductHtml(parentElement) {
     addChartToPage();
-
     let productId = getProductIdFromUrl(window.location.href);
-    $(parentElement).attr("id", "#realPrice"); //workaround for takealot being shit
-    let currentPrice = $(parentElement).find(".sf-price").find(".currency").text();
+    $(parentElement).attr("id", "#realPrice"); //workaround for takealot being shit, allows me to append to the parent element
+    let currentPrice = $(parentElement).find(".buybox-module_price_2YUFa").children("span.currency").text();
     currentPrice = currentPrice.replace(',', '').replace('R', '');
     let udpatesRequired = new Array();
     $.ajax({
@@ -200,9 +199,7 @@ function createSimplePriceNode(result, currentPrice) {
 
 ///WISHLIST
 function addPriceColumnToWishlist(wishlistTable) {
-    $(wishlistTable).attr("id", "#priceBoarTable");
-    let realTable = document.getElementById("#priceBoarTable");
-
+    let realTable = wishlistTable[0];
     //header
     let tr = realTable.rows[0];
     let th = document.createElement('th');
