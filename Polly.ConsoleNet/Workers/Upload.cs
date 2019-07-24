@@ -50,7 +50,7 @@ namespace Polly.ConsoleNet
 
             List<Task> tasks = new List<Task>();
 
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 30; i++)
             {
                 tasks.Add(Task.Run(async () =>
                 {
@@ -99,7 +99,8 @@ namespace Polly.ConsoleNet
                 while (!sr.EndOfStream)
                 {
                     var line = await sr.ReadLineAsync();
-                    if (done.Contains(line))
+                    var url = line.Split(',')[1];
+                    if (done.Contains(url))
                         continue;
                     toDoUrls.Add(line);
                 }

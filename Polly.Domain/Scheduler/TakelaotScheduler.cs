@@ -101,8 +101,8 @@ namespace Polly.Domain
 
         private bool IsProduct(string url)
         {
-            var sections = url.Split('/');
-            return !url.Contains("?") && sections.Length == 5 && sections[4].StartsWith("PLID");
+            var sections = url?.Split('/');
+            return sections != null && !url.Contains("?") && sections.Length == 5 && sections[4].StartsWith("PLID");
         }
     }
 }

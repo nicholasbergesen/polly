@@ -58,9 +58,6 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="RobotsSharpParser, Version=1.0.0.16, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RobotsSharpParser.1.0.0.16\lib\net461\RobotsSharpParser.dll</HintPath>
-    </Reference>
     <Reference Include="SimpleInjector, Version=4.4.3.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <HintPath>..\packages\SimpleInjector.4.4.3\lib\net45\SimpleInjector.dll</HintPath>
     </Reference>
@@ -91,6 +88,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\RobotsSharpParser\RobotsSharp\RobotsSharpParser\RobotsSharpParser.csproj">
+      <Project>{d18b4fbc-32ce-4b57-bfb4-054aa70eb476}</Project>
+      <Name>RobotsSharpParser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Polly.Data\Polly.Data.csproj">
       <Project>{dfbdff1c-89f7-49bd-87d3-23bc33b2e2bf}</Project>
       <Name>Polly.Data</Name>
