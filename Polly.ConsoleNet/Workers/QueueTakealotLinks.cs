@@ -1,9 +1,5 @@
-﻿using Polly.Data;
-using Polly.Domain;
-using RobotsSharpParser;
+﻿using Polly.Domain;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
