@@ -113,16 +113,19 @@ namespace Polly.Website.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Product product = (from prod in db.Product
                                where prod.Id == id
                                select prod)
                               .Include(x => x.PriceHistory)
                               .FirstOrDefault();
+
             if (product == null)
             {
                 return HttpNotFound();
             }
-            return View(product);
+
+            return View(new ProductModel(product));
         }
 
         //GET: Products/Create
