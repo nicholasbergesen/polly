@@ -88,10 +88,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\RobotsSharpParser\RobotsSharp\RobotsSharpParser\RobotsSharpParser.csproj">
-      <Project>{d18b4fbc-32ce-4b57-bfb4-054aa70eb476}</Project>
-      <Name>RobotsSharpParser</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Polly.Data\Polly.Data.csproj">
       <Project>{dfbdff1c-89f7-49bd-87d3-23bc33b2e2bf}</Project>
       <Name>Polly.Data</Name>
