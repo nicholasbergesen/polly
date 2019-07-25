@@ -1,88 +1,102 @@
 ﻿@model Polly.Website.Models.ProductModel
 
-<h2>@Html.DisplayFor(model => model.Title)</h2>
-
-<div class="list-inline">
-    <a href="@Model.Url" class="right">View on Takealot</a>
-    <h5>Last Checked: @Model.LastChecked</h5>
-</div>
-
-<hr />
-<div class="col-md-12">
-    <div class="col-md-4">
-        <img src="@Model.Image" width="250" />
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2>@Html.DisplayFor(model => model.Title)</h2>
+            <div class="list-inline">
+                <a href="@Model.Url" class="right">View on Takealot</a>
+                <h5>Last Checked: @Model.LastChecked</h5>
+            </div>
+            <hr />
+        </div>
+        <div class="col-xs-12">
+            <div class="col-md-4">
+                <img src="@Model.Image" width="250" />
+            </div>
+            <div class="col-md-8">
+                <h4>Description:</h4>
+                @if (string.IsNullOrEmpty(Model.Description))
+                {
+                    <p>No description available.</p>
+                }
+                else
+                {
+                    <div class="js_readmore">@Html.Raw(Model.Description)</div>
+                }
+            </div>
+            <hr />
+        </div>
+        <div class="col-xs-12">
+            <h4>Price history</h4>
+            <table class="table">
+                <tr>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Price
+                    </th>
+                    <th>
+                        Price Change
+                    </th>
+                    <th>
+                        Price Change %
+                    </th>
+                    <th>
+                        Discount Amount
+                    </th>
+                    <th>
+                        Discount %
+                    </th>
+                    <th>
+                        Original price
+                    </th>
+                </tr>
+                @foreach (var item in Model.PriceHistory)
+                {
+                    <tr>
+                        <td>
+                            @item.TimeStamp.ToLongDateString()
+                        </td>
+                        <td>
+                            <strong>@Html.DisplayFor(modelItem => item.Price)</strong>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PriceChangeAmount)
+                        </td>
+                        <td>
+                            @item.PriceChangePercent
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DiscountAmount)
+                        </td>
+                        <td>
+                            @item.DiscountPercentage
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OriginalPrice)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
     </div>
-    <div class="col-md-8">
-        <h4>Description:</h4>
-        @if (string.IsNullOrEmpty(Model.Description))
-        {
-            <p>No description available.</p>
-        }
-        else
-        {
-            <p>@Html.Raw(@Model.Description)</p>
-        }
+    <div class="row">
+        <div class="col-xs-12">
+            <div>
+                @{Html.RenderPartial("_PriceHistoryGraph", Model.PriceHistory); }
+            </div>
+            <br />
+            <div>
+                @Html.ActionLink("Back", "Index")
+            </div>
+        </div>
     </div>
 </div>
 
-
-<hr />
-<h4>Price history</h4>
-<table class="table">
-    <tr>
-        <th>
-            Date
-        </th>
-        <th>
-            Price
-        </th>
-        <th>
-            Price Change
-        </th>
-        <th>
-            Price Change %
-        </th>
-        <th>
-            Discount Amount
-        </th>
-        <th>
-            Discount %
-        </th>
-        <th>
-            Original price
-        </th>
-    </tr>
-    @foreach (var item in Model.PriceHistory)
-    {
-    <tr>
-        <td>
-            @item.TimeStamp.ToLongDateString()
-        </td>
-        <td>
-            <strong>@Html.DisplayFor(modelItem => item.Price)</strong>
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PriceChangeAmount)
-        </td>
-        <td>
-            @item.PriceChangePercent
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DiscountAmount)
-        </td>
-        <td>
-            @item.DiscountPercentage
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.OriginalPrice)
-        </td>
-    </tr>
-    }
-</table>
-<div>
-    @{Html.RenderPartial("_PriceHistoryGraph", Model.PriceHistory); }
-</div>
-<br />
-<div>
-    @Html.ActionLink("Back", "Index")
-</div>
+<script type="text/javascript">
+    $(function () {
+        var details = new Polly.Details();
+    });
+</script>

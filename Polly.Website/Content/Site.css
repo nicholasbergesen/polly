@@ -54,3 +54,10 @@ textarea {
     #custom-search-input .glyphicon-search {
         font-size: 23px;
     }
+
+
+/* CUSTOM */
+
+.js_readmore {
+    overflow-y: hidden;
+}

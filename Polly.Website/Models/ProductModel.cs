@@ -1,5 +1,6 @@
 ﻿using Polly.Data;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Polly.Website.Models
@@ -8,12 +9,18 @@ namespace Polly.Website.Models
     {
         public long Id { get; set; }
         public string UniqueIdentifier { get; set; }
+
+        [DataType(DataType.Url)]
         public string Url { get; set; }
         public string LastChecked { get; set; }
         public string Title { get; set; }
+
+        [DataType(DataType.Html)]
         public string Description { get; set; }
         public string Breadcrumb { get; set; }
         public string Category { get; set; }
+
+        [DataType(DataType.ImageUrl)]
         public string Image { get; set; }
         public List<PriceHistoryModel> PriceHistory { get; set; }
 
