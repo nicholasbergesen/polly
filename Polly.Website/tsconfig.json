@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "charset": "utf8",
+    "emitBOM": true,
+    "inlineSourceMap": false,
+    "inlineSources": true,
+    "module": "none",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "outFile": "./Scripts/typescript.js",
+    "removeComments": true,
+    "sourceMap": true,
+    "target": "es6",
+    "alwaysStrict": true
+  },
+  "compileOnSave": true
+}
