@@ -9,7 +9,8 @@ namespace Polly.Website
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/lib").Include(
-                        "~/Scripts/typescript.js"));
+                        "~/Scripts/typescript.js",
+                        "~/Scripts/readmore.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
