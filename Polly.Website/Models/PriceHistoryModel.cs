@@ -8,6 +8,7 @@ namespace Polly.Website.Models
 {
     public class PriceHistoriesModel
     {
+        public PriceHistoryModel Current { get; }
         public PriceHistoryModel Lowest { get; }
         public PriceHistoryModel Highest { get; }
         public List<PriceHistoryModel> List { get; }
@@ -15,6 +16,7 @@ namespace Polly.Website.Models
         private PriceHistoriesModel(List<PriceHistoryModel> priceHistoryModels, decimal lowestPrice, decimal highestPrice)
         {
             List = priceHistoryModels;
+            Current = priceHistoryModels.Last();
             Lowest = priceHistoryModels.Last(x =>x .Price == lowestPrice);
             Highest = priceHistoryModels.Last(x =>x .Price == highestPrice);
         }

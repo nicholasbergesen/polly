@@ -97,7 +97,10 @@
                     <tbody>
                         @foreach (var item in Model.PriceHistory.List.OrderByDescending(x => x.TimeStamp))
                         {
-                            <tr class="@Html.RenderWhenTrue(item == Model.PriceHistory.Lowest, "pl_goodDeal") @Html.RenderWhenTrue(item == Model.PriceHistory.Highest, "pl_badDeal")">
+                            <tr class="
+                                @Html.RenderWhenTrue(item == Model.PriceHistory.Current, "pl_currentDeal") 
+                                @Html.RenderWhenTrue(item == Model.PriceHistory.Lowest, "pl_goodDeal") 
+                                @Html.RenderWhenTrue(item == Model.PriceHistory.Highest, "pl_badDeal")">
                                 <td>
                                     @(isMobile ? item.TimeStamp.ToShortDateString() : item.TimeStamp.ToLongDateString())
                                 </td>
