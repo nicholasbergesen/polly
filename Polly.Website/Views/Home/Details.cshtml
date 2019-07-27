@@ -37,11 +37,11 @@
             <div class="pl_deal text-center">
                 @if (Model.Deal.IsGood)
                 {
-                    <h2 class="text-success">GOOD DEAL</h2>
+                    <h2 class="text-success pl_dealH2">GOOD DEAL</h2>
                 }
                 else
                 {
-                    <h2 class="text-danger">BAD DEAL</h2>
+                    <h2 class="text-danger pl_dealH2">BAD DEAL</h2>
                 }
                 <p>
                     Current Price: @Html.DisplayFor(item => item.Deal.CurrentPrice)</p>
@@ -97,9 +97,7 @@
                     <tbody>
                         @foreach (var item in Model.PriceHistory.List.OrderByDescending(x => x.TimeStamp))
                         {
-                            <tr class="
-                                @Html.RenderWhenTrue(item.Price == Model.PriceHistory.Lowest, "text-success") 
-                                @Html.RenderWhenTrue(item.Price == Model.PriceHistory.Highest, "text-danger")">
+                            <tr class="@Html.RenderWhenTrue(item == Model.PriceHistory.Lowest, "pl_goodDeal") @Html.RenderWhenTrue(item == Model.PriceHistory.Highest, "pl_badDeal")">
                                 <td>
                                     @(isMobile ? item.TimeStamp.ToShortDateString() : item.TimeStamp.ToLongDateString())
                                 </td>

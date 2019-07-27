@@ -36,11 +36,9 @@ namespace Polly.Website.Models
 
         public static DealModel Create(PriceHistoriesModel priceHistories)
         {
-            var lowestPrice = priceHistories.Lowest;
-            var highestPrice = priceHistories.Highest;
             var currentRecord = priceHistories.List.Last();
-            var actualDiscount = 100 - ((currentRecord.Price / highestPrice) * 100);
-            return new DealModel(lowestPrice, currentRecord.Price, actualDiscount, currentRecord.DiscountPercentage ?? 0);
+            var actualDiscount = 100 - ((currentRecord.Price / priceHistories.Highest.Price) * 100);
+            return new DealModel(priceHistories.Lowest.Price, currentRecord.Price, actualDiscount, currentRecord.DiscountPercentage ?? 0);
         }
     }
 }

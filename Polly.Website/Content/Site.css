@@ -65,3 +65,18 @@ textarea {
 .pl_priceChart {
     height:200px;
 }
+
+
+.pl_dealH2 {
+    font-weight:bold;
+}
+
+.pl_goodDeal {
+    color: white;
+    background-color: forestgreen !important;
+}
+
+.pl_badDeal {
+    color: white;
+    background-color: darkred !important;
+}

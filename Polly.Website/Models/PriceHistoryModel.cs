@@ -8,15 +8,15 @@ namespace Polly.Website.Models
 {
     public class PriceHistoriesModel
     {
-        public decimal Lowest { get; }
-        public decimal Highest { get; }
+        public PriceHistoryModel Lowest { get; }
+        public PriceHistoryModel Highest { get; }
         public List<PriceHistoryModel> List { get; }
 
-        private PriceHistoriesModel(List<PriceHistoryModel> priceHistoryModels)
+        private PriceHistoriesModel(List<PriceHistoryModel> priceHistoryModels, decimal lowestPrice, decimal highestPrice)
         {
             List = priceHistoryModels;
-            Lowest = priceHistoryModels.Min(x => x.Price);
-            Highest = priceHistoryModels.Max(x => x.Price);
+            Lowest = priceHistoryModels.Last(x =>x .Price == lowestPrice);
+            Highest = priceHistoryModels.Last(x =>x .Price == highestPrice);
         }
 
         public static PriceHistoriesModel Create(ICollection<PriceHistory> priceHistories)
@@ -25,7 +25,9 @@ namespace Polly.Website.Models
                 .Select(item => new PriceHistoryModel(item))
                 .ToList();
 
-            return new PriceHistoriesModel(records);
+            var lowestPrice = records.Min(x => x.Price);
+            var highestPrice = records.Max(x => x.Price);
+            return new PriceHistoriesModel(records, lowestPrice, highestPrice);
         }
     }
 
