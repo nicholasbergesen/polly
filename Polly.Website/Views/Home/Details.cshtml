@@ -16,17 +16,12 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-5 col-xs-12">
-            @*DEAL OR NO DEAL*@
-        </div>
-    </div>
-    <div class="row">
         <div class="col-md-3 col-xs-12">
             <img class="img-responsive" src="@Model.Image" />
         </div>
         @if (!isMobile)
         {
-            <div class="col-md-9 col-xs-12">
+            <div class="col-md-6 col-xs-12">
                 <h4>Description:</h4>
                 @if (string.IsNullOrEmpty(Model.Description))
                 {
@@ -38,8 +33,34 @@
                 }
             </div>
         }
+        <div class="col-md-3 col-xs-12">
+            <div class="pl_deal text-center">
+                @if (Model.Deal.IsGood)
+                {
+                    <h2 class="text-success">GOOD DEAL</h2>
+                }
+                else
+                {
+                    <h2 class="text-danger">BAD DEAL</h2>
+                }
+                <p>
+                    Current Price: @Html.DisplayFor(item => item.Deal.CurrentPrice)</p>
+                <p>
+                    Lowest Price: @Html.DisplayFor(item => item.Deal.LowestPrice)</p>
+                <p>
+                    Actual Discount: @Html.DisplayFor(item => item.Deal.ActualDiscount)
+                    <br/><small><b>(relative to highest price)</b></small>
+                </p>
+                <p>
+                    Claimed Discount: @Html.DisplayFor(item => item.Deal.ClaimedDiscount)
+                    <br /><small><b>(relative to highest original price)</b></small>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-12 col-xs-12">
-            @{Html.RenderPartial("_PriceHistoryGraph", Model.PriceHistory); }
+            @{Html.RenderPartial("_PriceHistoryGraph", Model.PriceHistory.List); }
         </div>
         <div class="col-md-12 col-xs-12">
             <h4>Price history</h4>
@@ -74,9 +95,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.PriceHistory.OrderByDescending(x => x.TimeStamp))
+                        @foreach (var item in Model.PriceHistory.List.OrderByDescending(x => x.TimeStamp))
                         {
-                            <tr>
+                            <tr class="
+                                @Html.RenderWhenTrue(item.Price == Model.PriceHistory.Lowest, "text-success") 
+                                @Html.RenderWhenTrue(item.Price == Model.PriceHistory.Highest, "text-danger")">
                                 <td>
                                     @(isMobile ? item.TimeStamp.ToShortDateString() : item.TimeStamp.ToLongDateString())
                                 </td>
