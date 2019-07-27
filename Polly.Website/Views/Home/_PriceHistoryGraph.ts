@@ -6,7 +6,6 @@
 
             var ctx = <HTMLCanvasElement>document.getElementById("myChart");
 
-            //TODO: RENDER SMALLER VERSION WHEN SMARTPHONE
             var myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
