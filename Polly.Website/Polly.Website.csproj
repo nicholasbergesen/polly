@@ -141,10 +141,12 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\PercentageDataTypeAttribute.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\BrowserHelper.cs" />
     <Compile Include="Models\DiscountProduct.cs" />
     <Compile Include="Models\PriceHistoryModel.cs" />
     <Compile Include="Models\ProductModel.cs" />

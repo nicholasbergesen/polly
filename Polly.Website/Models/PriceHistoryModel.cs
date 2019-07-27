@@ -16,10 +16,14 @@ namespace Polly.Website.Models
 
         [DataType(DataType.Currency)]
         public decimal? DiscountAmount { get; set; }
+
+        [PercentageDataType]
         public decimal? DiscountPercentage { get; set; }
 
         [DataType(DataType.Currency)]
         public decimal? PriceChangeAmount { get; set; }
+
+        [PercentageDataType]
         public decimal? PriceChangePercent { get; set; }
         public DateTime TimeStamp { get; private set; }
 
