@@ -61,3 +61,7 @@ textarea {
 .pl_readmore {
     overflow-y: hidden;
 }
+
+.pl_priceChart {
+    height:200px;
+}
