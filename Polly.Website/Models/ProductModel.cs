@@ -38,7 +38,6 @@ namespace Polly.Website.Models
 
             PriceHistory = product.PriceHistory
                 .Select(item => new PriceHistoryModel(item))
-                .OrderByDescending(x => x.TimeStamp)
                 .ToList();
         }
     }
