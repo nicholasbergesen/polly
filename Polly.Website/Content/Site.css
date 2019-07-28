@@ -72,7 +72,7 @@ textarea {
 
 .pl_goodDeal {
     color: white;
-    background-color: forestgreen !important;
+    background-color: mediumseagreen !important;
 }
 
 .pl_badDeal {
@@ -82,5 +82,9 @@ textarea {
 
 .pl_currentDeal {
     color: white;
-    background-color: dodgerblue !important;
+    background-color: lightskyblue !important;
+}
+
+.pl_bold{
+    font-weight:bold;
 }
