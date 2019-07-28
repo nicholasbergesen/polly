@@ -65,3 +65,26 @@ textarea {
 .pl_priceChart {
     height:200px;
 }
+
+.pl_dealH2 {
+    font-weight:bold;
+}
+
+.pl_goodDeal {
+    color: white;
+    background-color: mediumseagreen !important;
+}
+
+.pl_badDeal {
+    color: white;
+    background-color: darkred !important;
+}
+
+.pl_currentDeal {
+    color: white;
+    background-color: lightskyblue !important;
+}
+
+.pl_bold{
+    font-weight:bold;
+}

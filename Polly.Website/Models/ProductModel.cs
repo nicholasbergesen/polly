@@ -7,24 +7,27 @@ namespace Polly.Website.Models
 {
     public class ProductModel
     {
-        public long Id { get; set; }
-        public string UniqueIdentifier { get; set; }
+        public long Id { get; }
+        public string UniqueIdentifier { get; }
 
         [DataType(DataType.Url)]
-        public string Url { get; set; }
-        public string LastChecked { get; set; }
-        public string Title { get; set; }
+        public string Url { get; }
+        public string LastChecked { get; }
+        public string Title { get; }
 
         [DataType(DataType.Html)]
-        public string Description { get; set; }
-        public string Breadcrumb { get; set; }
-        public string Category { get; set; }
+        public string Description { get; }
+        public string Breadcrumb { get; }
+        public string Category { get;  }
 
         [DataType(DataType.ImageUrl)]
-        public string Image { get; set; }
-        public List<PriceHistoryModel> PriceHistory { get; set; }
+        public string Image { get; }
 
-        public ProductModel(Product product)
+        public PriceHistoriesModel PriceHistory { get; private set; }
+
+        public DealModel Deal { get; private set; }
+
+        private ProductModel(Product product)
         {
             Id = product.Id;
             UniqueIdentifier = product.UniqueIdentifier;
@@ -35,10 +38,15 @@ namespace Polly.Website.Models
             Breadcrumb = product.Breadcrumb;
             Category = product.Category;
             Image = product.Image;
+        }
 
-            PriceHistory = product.PriceHistory
-                .Select(item => new PriceHistoryModel(item))
-                .ToList();
+        public static ProductModel Create(Product product)
+        {
+            var model = new ProductModel(product);
+            var priceHistory = PriceHistoriesModel.Create(product.PriceHistory);
+            model.PriceHistory = priceHistory;
+            model.Deal = DealModel.Create(priceHistory);
+            return model;
         }
     }
 }

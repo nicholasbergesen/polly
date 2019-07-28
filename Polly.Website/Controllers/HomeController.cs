@@ -106,7 +106,6 @@ namespace Polly.Website.Controllers
                 return View(products);
         }
 
-        // GET: Products/Details/5
         public ActionResult Details(long? id)
         {
             if (id == null)
@@ -125,7 +124,7 @@ namespace Polly.Website.Controllers
                 return HttpNotFound();
             }
 
-            return View(new ProductModel(product));
+            return View(ProductModel.Create(product));
         }
 
         //GET: Products/Create

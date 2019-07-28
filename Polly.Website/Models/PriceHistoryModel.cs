@@ -1,9 +1,38 @@
 ﻿using Polly.Data;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Polly.Website.Models
 {
+    public class PriceHistoriesModel
+    {
+        public PriceHistoryModel Current { get; }
+        public PriceHistoryModel Lowest { get; }
+        public PriceHistoryModel Highest { get; }
+        public List<PriceHistoryModel> List { get; }
+
+        private PriceHistoriesModel(List<PriceHistoryModel> priceHistoryModels, decimal lowestPrice, decimal highestPrice)
+        {
+            List = priceHistoryModels;
+            Current = priceHistoryModels.Last();
+            Lowest = priceHistoryModels.Last(x => x.Price == lowestPrice);
+            Highest = priceHistoryModels.Last(x => x.Price == highestPrice);
+        }
+
+        public static PriceHistoriesModel Create(ICollection<PriceHistory> priceHistories)
+        {
+            var records = priceHistories
+                .Select(item => new PriceHistoryModel(item))
+                .ToList();
+
+            var lowestPrice = records.Min(x => x.Price);
+            var highestPrice = records.Max(x => x.Price);
+            return new PriceHistoriesModel(records, lowestPrice, highestPrice);
+        }
+    }
+
     public class PriceHistoryModel
     {
         public long Id { get; set; }
