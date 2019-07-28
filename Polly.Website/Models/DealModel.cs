@@ -27,16 +27,16 @@ namespace Polly.Website.Models
         {
             LowestPrice = lowestPrice;
             CurrentPrice = currentPrice;
-
             ActualDiscount = actualDiscount;
             ClaimedDiscount = claimedDiscount;
-
             IsGood = lowestPrice == currentPrice || actualDiscount > claimedDiscount;
         }
 
         public static DealModel Create(PriceHistoriesModel priceHistories)
         {
+            var threshold = DateTime.Today.AddDays(-31);
             var currentRecord = priceHistories.List.Last();
+            var records = priceHistories.List.Where(item => item.TimeStamp >= threshold && item.Price != currentRecord.Price);
             var actualDiscount = 100 - ((currentRecord.Price / priceHistories.Highest.Price) * 100);
             return new DealModel(priceHistories.Lowest.Price, currentRecord.Price, actualDiscount, currentRecord.DiscountPercentage ?? 0);
         }
