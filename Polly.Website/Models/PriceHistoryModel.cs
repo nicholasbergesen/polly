@@ -17,8 +17,8 @@ namespace Polly.Website.Models
         {
             List = priceHistoryModels;
             Current = priceHistoryModels.Last();
-            Lowest = priceHistoryModels.Last(x =>x .Price == lowestPrice);
-            Highest = priceHistoryModels.Last(x =>x .Price == highestPrice);
+            Lowest = priceHistoryModels.Last(x => x.Price == lowestPrice);
+            Highest = priceHistoryModels.Last(x => x.Price == highestPrice);
         }
 
         public static PriceHistoriesModel Create(ICollection<PriceHistory> priceHistories)
