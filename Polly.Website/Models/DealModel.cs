@@ -8,7 +8,7 @@ namespace Polly.Website.Models
 {
     public class DealModel
     {
-        public const int DealThreshold = 3;    // Months
+        public const int DealThreshold = 6;    // Months
 
         public DealType Type { get; }
 
@@ -45,7 +45,7 @@ namespace Polly.Website.Models
             var currentPriceRecord = priceHistories.Current;
             var threshold = DateTime.Today.AddMonths(-DealThreshold);
 
-            var recentPrices = priceHistories.List.Where(item => item.TimeStamp >= threshold && item.Price != currentPriceRecord.Price);
+            var recentPrices = priceHistories.List.Where(item => item.TimeStamp >= threshold);
             var recentLow = recentPrices.Min(m => m.Price);
             var recentHigh = recentPrices.Max(m => m.Price);
             var recentAverage = recentPrices.Average(m => m.Price);
@@ -62,18 +62,6 @@ namespace Polly.Website.Models
             {
                 return DealType.Worst;
             }
-            if (GetPriceMarginRange(recentHigh).Contains(currentPrice))
-            {
-                return DealType.Bad;
-            }
-            if (GetPriceMarginRange(recentAverage).Contains(currentPrice))
-            {
-                return DealType.Average;
-            }
-            if (GetPriceMarginRange(recentAverage).Contains(currentPrice))
-            {
-                return DealType.Good;
-            }
             if (recentLow == currentPrice)
             {
                 return DealType.Best;
@@ -86,8 +74,20 @@ namespace Polly.Website.Models
             {
                 return DealType.AboveAverage;
             }
+            if (GetPriceMarginRange(recentHigh).Contains(currentPrice))
+            {
+                return DealType.Bad;
+            }
+            if (GetPriceMarginRange(recentAverage).Contains(currentPrice))
+            {
+                return DealType.Average;
+            }
+            if (GetPriceMarginRange(recentLow).Contains(currentPrice))
+            {
+                return DealType.Good;
+            }
 
-            throw new Exception($"Invalid {nameof(DealType)}");
+            return DealType.Unknown;
         }
 
         public string GetDealTypeClass()
@@ -106,7 +106,7 @@ namespace Polly.Website.Models
                     return "text-success";
             }
 
-            throw new Exception($"Invalid {nameof(DealType)}");
+            return string.Empty;
         }
 
         public string GetDealTypeText()
@@ -125,6 +125,7 @@ namespace Polly.Website.Models
 
     public enum DealType
     {
+        Unknown,
         Worst,
         Bad,
         [Description("Below Average")]

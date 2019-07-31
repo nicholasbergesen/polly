@@ -38,8 +38,9 @@
                 <h2 class="pl_dealH2 @Model.Deal.GetDealTypeClass()">@Model.Deal.GetDealTypeText()</h2>
 
                 <div class="@Html.RenderWhenTrue(Model.Deal.LowestPrice == Model.Deal.CurrentPrice, "pl_bold")">
-                    <p>Current Price: @Html.DisplayFor(item => item.Deal.CurrentPrice)</p>
                     <p>Lowest Price: @Html.DisplayFor(item => item.Deal.LowestPrice)</p>
+                    <p class="pl_bold">Current Price: @Html.DisplayFor(item => item.Deal.CurrentPrice)</p>
+                    <p>Highest Price: @Html.DisplayFor(item => item.Deal.HighestPrice)</p>
                 </div>
                 <p>
                     Actual Discount: @Html.DisplayFor(item => item.Deal.ActualDiscount)
