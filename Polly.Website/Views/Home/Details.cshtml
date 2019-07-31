@@ -35,14 +35,7 @@
         }
         <div class="col-md-3 col-xs-12 well well-lg">
             <div class="pl_deal text-center">
-                @if (Model.Deal.IsGood)
-                {
-                    <h2 class="text-success pl_dealH2">GOOD DEAL</h2>
-                }
-                else
-                {
-                    <h2 class="text-danger pl_dealH2">BAD DEAL</h2>
-                }
+                <h2 class="pl_dealH2 @Model.Deal.GetDealTypeClass()">@Model.Deal.GetDealTypeText()</h2>
 
                 <div class="@Html.RenderWhenTrue(Model.Deal.LowestPrice == Model.Deal.CurrentPrice, "pl_bold")">
                     <p>Current Price: @Html.DisplayFor(item => item.Deal.CurrentPrice)</p>
@@ -56,7 +49,7 @@
                     Claimed Discount: @Html.DisplayFor(item => item.Deal.ClaimedDiscount)
                     <br /><small class="pl_bold">(relative to highest original price)</small>
                 </p>
-                <sub>Note: These values are calculated over the past 31 days</sub>
+                <sub class="pl_bold">Note: These values are calculated over the past @Model.Deal.Threshold</sub>
             </div>
         </div>
     </div>
