@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Polly.Data;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Web;
 
 namespace Polly.Website.Models
 {
@@ -17,6 +18,7 @@ namespace Polly.Website.Models
 
         [DataType(DataType.Currency)]
         public decimal CurrentPrice { get; }
+
         [DataType(DataType.Currency)]
         public decimal HighestPrice { get; }
 
@@ -25,6 +27,7 @@ namespace Polly.Website.Models
 
         [PercentageDataType]
         public decimal ClaimedDiscount { get; }
+
 
         public string Threshold { get; }
 
