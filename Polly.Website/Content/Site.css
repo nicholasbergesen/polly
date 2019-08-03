@@ -87,4 +87,13 @@ textarea {
 
 .pl_bold{
     font-weight:bold;
+
+}
+
+.pl_inlineSearch {
+    max-width:160px;
+}
+
+.pl_inlineSearchForm {
+    margin-top: 9px;
 }

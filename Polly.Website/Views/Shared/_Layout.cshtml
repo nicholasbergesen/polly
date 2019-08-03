@@ -29,6 +29,17 @@
                     <span class="icon-bar"></span>
                 </button>
                 @Html.ActionLink("Priceboar", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @id = "inline-search-form", @class = "pl_inlineSearchForm"}))
+                {
+                    <div class="input-group">
+                        <input type="text" class="form-control pl_inlineSearch pull-right" placeholder="PLID12345678" id="SearchString" name="SearchString" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" onclick="document.getElementById('inline-search-form').submit();">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                }
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
