@@ -4,11 +4,9 @@ namespace Polly.Domain
 {
     public abstract class MapperBase
     {
-        protected Ilogger _logger;
 
-        public MapperBase(Ilogger logger)
+        public MapperBase()
         {
-            _logger = logger;
         }
 
         public bool TryDeserialize<T>(string jsonString, out T jsonObject)
@@ -19,8 +17,7 @@ namespace Polly.Domain
             }
             catch (JsonException jsonException)
             {
-                _logger.Log(jsonException.Message);
-                jsonObject = default(T);
+                jsonObject = default;
                 return false;
             }
 

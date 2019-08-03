@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Polly.Data;
-using Polly.Website.Controllers.Json;
+using Polly.Domain;
 
 namespace Polly.Website.Controllers
 {
@@ -19,7 +18,13 @@ namespace Polly.Website.Controllers
         private static Dictionary<string, ApiProd> productPrices = new Dictionary<string, ApiProd>();
         private static Dictionary<string, ApiPriceHistory> productPriceHistory = new Dictionary<string, ApiPriceHistory>();
 
-        private PollyDbContext db = new PollyDbContext();
+        private readonly IProductRepository _productRepository;
+        private readonly IDownloader _downloader;
+        public ProductsController(IProductRepository productRepository, IDownloader downloader)
+        {
+            _productRepository = productRepository;
+            _downloader = downloader;
+        }
 
         [Route("{productId}/{currentPrice}")]
         public async Task<HttpResponseMessage> GetLastProductPrice(string productId, decimal currentPrice)
@@ -29,11 +34,7 @@ namespace Polly.Website.Controllers
             {
                 var thirtyoneDays = DateTime.Today.Subtract(TimeSpan.FromDays(31));
 
-                var productdb = await (from product in db.Product
-                                       where product.UniqueIdentifier == productId
-                                       select product)
-                                     .Include(x => x.PriceHistory)
-                                     .FirstOrDefaultAsync();
+                var productdb = await _productRepository.FetchByUniqueIdAsync(productId);
 
                 if (productdb != null)
                 {
@@ -56,17 +57,10 @@ namespace Polly.Website.Controllers
                         returnPrice.Status = Status.RequiresUpdate;
 
                         await Task.Delay(100);
+
                         var downloadUrl = BuildDownloadUrl(productId);
-                        using (HttpClient httpClient = new HttpClient())
-                        {
-                            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");
-                            var downloadresponse = await httpClient.GetAsync(downloadUrl);
-                            if (downloadresponse.IsSuccessStatusCode)
-                            {
-                                var html = await downloadresponse.Content.ReadAsStringAsync();
-                                await SaveProductFromJson(html);
-                            }
-                        }
+                        var html = await _downloader.DownloadAsync(downloadUrl);
+                        await SaveProductFromJson(html);
                     }
 
                     productPrices.Add(productId, returnPrice);
@@ -74,17 +68,9 @@ namespace Polly.Website.Controllers
                 else //add product if it doesn't exist
                 {
                     var downloadUrl = BuildDownloadUrl(productId);
-                    using (HttpClient httpClient = new HttpClient())
-                    {
-                        httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");
-                        var downloadresponse = await httpClient.GetAsync(downloadUrl);
-                        if (downloadresponse.IsSuccessStatusCode)
-                        {
-                            var html = await downloadresponse.Content.ReadAsStringAsync();
-                            var prod = await SaveProductFromJson(html);
-                            returnPrice = new ApiProd() { Price = 0, Url = "https://www.priceboar.com/Home/Details/" + prod.Id, Status = Status.RequiresUpdate };
-                        }
-                    }
+                    var html = await _downloader.DownloadAsync(downloadUrl);
+                    var prod = await SaveProductFromJson(html);
+                    returnPrice = new ApiProd() { Price = 0, Url = "https://www.priceboar.com/Home/Details/" + prod.Id, Status = Status.RequiresUpdate };
                 }
             }
 
@@ -104,11 +90,7 @@ namespace Polly.Website.Controllers
             if (productPriceHistory.TryGetValue(productId, out ApiPriceHistory apiPriceHistory))
                 return apiPriceHistory;
 
-            var productdb = await (from product in db.Product
-                                   where product.UniqueIdentifier == productId
-                                   select product)
-                                     .Include(x => x.PriceHistory)
-                                     .FirstOrDefaultAsync();
+            var productdb = await _productRepository.FetchByUniqueIdAsync(productId);
 
             ApiPriceHistory prices = new ApiPriceHistory();
 
@@ -219,15 +201,6 @@ namespace Polly.Website.Controllers
 
             TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
             return await SaveProductFromJsonObject(jsonObject);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

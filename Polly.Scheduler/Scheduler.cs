@@ -12,7 +12,7 @@ namespace Polly.SchedulerConsole
 {
     public abstract class Scheduler
     {
-        private Thread _mainDownloadThread;
+        private readonly Thread _mainDownloadThread;
         protected Website Website;
 
         public event EventHandler OnStart;
@@ -46,7 +46,7 @@ namespace Polly.SchedulerConsole
         {
             try
             {
-                Robots robots = new Robots(Website.Domain, Website.UserAgent, enableErrorCorrection: true);
+                Robots robots = new Robots(Website.Domain, Website.UserAgent);
                 robots.Load();
                 robots.OnProgress += Robots_OnProgress;
                 var websiteLinksToDownload = await robots.GetSitemapLinksAsync();

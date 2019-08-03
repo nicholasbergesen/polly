@@ -8,7 +8,6 @@ namespace Polly.ConsoleNet
     public class QueueTakealotLinks : AsyncWorkerBase
     {
         ITakealotScheduler _takealotScheduler;
-        //Website _websiteContext;
 
         public QueueTakealotLinks(ITakealotScheduler takealotScheduler)
         {

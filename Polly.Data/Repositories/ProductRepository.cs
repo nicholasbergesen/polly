@@ -21,6 +21,7 @@ namespace Polly.Data
             using (PollyDbContext context = new PollyDbContext())
             {
                 return await context.Product
+                    .Include(x => x.PriceHistory)
                     .FirstOrDefaultAsync(x => x.UniqueIdentifier == uniqueIdentifier);
             }
         }

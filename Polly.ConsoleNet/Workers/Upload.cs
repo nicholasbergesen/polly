@@ -70,7 +70,7 @@ namespace Polly.ConsoleNet
                                 continue;
                             }
                             TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
-                            var result = await SaveProductFromJsonObject(jsonObject);
+                            await SaveProductFromJsonObject(jsonObject);
 
                             lock (_lock)
                             {

@@ -1,4 +1,5 @@
 ﻿using Polly.Data;
+using System;
 
 namespace Polly.Domain
 {
@@ -8,8 +9,8 @@ namespace Polly.Domain
         //IPriceHistoryRepository _priceHistoryRepository;
         //IProductRepository _productRepository;
 
-        public TakelaotMapper(Ilogger logger)
-            :base(logger)
+        public TakelaotMapper()
+            :base()
         {
         }
 
@@ -28,7 +29,7 @@ namespace Polly.Domain
             //if (takealotDTO.gallery.images.Any())
             //    existingProduct.Image = takealotDTO.gallery.images[0].Replace("{size}", "pdpxl");
             existingProduct.Url = takealotDTO.desktop_href;
-            existingProduct.LastChecked = takealotDTO.meta.date_retrieved;
+            existingProduct.LastChecked = DateTime.Now;
 
             MapToPriceHistory(takealotDTO, new PriceHistory());
 
