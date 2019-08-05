@@ -6,16 +6,6 @@ namespace Polly.Data
 {
     public class ProductRepository : IProductRepository
     {
-        public PriceHistory FetchProductLastPrice(long id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Product FetchProductOrDefault(string prodid)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<Product> FetchFullProductByUniqueIdAsync(string uniqueIdentifier)
         {
             using (PollyDbContext context = new PollyDbContext())
@@ -30,10 +20,18 @@ namespace Polly.Data
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                if (product.Id == default(long))
+                if (product.Id == default)
                     context.Product.Add(product);
                 else
                     context.Entry(product).State = EntityState.Modified;
+
+                foreach (PriceHistory priceHistory in product.PriceHistory)
+                {
+                    if (priceHistory.Id == default)
+                        context.PriceHistory.Add(priceHistory);
+                    else
+                        context.Entry(priceHistory).State = EntityState.Unchanged;
+                }
 
                 await context.SaveChangesAsync();
             }

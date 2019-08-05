@@ -8,6 +8,5 @@ namespace Polly.Data
     {
         Task<PriceHistory> FetchLastPriceForProductId(long productId);
         Task SaveAsync(PriceHistory priceHistory);
-        Task SaveAllAsync(IEnumerable<PriceHistory> priceHistory);
     }
 }

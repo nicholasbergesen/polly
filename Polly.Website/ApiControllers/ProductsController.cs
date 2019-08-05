@@ -44,8 +44,6 @@ namespace Polly.Website.Controllers
                     var lastPrice = productdb.PriceHistory.Last();
                     if(lastPrice.Price != currentPrice)
                     {
-                        returnPrice.Status = Status.RequiresUpdate;
-
                         //WARNING!
                         //this is very heavy, try sending more data from the client to prevent needing to do a web call on the server.
                         var downloadUrl = BuildDownloadUrl(productId);

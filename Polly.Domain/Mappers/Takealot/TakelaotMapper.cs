@@ -22,8 +22,7 @@ namespace Polly.Domain
             {
                 var product = await MapInternal(takealotJson);
 
-                await Task.WhenAll(_productRepository.SaveAsync(product),
-                    _priceHistoryRepository.SaveAllAsync(product.PriceHistory));
+                await _productRepository.SaveAsync(product);
 
                 return product;
             }

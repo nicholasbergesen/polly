@@ -19,12 +19,6 @@ namespace Polly.Data
             }
         }
 
-        public async Task SaveAllAsync(IEnumerable<PriceHistory> priceHistory)
-        {
-            foreach (PriceHistory priceHistoryItem in priceHistory)
-                await SaveAsync(priceHistoryItem);
-        }
-
         public async Task SaveAsync(PriceHistory priceHistory)
         {
             using (PollyDbContext context = new PollyDbContext())
@@ -32,7 +26,7 @@ namespace Polly.Data
                 if (priceHistory.Id == default)
                     context.PriceHistory.Add(priceHistory);
                 else
-                    context.Entry(priceHistory).State = EntityState.Modified;
+                    context.Entry(priceHistory).State = EntityState.Unchanged; //should never modify price history
 
                 await context.SaveChangesAsync();
             }
