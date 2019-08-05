@@ -37,7 +37,7 @@ namespace Polly.Domain
             if (price >= originalPrice)//prevent bad data
                 originalPrice = null;
 
-            var product = await _productRepository.FetchByUniqueIdAsync(uniqueIdentifier);
+            var product = await _productRepository.FetchFullProductByUniqueIdAsync(uniqueIdentifier);
             bool isNew = product == null;
             HashSet<int> categoryIds = new HashSet<int>();
 

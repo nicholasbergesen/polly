@@ -20,10 +20,13 @@ namespace Polly.Website.Controllers
 
         private readonly IProductRepository _productRepository;
         private readonly IDownloader _downloader;
-        public ProductsController(IProductRepository productRepository, IDownloader downloader)
+        private readonly ITakealotMapper _takealotMapper;
+
+        public ProductsController(IProductRepository productRepository, IDownloader downloader, ITakealotMapper takealotMapper)
         {
             _productRepository = productRepository;
             _downloader = downloader;
+            _takealotMapper = takealotMapper;
         }
 
         [Route("{productId}/{currentPrice}")]
@@ -34,34 +37,43 @@ namespace Polly.Website.Controllers
             {
                 var thirtyoneDays = DateTime.Today.Subtract(TimeSpan.FromDays(31));
 
-                var productdb = await _productRepository.FetchByUniqueIdAsync(productId);
+                var productdb = await _productRepository.FetchFullProductByUniqueIdAsync(productId);
 
                 if (productdb != null)
                 {
-                    var recentPrices = productdb.PriceHistory.Where(x => thirtyoneDays < x.TimeStamp && x.Price != currentPrice);
-                    //1000% increase represents a 90% discount, anything more is considered junk data
-                    if (!recentPrices.Any())
-                        returnPrice = new ApiProd() { Price = 0, Url = "https://www.priceboar.com/Home/Details/" + productdb.Id, Status = Status.NoPrices };
-                    else if (recentPrices.Any(x => x.Price < (currentPrice * 10)))
-                        returnPrice = new ApiProd() { Price = recentPrices.Where(x => x.Price < (currentPrice * 10)).Max(x => x.Price),
-                            Url = "https://www.priceboar.com/Home/Details/" + productdb.Id, Status = Status.HasValidPrice };
-                    else
-                        returnPrice = new ApiProd() { Price = recentPrices.Max(x => x.Price),
-                            Url = "https://www.priceboar.com/Home/Details/" + productdb.Id,
-                            Status = Status.HasValidPrice
-                        };
-
                     var lastPrice = productdb.PriceHistory.Last();
                     if(lastPrice.Price != currentPrice)
                     {
                         returnPrice.Status = Status.RequiresUpdate;
 
-                        await Task.Delay(100);
-
+                        //WARNING!
+                        //this is very heavy, try sending more data from the client to prevent needing to do a web call on the server.
                         var downloadUrl = BuildDownloadUrl(productId);
                         var html = await _downloader.DownloadAsync(downloadUrl);
-                        await SaveProductFromJson(html);
+                        await _takealotMapper.MapAndSaveAsync(html);
+
+                        await Task.Delay(100);//not to spam takealot
                     }
+
+                    var recentPrices = productdb.PriceHistory.Where(x => thirtyoneDays < x.TimeStamp && x.Price != currentPrice);
+
+                    //1000% increase represents a 90% discount, anything more is considered junk data
+                    if (!recentPrices.Any())
+                        returnPrice = new ApiProd() { Price = 0, Url = "https://www.priceboar.com/Home/Details/" + productdb.Id, Status = Status.NoPrices };
+                    else if (recentPrices.Any(x => x.Price < (currentPrice * 10)))
+                        returnPrice = new ApiProd()
+                        {
+                            Price = recentPrices.Where(x => x.Price < (currentPrice * 10)).Max(x => x.Price),
+                            Url = "https://www.priceboar.com/Home/Details/" + productdb.Id,
+                            Status = Status.HasValidPrice
+                        };
+                    else
+                        returnPrice = new ApiProd()
+                        {
+                            Price = recentPrices.Max(x => x.Price),
+                            Url = "https://www.priceboar.com/Home/Details/" + productdb.Id,
+                            Status = Status.HasValidPrice
+                        };
 
                     productPrices.Add(productId, returnPrice);
                 }
@@ -69,8 +81,8 @@ namespace Polly.Website.Controllers
                 {
                     var downloadUrl = BuildDownloadUrl(productId);
                     var html = await _downloader.DownloadAsync(downloadUrl);
-                    var prod = await SaveProductFromJson(html);
-                    returnPrice = new ApiProd() { Price = 0, Url = "https://www.priceboar.com/Home/Details/" + prod.Id, Status = Status.RequiresUpdate };
+                    var productInternal = await _takealotMapper.MapAndSaveAsync(html);
+                    returnPrice = new ApiProd() { Price = 0, Url = "https://www.priceboar.com/Home/Details/" + productInternal.Id, Status = Status.RequiresUpdate };
                 }
             }
 
@@ -90,7 +102,7 @@ namespace Polly.Website.Controllers
             if (productPriceHistory.TryGetValue(productId, out ApiPriceHistory apiPriceHistory))
                 return apiPriceHistory;
 
-            var productdb = await _productRepository.FetchByUniqueIdAsync(productId);
+            var productdb = await _productRepository.FetchFullProductByUniqueIdAsync(productId);
 
             ApiPriceHistory prices = new ApiPriceHistory();
 
@@ -110,7 +122,8 @@ namespace Polly.Website.Controllers
         public async Task<HttpResponseMessage> SendTakelotJson([FromUri] string key, [FromBody] TakealotJson data)
         {
             if (key == "19c45699-a11a-43d1-a2fd-07feea88afdf")
-                await SaveProductFromJsonObject(data);
+                //await SaveProductFromJsonObject(data);
+                return null;
             else
                 throw new HttpResponseException(HttpStatusCode.NotFound);
 
@@ -150,57 +163,6 @@ namespace Polly.Website.Controllers
         protected string BuildDownloadUrl(string productId)
         {
             return string.Concat(TakealotApi, "/", productId, "?platform=desktop");
-        }
-
-        private async Task<Data.Product> SaveProductFromJsonObject(TakealotJson jsonObject)
-        {
-            bool hasPurchasePrice = !jsonObject.event_data.documents.product.purchase_price.HasValue;
-            if (hasPurchasePrice)
-                return null;
-
-            decimal price = jsonObject.event_data.documents.product.purchase_price.Value;
-            decimal? originalPrice = jsonObject.event_data.documents.product.original_price;
-
-            if (price >= originalPrice)//prevent bad data
-                originalPrice = null;
-
-            Data.Product product = DataAccess.FetchProductOrDefault(jsonObject.data_layer.prodid);
-            if (product != null)
-            {
-                var lastPrice = await DataAccess.FetchProductLastPrice(product.Id);
-                if (lastPrice.Price == price)
-                    return null;
-                await DataAccess.SaveAsync(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
-                return null;
-            }
-
-            product = new Data.Product()
-            {
-                UniqueIdentifier = jsonObject.data_layer.prodid
-            };
-            product.PriceHistory.Add(new PriceHistory(null, price, originalPrice) { ProductId = product.Id });
-
-            product.Breadcrumb = jsonObject.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
-            product.Title = jsonObject.title;
-            product.Description = jsonObject.description?.html;
-            product.Category = jsonObject.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
-            if (jsonObject.gallery.images.Any())
-                product.Image = jsonObject.gallery.images[0].Replace("{size}", "pdpxl");
-            product.Url = jsonObject.desktop_href;
-            product.LastChecked = jsonObject.meta.date_retrieved;
-
-            await DataAccess.SaveAsync(product);
-
-            return product;
-        }
-
-        private async Task<Data.Product> SaveProductFromJson(string httpResponse)
-        {
-            if (string.IsNullOrEmpty(httpResponse))
-                return null;
-
-            TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
-            return await SaveProductFromJsonObject(jsonObject);
         }
     }
 }

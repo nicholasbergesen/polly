@@ -1,11 +1,15 @@
 ﻿using Polly.Data;
+using System.Threading.Tasks;
 
 namespace Polly.Domain
 {
-    public interface ITakealotMapper
+    public interface IMapper
     {
-        bool IsValid(TakealotJson takaleotDTO);
-        void MapToProduct(TakealotJson sourceObject, Data.Product product);
-        void MapToPriceHistory(TakealotJson takealotDTO, PriceHistory priceHistory);
+        Task<Data.Product> MapAndSaveAsync(string dataString);
     }
+
+    public interface ITakealotMapper : IMapper
+    {
+    }
+
 }

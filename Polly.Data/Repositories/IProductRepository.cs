@@ -6,7 +6,7 @@ namespace Polly.Data
     {
         Product FetchProductOrDefault(string prodid);
         PriceHistory FetchProductLastPrice(long id);
-        Task<Product> FetchByUniqueIdAsync(string uniqueIdentifier);
+        Task<Product> FetchFullProductByUniqueIdAsync(string uniqueIdentifier);
         Task SaveAsync(Product product);
     }
 }

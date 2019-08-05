@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Linq;
 using System.Data.Entity;
+using System.Collections.Generic;
 
 namespace Polly.Data
 {
@@ -18,11 +19,17 @@ namespace Polly.Data
             }
         }
 
+        public async Task SaveAllAsync(IEnumerable<PriceHistory> priceHistory)
+        {
+            foreach (PriceHistory priceHistoryItem in priceHistory)
+                await SaveAsync(priceHistoryItem);
+        }
+
         public async Task SaveAsync(PriceHistory priceHistory)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                if (priceHistory.Id == default(long))
+                if (priceHistory.Id == default)
                     context.PriceHistory.Add(priceHistory);
                 else
                     context.Entry(priceHistory).State = EntityState.Modified;

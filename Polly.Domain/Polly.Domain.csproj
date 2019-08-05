@@ -56,7 +56,7 @@
     <Compile Include="Download\TakealotDownloader.cs" />
     <Compile Include="Ilogger.cs" />
     <Compile Include="Mappers\Loot\LootMapper.cs" />
-    <Compile Include="Mappers\MapperBase.cs" />
+    <Compile Include="Mappers\JsonMapperBase.cs" />
     <Compile Include="Mappers\Takealot\ITakealotMapper.cs" />
     <Compile Include="Mappers\Takealot\Json\TakealotJson1-8-1.cs" />
     <Compile Include="Mappers\Takealot\TakelaotMapper.cs" />

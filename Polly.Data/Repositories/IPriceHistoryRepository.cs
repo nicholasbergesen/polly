@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Polly.Data
@@ -7,5 +8,6 @@ namespace Polly.Data
     {
         Task<PriceHistory> FetchLastPriceForProductId(long productId);
         Task SaveAsync(PriceHistory priceHistory);
+        Task SaveAllAsync(IEnumerable<PriceHistory> priceHistory);
     }
 }

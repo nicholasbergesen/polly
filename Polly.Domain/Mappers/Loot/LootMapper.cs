@@ -4,30 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Polly.Domain.Mappers.Loot
+namespace Polly.Domain
 {
-    class LootMapper
+    public class LootMapper
     {
-        public HtmlMapper()
+        public LootMapper()
         {
-        }
-
-        public override Product MapContext(string htmlString)
-        {
-
-            try
-            {
-                //using (MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(htmlString)))
-                //{
-                //    XPathDocument xdoc = new XPathDocument(ms);
-                //    if (downloadContext.CrawlData != null)
-                //        UpdatePrimaryData(xdoc.CreateNavigator(), downloadContext.CrawlData);
-                //}
-            }
-            catch 
-            {
-                
-            }
         }
     }
 }

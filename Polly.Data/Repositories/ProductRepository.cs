@@ -16,7 +16,7 @@ namespace Polly.Data
             throw new NotImplementedException();
         }
 
-        public async Task<Product> FetchByUniqueIdAsync(string uniqueIdentifier)
+        public async Task<Product> FetchFullProductByUniqueIdAsync(string uniqueIdentifier)
         {
             using (PollyDbContext context = new PollyDbContext())
             {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Polly.Data
 {
+    [Obsolete]
     public class DataAccess
     {
         public static IEnumerable<Website> GetWebsites()

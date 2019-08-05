@@ -1,51 +1,83 @@
 ﻿using Polly.Data;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Polly.Domain
 {
-    public class TakelaotMapper : MapperBase, ITakealotMapper
+    public class TakelaotMapper : JsonMapperBase<TakealotJson>, ITakealotMapper
     {
-        //IDownloadQueueRepository _downloadQueueRepository;
-        //IPriceHistoryRepository _priceHistoryRepository;
-        //IProductRepository _productRepository;
+        IPriceHistoryRepository _priceHistoryRepository;
+        IProductRepository _productRepository;
 
-        public TakelaotMapper()
-            :base()
+        public TakelaotMapper(IPriceHistoryRepository priceHistoryRepository, IProductRepository productRepository)
         {
+            _priceHistoryRepository = priceHistoryRepository;
+            _productRepository = productRepository;
         }
 
-        public bool IsValid(TakealotJson takaleotDTO)
+        public async Task<Data.Product> MapAndSaveAsync(string json)
+        {
+            if (TryDeserialize(json, out TakealotJson takealotJson) && IsValid(takealotJson))
+            {
+                var product = await MapInternal(takealotJson);
+
+                await Task.WhenAll(_productRepository.SaveAsync(product),
+                    _priceHistoryRepository.SaveAllAsync(product.PriceHistory));
+
+                return product;
+            }
+            else
+                return default;
+        }
+
+        protected override async Task<Data.Product> MapInternal(TakealotJson jsonObject)
+        {
+            bool hasPurchasePrice = !jsonObject.event_data.documents.product.purchase_price.HasValue;
+            if (hasPurchasePrice)
+                return null;
+
+            decimal price = jsonObject.event_data.documents.product.purchase_price.Value;
+            decimal? originalPrice = jsonObject.event_data.documents.product.original_price;
+
+            if (price >= originalPrice)//prevent bad data
+                originalPrice = null;
+
+            Data.Product product = await _productRepository.FetchFullProductByUniqueIdAsync(jsonObject.data_layer.prodid);
+            product.LastChecked = jsonObject.meta.date_retrieved;
+
+            if (product != null)
+            {
+                var lastPrice = await _priceHistoryRepository.FetchLastPriceForProductId(product.Id);
+                if (lastPrice.Price != price)
+                {
+                    product.PriceHistory.Add(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
+                    return product;
+                }
+            }
+            else//new product
+            {
+                product = new Data.Product()
+                {
+                    UniqueIdentifier = jsonObject.data_layer.prodid
+                };
+                product.PriceHistory.Add(new PriceHistory(null, price, originalPrice) { ProductId = product.Id });
+
+                product.Breadcrumb = jsonObject.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
+                product.Title = jsonObject.title;
+                product.Description = jsonObject.description?.html;
+                product.Category = jsonObject.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
+                if (jsonObject.gallery.images.Any())
+                    product.Image = jsonObject.gallery.images[0].Replace("{size}", "pdpxl");
+                product.Url = jsonObject.desktop_href;
+            }
+
+            return product;
+        }
+
+        protected override bool IsValid(TakealotJson takaleotDTO)
         {
             return takaleotDTO.event_data.documents.product.purchase_price.HasValue;
-        }
-
-        public void MapToProduct(TakealotJson takealotDTO, Data.Product existingProduct)
-        {
-            existingProduct.UniqueIdentifier = takealotDTO.data_layer.prodid;
-            //existingProduct.Breadcrumb = takealotDTO.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
-            existingProduct.Title = takealotDTO.title;
-            existingProduct.Description = takealotDTO.description?.html;
-            //existingProduct.Category = takealotDTO.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
-            //if (takealotDTO.gallery.images.Any())
-            //    existingProduct.Image = takealotDTO.gallery.images[0].Replace("{size}", "pdpxl");
-            existingProduct.Url = takealotDTO.desktop_href;
-            existingProduct.LastChecked = DateTime.Now;
-
-            MapToPriceHistory(takealotDTO, new PriceHistory());
-
-            //_priceHistoryRepository.Save(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id }));
-        }
-
-        public void MapToPriceHistory(TakealotJson takealotDTO, PriceHistory priceHistory)
-        {
-            //if (existingProduct != null)
-            //{
-            //    var lastPrice = _priceHistoryRepository.FetchProductLastPrice(existingProduct.Id);
-            //    if (lastPrice.Price == price)
-            //        return;
-            //    _priceHistoryRepository.Save(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id }));
-            //    //return;
-            //}
         }
     }
 }
