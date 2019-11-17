@@ -209,7 +209,7 @@ namespace Polly.Domain
     {
         public int? idFormatType { get; set; }
         public string type { get; set; }
-        public int id { get; set; }
+        public int? id { get; set; }
         public string name { get; set; }
     }
 

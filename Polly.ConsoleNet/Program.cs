@@ -36,6 +36,7 @@ namespace Polly.ConsoleNet
             //{ 2, _container.GetInstance<DownloadFromQueue>() },
             { 3, _container.GetInstance<Upload>() },
             { 4, _container.GetInstance<Compress>() },
+            { 5, _container.GetInstance<Refresh>() },
         };
 
         static void Main(string[] args)
@@ -56,8 +57,9 @@ namespace Polly.ConsoleNet
         {
             Console.WriteLine("1.Populate download queue from Takealot robots.");
             Console.WriteLine("2.Populate download queue from Loot robots.");
-            Console.WriteLine("3.Upload");
-            Console.WriteLine("4.RemoveDuplicated");
+            Console.WriteLine("3.Update products from sitemap links");
+            Console.WriteLine("4.Compress");
+            Console.WriteLine("5.Refresh old products (2 weeks)");
             //Console.WriteLine("3.Populate download queue with products older than 2 days.");
             //Console.WriteLine("4.Run Downloader (PriceOnly).");
             //Console.WriteLine("5.Run Downloader (PriceAndProduct).");
@@ -66,7 +68,7 @@ namespace Polly.ConsoleNet
 
             if (int.TryParse(Console.ReadLine(), out int menuOption)
                 && menuOption > 0
-                && menuOption < 5)
+                && menuOption < 6)
                 return menuOption;
 
             Console.Clear();

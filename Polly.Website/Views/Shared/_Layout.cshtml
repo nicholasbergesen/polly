@@ -23,13 +23,14 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
+                @Html.Partial("_LoginPartial")
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
                 @Html.ActionLink("Priceboar", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @id = "inline-search-form", @class = "pl_inlineSearchForm"}))
+                @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @id = "inline-search-form", @class = "pl_inlineSearchForm" }))
                 {
                     <div class="input-group">
                         <input type="text" class="form-control pl_inlineSearch pull-right" placeholder="PLID12345678" id="SearchString" name="SearchString" />
@@ -46,10 +47,10 @@
                     @*<li>@Html.ActionLink("Discounts", "Discount", "Home")</li>*@
                 </ul>
                 @*<ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>*@
+            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+            <li>@Html.ActionLink("About", "About", "Home")</li>
+            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+        </ul>*@
             </div>
         </div>
     </div>

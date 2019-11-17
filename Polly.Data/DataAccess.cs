@@ -2,11 +2,20 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Polly.Data
 {
+    public class ProductDownload
+    {
+        public long Id { get; set; }
+        public string Url { get; set; }
+        public decimal Price { get; set; }
+        public long PriceId { get; set; }
+    }
+
     [Obsolete]
     public class DataAccess
     {
@@ -62,6 +71,7 @@ namespace Polly.Data
         {
             using (PollyDbContext context = new PollyDbContext())
             {
+                context.Database.CommandTimeout = 60;
                 if (product.Id == default(long))
                     context.Product.Add(product);
                 else
@@ -75,6 +85,7 @@ namespace Polly.Data
         {
             using (PollyDbContext context = new PollyDbContext())
             {
+                context.Database.CommandTimeout = 60;
                 if (priceHistory.Id == default(long))
                     context.PriceHistory.Add(priceHistory);
                 else
@@ -84,13 +95,14 @@ namespace Polly.Data
             }
         }
 
-        public static Product FetchProductOrDefault(string uniqueIdentifier)
+        public static async Task<Product> FetchProductOrDefault(string uniqueIdentifier)
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return context.Product
+                context.Database.CommandTimeout = 60;//5 minutes
+                return await context.Product
                     .Include(x => x.PriceHistory)
-                    .FirstOrDefault(x => x.UniqueIdentifier == uniqueIdentifier);
+                    .FirstOrDefaultAsync(x => x.UniqueIdentifier == uniqueIdentifier);
             }
         }
 
@@ -100,7 +112,7 @@ namespace Polly.Data
             {
                 return await context.Product
                     .Include(x => x.PriceHistory)
-                    .FirstAsync (x => x.Id == productId);
+                    .FirstAsync(x => x.Id == productId);
             }
         }
 
@@ -114,6 +126,47 @@ namespace Polly.Data
                     .Skip(skip)
                     .Take(batchSize)
                     .ToListAsync();
+            }
+        }
+
+        public static async Task UpdateLastChecked(long productId, DateTime date)
+        {
+            var product = new Product() { Id = productId, LastChecked = date };
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                context.Product.Attach(product);
+                context.Entry(product).Property(x => x.LastChecked).IsModified = true;
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public static async Task<IList<ProductDownload>> GetRefreshItems()
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                var twoWeeksAgo = DateTime.Now.AddDays(-14);
+                return await context.Product
+                    .Where(x => x.LastChecked < twoWeeksAgo)
+                    .OrderByDescending(x => x.LastChecked)
+                    .Select(x => new ProductDownload()
+                    {
+                        Id = x.Id,
+                        Url = x.Url,
+                        Price = x.PriceHistory.OrderByDescending(y => y.Id).FirstOrDefault().Price,
+                        PriceId = x.PriceHistory.OrderByDescending(y => y.Id).FirstOrDefault().Id
+                    })
+                    .Take(1000)
+                    .ToListAsync();
+            }
+        }
+
+        public static async Task<Product> GetProductById(long productId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                var prod = await context.Product.FindAsync(productId);
+                //await context.Entry(prod).Reference(p => p.PriceHistory).LoadAsync();
+                return prod;
             }
         }
 
@@ -186,6 +239,7 @@ namespace Polly.Data
         {
             using (PollyDbContext context = new PollyDbContext())
             {
+                context.Database.CommandTimeout = 300;
                 return await (from priceHistory in context.PriceHistory
                               where priceHistory.ProductId == productId
                               orderby priceHistory.Id descending
@@ -200,7 +254,7 @@ namespace Polly.Data
                 var downloadItemExists = await context.DownloadQueue.FirstOrDefaultAsync(x => x.DownloadUrl == downloadQueue.DownloadUrl);
                 if (downloadItemExists != null)
                     return;
-                else if (downloadQueue.Id == default(long))
+                else if (downloadQueue.Id == default)
                     context.DownloadQueue.Add(downloadQueue);
                 else
                     context.Entry(downloadQueue).State = EntityState.Modified;

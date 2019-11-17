@@ -16,9 +16,9 @@ namespace Polly.ConsoleNet
 {
     public class Upload : AsyncWorkerBase
     {
-        IDownloader _downloader;
-        HttpClient _httpClient = new HttpClient();
+        readonly IDownloader _downloader;
         readonly object _lock = new object();
+        readonly object _writelock = new object();
 
         public Upload(IDownloader downloader)
         {
@@ -47,47 +47,85 @@ namespace Polly.ConsoleNet
             var doneUrls = await GetDone();
             var toDo = await GetToDo(doneUrls);
             var total = toDo.Count;
-
+            StreamWriter sw = new StreamWriter("done.txt", append: true);
             List<Task> tasks = new List<Task>();
 
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 25; i++)
             {
                 tasks.Add(Task.Run(async () =>
                 {
-                    try
+                    while (toDo.TryDequeue(out string line))
                     {
-                        while (toDo.TryDequeue(out string line))
+                        var items = line.Split(',');
+                        var url = items[1];
+                        var httpResponse = await _downloader.DownloadAsync(url);
+                        if (string.IsNullOrWhiteSpace(httpResponse))
                         {
-                            var items = line.Split(',');
-                            var url = items[1];
-                            var httpResponse = await _downloader.DownloadAsync(url);
-                            if (string.IsNullOrWhiteSpace(httpResponse))
+                            lock (_writelock)
                             {
-                                lock (_lock)
-                                {
-                                    Write(url);
-                                }
-                                continue;
+                                sw.WriteLine(url);
                             }
-                            TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
-                            await SaveProductFromJsonObject(jsonObject);
+                            continue;
+                        }
 
-                            lock (_lock)
+                        try
+                        {
+                            TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
+
+                            try
                             {
-                                Write(url);
+                                await SaveProductFromJsonObject(jsonObject);
+                                lock (_writelock)
+                                {
+                                    sw.WriteLine(url);
+                                }
                             }
+                            catch
+                            {
+                                await SaveProductFromJsonObject(jsonObject);
+                                lock (_writelock)
+                                {
+                                    sw.WriteLine(url);
+                                }
+                            }
+                        }
+                        catch (System.Data.Entity.Core.EntityException e)
+                        {
+                            toDo.Enqueue(line);
+                        }
+                        catch (Exception e)
+                        {
+                            await sw.WriteLineAsync(url);
+                        }
+                        lock (_lock)
+                        {
                             RaiseOnProgress(++count, total, startTime);
                         }
                     }
-                    catch (Exception e)
+                })
+                .ContinueWith(ctask =>
+                {
+                    lock (_lock)
                     {
-                        Console.WriteLine(e);
-                        Console.ReadLine();
+                        Console.WriteLine();
+                        Console.WriteLine($"A task ended unexpectedly:{ctask.Exception.Message}");
                     }
-                }));
+                },
+                TaskContinuationOptions.OnlyOnFaulted)
+                .ContinueWith(ctask =>
+                {
+                },
+                TaskContinuationOptions.OnlyOnCanceled));
             }
-
-            await Task.WhenAll(tasks);
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            finally
+            {
+                sw.Close();
+                sw.Dispose();
+            }
         }
 
         private async Task<ConcurrentQueue<string>> GetToDo(HashSet<string> done)
@@ -106,14 +144,6 @@ namespace Polly.ConsoleNet
                 }
             }
             return new ConcurrentQueue<string>(toDoUrls);
-        }
-
-        private void Write(string line)
-        {
-            using (StreamWriter sw = new StreamWriter("done.txt", append: true))
-            {
-                sw.WriteLine(line);
-            }
         }
 
         private async Task<HashSet<string>> GetDone()
@@ -142,7 +172,7 @@ namespace Polly.ConsoleNet
             if (price >= originalPrice)//prevent bad data
                 originalPrice = null;
 
-            Data.Product product = DataAccess.FetchProductOrDefault(jsonObject.data_layer.prodid);
+            Data.Product product = await DataAccess.FetchProductOrDefault(jsonObject.data_layer.prodid);
             if (product != null)
             {
                 var lastPrice = await DataAccess.FetchProductLastPrice(product.Id);

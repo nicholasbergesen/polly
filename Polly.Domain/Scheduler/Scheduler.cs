@@ -11,7 +11,7 @@ namespace Polly.Domain
 
     public abstract class Scheduler
     {
-        private const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36";
+        private const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36";
         private const int BatchSaveCount = 1000;
         private List<DownloadQueue> _saveBatch;
         private DateTime _start;
@@ -34,6 +34,7 @@ namespace Polly.Domain
         {
             Console.WriteLine("Parsing Robots.txt...");
             Robots robots = new Robots(Domain, UserAgent);
+            robots.IgnoreErrors = true;
             await robots.LoadAsync();
             robots.OnProgress += Robots_OnProgress;
             var sitemaps = await robots.GetSitemapIndexesAsync();
