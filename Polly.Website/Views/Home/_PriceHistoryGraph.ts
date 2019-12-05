@@ -33,6 +33,9 @@
                             display: true,
                             scaleLabel: {
                                 labelString: 'Price'
+                            },
+                            ticks: {
+                                beginAtZero: true
                             }
                         }]
                     },

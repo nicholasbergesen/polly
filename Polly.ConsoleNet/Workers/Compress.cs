@@ -1,11 +1,13 @@
-﻿using Polly.Data;
+﻿using Newtonsoft.Json;
+using Polly.Data;
+using Polly.Domain;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,82 +16,110 @@ namespace Polly.ConsoleNet
 {
     public class Compress : AsyncWorkerBase
     {
-        private IProductRepository _productRepository;
-
-        public Compress(IProductRepository productRepository)
+        public Compress()
         {
-            _productRepository = productRepository;
+            ServicePointManager.DefaultConnectionLimit = 150;
+            OnProgress += Compress_OnProgress;
+            OnStart += Compress_OnStart;
         }
 
-        public override string ToString() { return ""; }
-
-        protected override Task DoWorkInternalAsync(CancellationToken token)
+        private void Compress_OnStart(object sender, EventArgs e)
         {
-            var ids = new List<long>() { 3767 };
-
-            //await GetAllProductIds();
-            var connString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            return null;
-            //using (SqlConnection con = new SqlConnection(connString))
-            //{
-            //    await con.OpenAsync();
-            //    SqlTransaction tran = con.BeginTransaction();
-            //    for (int i = 0; i < ids.Count; i++)
-            //    {
-            //        if (i % 100 == 0)
-            //        {
-            //            tran.Commit();
-            //            tran = con.BeginTransaction();
-            //        }
-
-            //        using (SqlCommand com = new SqlCommand("select [Description] from Product where Id = " + ids[i], con, tran))
-            //        {
-            //            string description = (string)await com.ExecuteScalarAsync();
-            //            var compbtyes = await CompressString(description);
-            //            using (SqlCommand comup = new SqlCommand("update Product set [Description] = @comp where Id = @id", con, tran))
-            //            {
-            //                comup.Parameters.AddWithValue("@comp", compbtyes);
-            //                comup.Parameters.AddWithValue("@id", ids[i]);
-            //                await comup.ExecuteNonQueryAsync();
-            //            }
-            //        }
-
-            //        tran.Commit();
-            //    }
-            //}
+            Console.Clear();
         }
 
-        public async Task<byte[]> CompressString(string input)
+        private void Compress_OnProgress(object sender, ProgressEventArgs e)
         {
-            byte[] encoded = Encoding.UTF8.GetBytes(input);
-            using (var output = new MemoryStream())
+            Console.CursorTop = 0;
+            Console.CursorLeft = 0;
+            Console.WriteLine(e.ProgressString);
+        }
+
+        protected override async Task DoWorkInternalAsync(CancellationToken token)
+        {
+            var startTime = DateTime.Now;
+            int count = 0;
+            long lastId = await DataAccess.LastId();
+            int productCount = await DataAccess.ProductCount();
+
+            long lastProcessedId = 3852;
+            if (File.Exists("processed.txt"))
             {
-                using (var compressionStream = new GZipStream(output, CompressionMode.Compress))
-                {
-                    await compressionStream.WriteAsync(encoded, 0, encoded.Length);
-                }
+                lastProcessedId = long.Parse(File.ReadAllText("processed.txt"));
+                productCount -= int.Parse(lastProcessedId.ToString());
+            }
 
-                return output.ToArray();
+
+            while (lastProcessedId <= lastId)
+            {
+                var nextProducts = await DataAccess.GetNextProduct(lastProcessedId);
+
+                foreach (var nextProduct in nextProducts)
+                {
+                    lastProcessedId = nextProduct.Id;
+
+                    if (nextProduct == default || nextProduct.Description == default)
+                    {
+                        File.WriteAllText("processed.txt", (lastProcessedId).ToString());
+                        RaiseOnProgress(++count, productCount, startTime);
+                        continue;
+                    }
+
+                    int imgIndex = nextProduct.Description.IndexOf("<img");
+                    string secondHalf = null;
+                    int imgEndIndex = -1;
+                    if (imgIndex > -1)
+                    {
+                        secondHalf = nextProduct.Description.Substring(imgIndex, nextProduct.Description.Length - imgIndex);
+                        imgEndIndex = secondHalf.IndexOf(">") + imgIndex;
+                    }
+
+                    if (imgIndex - imgEndIndex == 1)
+                        throw new Exception("not good");
+
+                    bool needssave = false;
+                    while (imgIndex > -1 && imgEndIndex > -1)
+                    {
+                        needssave = true;
+                        nextProduct.Description = nextProduct.Description.Remove(imgIndex, imgEndIndex - imgIndex);
+
+                        imgIndex = nextProduct.Description.IndexOf("<img");
+                        if (imgIndex > -1)
+                        {
+                            secondHalf = nextProduct.Description.Substring(imgIndex, nextProduct.Description.Length - imgIndex - 1);
+                            imgEndIndex = secondHalf.IndexOf(">") + imgIndex;
+                        }
+                    }
+
+                    int curLength = nextProduct.Description.Length;
+                    nextProduct.Description = nextProduct.Description.Replace("    ", " ");
+                    int reducedLength = nextProduct.Description.Length;
+                    while(curLength != reducedLength)
+                    {
+                        needssave = true;
+                        curLength = nextProduct.Description.Length;
+                        nextProduct.Description = nextProduct.Description.Replace("    ", " ");
+                        reducedLength = nextProduct.Description.Length;
+                    }
+
+                    if (nextProduct.Description.Length > 8000)
+                    {
+                        needssave = true;
+                        nextProduct.Description = nextProduct.Description.Substring(0, 8000);
+                    }
+
+                    if (needssave)
+                        await DataAccess.UpdateDescription(nextProduct);
+
+                    File.WriteAllText("processed.txt", (lastProcessedId).ToString());
+                    RaiseOnProgress(++count, productCount, startTime);
+                }
             }
         }
 
-        private static async Task<List<long>> GetAllProductIds()
+        public override string ToString()
         {
-            var connString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            List<long> ids = new List<long>(5100000);
-
-            using (SqlConnection con = new SqlConnection(connString))
-            {
-                await con.OpenAsync();
-                using (SqlCommand com = new SqlCommand("select Id from Product", con))
-                {
-                    com.CommandTimeout = 600;
-                    var reader = await com.ExecuteReaderAsync();
-                    ids.Add(reader.GetInt64(0));
-                }
-            }
-
-            return ids;
+            return "Compress";
         }
     }
 }

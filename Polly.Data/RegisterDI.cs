@@ -9,7 +9,7 @@ namespace Polly.Data
             if (lifestyle == default)
             {
                 container.Register<IProductRepository, ProductRepository>();
-                container.Register<IDownloadQueueRepository, DownloadQueueRepository>();
+                //container.Register<IDownloadQueueRepository, DownloadQueueRepository>();
                 container.Register<IPriceHistoryRepository, PriceHistoryRepository>();
                 container.Register<ICategoryRepository, CategoryRepository>();
                 container.Register<IProductCategoryRepository, ProductCategoryRepository>();
@@ -17,7 +17,7 @@ namespace Polly.Data
             else
             {
                 container.Register<IProductRepository, ProductRepository>(lifestyle);
-                container.Register<IDownloadQueueRepository, DownloadQueueRepository>(lifestyle);
+                //container.Register<IDownloadQueueRepository, DownloadQueueRepository>(lifestyle);
                 container.Register<IPriceHistoryRepository, PriceHistoryRepository>(lifestyle);
                 container.Register<ICategoryRepository, CategoryRepository>(lifestyle);
                 container.Register<IProductCategoryRepository, ProductCategoryRepository>(lifestyle);

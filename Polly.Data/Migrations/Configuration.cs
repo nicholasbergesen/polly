@@ -11,7 +11,8 @@ namespace Polly.Data.Migrations
         public Configuration()
         {
             CommandTimeout = 6000;
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
+            MigrationsDirectory = @"Migrations";
         }
 
         protected override void Seed(PollyDbContext context)

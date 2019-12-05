@@ -54,6 +54,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Download\IDownloader.cs" />
     <Compile Include="Download\TakealotDownloader.cs" />
+    <Compile Include="Emailer.cs" />
     <Compile Include="Ilogger.cs" />
     <Compile Include="Mappers\Loot\LootMapper.cs" />
     <Compile Include="Mappers\JsonMapperBase.cs" />

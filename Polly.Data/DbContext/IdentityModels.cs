@@ -1,10 +1,11 @@
 ﻿using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace Poly.Data
+namespace Polly.Data
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
@@ -16,10 +17,26 @@ namespace Poly.Data
             // Add custom user claims here
             return userIdentity;
         }
+
+        public bool IsEnabled { get; set; }
     }
 
+    public class ApplicationRole : IdentityRole
+    {
+    }
+
+    public class ApplicationUserRole : IdentityUserRole
+    {
+    }
+
+    [DbConfigurationType(typeof(MyConfiguration))]
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        static ApplicationDbContext()
+        {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, UserMigrations.Configuration>());
+        }
+
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
@@ -29,5 +46,13 @@ namespace Poly.Data
         {
             return new ApplicationDbContext();
         }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public System.Data.Entity.DbSet<Polly.Data.ApplicationRole> IdentityRoles { get; set; }
     }
 }

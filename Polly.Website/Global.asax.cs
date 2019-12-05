@@ -1,8 +1,4 @@
-﻿using SimpleInjector;
-using SimpleInjector.Integration.Web.Mvc;
-using SimpleInjector.Integration.WebApi;
-using SimpleInjector.Lifestyles;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -14,22 +10,22 @@ using System.Web.Routing;
 
 namespace Polly.Website
 {
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : HttpApplication
     {
         protected void Application_Start()
         {
             //https://simpleinjector.readthedocs.io/en/latest/mvcintegration.html
             //https://simpleinjector.readthedocs.io/en/latest/webapiintegration.html
-            var container = new Container();
-            container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-            Domain.RegisterDI.Register(container, Lifestyle.Scoped);
-            Data.RegisterDI.Register(container, Lifestyle.Scoped);
-            container.RegisterWebApiControllers(GlobalConfiguration.Configuration);
-            container.RegisterMvcControllers(Assembly.GetExecutingAssembly());
-            container.Verify();
+            //var container = new Container();
+            //container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+            //Domain.RegisterDI.Register(container, Lifestyle.Scoped);
+            //Data.RegisterDI.Register(container, Lifestyle.Scoped);
+            //container.RegisterWebApiControllers(GlobalConfiguration.Configuration);
+            //container.RegisterMvcControllers(Assembly.GetExecutingAssembly());
+            //container.Verify();
 
-            GlobalConfiguration.Configuration.DependencyResolver = new SimpleInjectorWebApiDependencyResolver(container);
-            DependencyResolver.SetResolver(new SimpleInjectorDependencyResolver(container));
+            //GlobalConfiguration.Configuration.DependencyResolver = new SimpleInjectorWebApiDependencyResolver(container);
+            //DependencyResolver.SetResolver(new SimpleInjectorDependencyResolver(container));
 
             // Here your usual Web API configuration stuff.
 

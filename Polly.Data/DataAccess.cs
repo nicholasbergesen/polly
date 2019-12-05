@@ -72,11 +72,21 @@ namespace Polly.Data
             using (PollyDbContext context = new PollyDbContext())
             {
                 context.Database.CommandTimeout = 60;
-                if (product.Id == default(long))
+                if (product.Id == default)
                     context.Product.Add(product);
                 else
                     context.Entry(product).State = EntityState.Modified;
 
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public static async Task UpdateDescription(Product product)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                context.Product.Attach(product);
+                context.Entry(product).Property(x => x.Description).IsModified = true;
                 await context.SaveChangesAsync();
             }
         }
@@ -156,6 +166,34 @@ namespace Polly.Data
                         PriceId = x.PriceHistory.OrderByDescending(y => y.Id).FirstOrDefault().Id
                     })
                     .Take(1000)
+                    .ToListAsync();
+            }
+        }
+
+        public static async Task<long> LastId()
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await context.Product.MaxAsync(x => x.Id);
+            }
+        }
+
+        public static async Task<int> ProductCount()
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await context.Product.Where(x => x.Description != null).CountAsync();
+            }
+        }
+
+        public static async Task<List<Product>> GetNextProduct(long fromId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await context.Product
+                    .OrderBy(x => x.Id)
+                    .Where(x => x.Description != null && x.Id > fromId)
+                    .Take(2000)
                     .ToListAsync();
             }
         }

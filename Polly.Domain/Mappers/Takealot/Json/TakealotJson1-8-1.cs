@@ -80,7 +80,7 @@ namespace Polly.Domain
         public bool is_add_to_wishlist_available { get; set; }
         public object variants_call_to_action { get; set; }
         public object multibuy_label { get; set; }
-        public bool is_free_shipping_available { get; set; }
+        public object is_free_shipping_available { get; set; }
         public bool multibuy_display { get; set; }
         public bool? is_add_to_cart_available { get; set; }
         public float[] prices { get; set; }

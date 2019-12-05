@@ -45,7 +45,7 @@ namespace Polly.Website.Models
             var model = new ProductModel(product);
             var priceHistory = PriceHistoriesModel.Create(product.PriceHistory);
             model.PriceHistory = priceHistory;
-            model.Deal = DealModel.Create(priceHistory);
+            //model.Deal = DealModel.Create(priceHistory);
             return model;
         }
     }

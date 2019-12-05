@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.Entity.SqlServer;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Polly.Data
 {
+    [DbConfigurationType(typeof(MyConfiguration))]
     public class PollyDbContext : DbContext
     {
+        static PollyDbContext()
+        {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<PollyDbContext, Migrations.Configuration>());
+        }
+
         public PollyDbContext()
             :base("DefaultConnection")
         {

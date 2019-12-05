@@ -50,7 +50,7 @@ namespace Polly.ConsoleNet
             StreamWriter sw = new StreamWriter("done.txt", append: true);
             List<Task> tasks = new List<Task>();
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 15; i++)
             {
                 tasks.Add(Task.Run(async () =>
                 {

@@ -22,11 +22,11 @@ namespace Polly.Website.Controllers
         private readonly IDownloader _downloader;
         private readonly ITakealotMapper _takealotMapper;
 
-        public ProductsController(IProductRepository productRepository, IDownloader downloader, ITakealotMapper takealotMapper)
+        public ProductsController()
         {
-            _productRepository = productRepository;
-            _downloader = downloader;
-            _takealotMapper = takealotMapper;
+            _productRepository = new ProductRepository();
+            _downloader = new TakealotDownloader();
+            _takealotMapper = new TakelaotMapper(new PriceHistoryRepository(), _productRepository);
         }
 
         [Route("{productId}/{currentPrice}")]

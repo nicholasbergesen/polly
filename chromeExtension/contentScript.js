@@ -2,9 +2,15 @@ const apiUrl = "https://priceboar.com/api/";
 const apiProducts = apiUrl + "products/";
 
 window.addEventListener('load', function () {
+    setTimeout(() => {
+        checkPage();
+    }, 1000);
+});
+
+function checkPage() {
     let dailyDealItems = $('.daily-deal-item');
-    let buyBox = $('.pdp-module_sidebar-buybox_1m6Sm');
-    let wishlist = $("#wishlist");
+    let isProductPage = this.isProductPage();
+    let wishlist = $("#wishlist");    
 
     if(dailyDealItems.length > 0) {
         for (let i = 0; i < dailyDealItems.length; i++) {
@@ -14,10 +20,11 @@ window.addEventListener('load', function () {
     else if(wishlist.length > 0) {
         addPriceColumnToWishlist(wishlist);
     }
-    else if(buyBox.length > 0) {
+    else if(isProductPage) {
+        let buyBox = $('div.pdp-module_sidebar-buybox_1m6Sm');
         updateProductHtml(buyBox);
     }
-});
+}
 
 ///DAILY DEALS
 function showDailyDealPrice(parentElement) {
@@ -165,11 +172,18 @@ function createChartNode(prices, dates) {
             scales: {
                 xAxes: [{
                     display: true,
-                    labelString: 'Date'
+                    scaleLabel: {
+                        labelString: 'Date'
+                    }
                 }],
                 yAxes: [{
                     display: true,
-                    labelString: 'Price'
+                    scaleLabel: {
+                        labelString: 'Price'
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    }
                 }]
             }
         }
@@ -236,4 +250,10 @@ function getProductIdFromUrl(url) {
     let splitUrl = url.split('/');
     let productId = splitUrl[splitUrl.length - 1];
     return productId;
+}
+
+function isProductPage() {
+    let splitUrl = window.location.href.split('/');
+    let productId = splitUrl[splitUrl.length - 1];
+    return productId.startsWith("PLID");
 }

@@ -53,7 +53,8 @@ namespace Polly.ConsoleNet
 
                 while (!toDo.IsAddingCompleted)
                 {
-                    var newItems = await DataAccess.GetRefreshItems();
+                    var newItems = await DataAccess.GetRefreshItems()
+                        .ConfigureAwait(false);
 
                     foreach (var item in newItems)
                     {
@@ -70,12 +71,13 @@ namespace Polly.ConsoleNet
 
 
                     while (toDo.Count > 1000)
-                        await Task.Delay(2000);
+                        await Task.Delay(2000)
+                            .ConfigureAwait(false);
                 }
             }));
 
             //consumers
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 30; i++)
             {
                 tasks.Add(Task.Run(async () =>
                 {
@@ -86,15 +88,27 @@ namespace Polly.ConsoleNet
 
                         try
                         {
+                            //81976 with null url but has unique code.
+                            if (string.IsNullOrWhiteSpace(productDownload.Url))
+                            {
+                                ++count;
+                                await DataAccess.UpdateLastChecked(productDownload.Id, DateTime.Now)
+                                    .ConfigureAwait(false);
+                                continue;
+                            }
+
                             var httpResponse = await _downloader.DownloadAsync(BuildDownloadUrl(productDownload.Url));
                             if (string.IsNullOrWhiteSpace(httpResponse))
                             {
-                                await DataAccess.UpdateLastChecked(productDownload.Id, DateTime.Now);
+                                ++count;
+                                await DataAccess.UpdateLastChecked(productDownload.Id, DateTime.Now)
+                                    .ConfigureAwait(false);
                                 continue;
                             }
 
                             TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
-                            await SaveNewPrice(jsonObject, productDownload);
+                            await SaveNewPrice(jsonObject, productDownload)
+                                .ConfigureAwait(false);
 
                             lock (_lock)
                             {
@@ -103,7 +117,9 @@ namespace Polly.ConsoleNet
                         }
                         catch (Exception e)
                         {
-                            await DataAccess.UpdateLastChecked(productDownload.Id, DateTime.Now);
+                            ++count;
+                            await DataAccess.UpdateLastChecked(productDownload.Id, DateTime.Now)
+                                .ConfigureAwait(false);
                             Console.WriteLine(e);
                             Console.ReadLine();
                         }
@@ -133,6 +149,10 @@ namespace Polly.ConsoleNet
 
         private async Task SaveNewPrice(TakealotJson jsonObject, ProductDownload productDownload)
         {
+            //no change, update last checked
+            await DataAccess.UpdateLastChecked(productDownload.Id, jsonObject.meta.date_retrieved)
+                .ConfigureAwait(false);
+
             bool hasPurchasePrice = !jsonObject.event_data.documents.product.purchase_price.HasValue;
             if (hasPurchasePrice)
                 return;
@@ -143,19 +163,17 @@ namespace Polly.ConsoleNet
             if (price >= originalPrice)//prevent bad data
                 originalPrice = null;
 
-            //no change, update last checked
-            await DataAccess.UpdateLastChecked(productDownload.Id, jsonObject.meta.date_retrieved);
-
             if (productDownload.Price != price)
             {
-                await DataAccess.SaveAsync(new PriceHistory(productDownload.Price, productDownload.PriceId, price, originalPrice) { ProductId = productDownload.Id });
+                await DataAccess.SaveAsync(new PriceHistory(productDownload.Price, productDownload.PriceId, price, originalPrice) { ProductId = productDownload.Id })
+                    .ConfigureAwait(false);
                 return;
             }
         }
 
         public override string ToString()
         {
-            return "Upload";
+            return "Refresh";
         }
     }
 }
