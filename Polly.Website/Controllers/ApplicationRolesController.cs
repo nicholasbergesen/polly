@@ -11,7 +11,7 @@ using Polly.Data;
 
 namespace Polly.Website.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Users = "nicholasb.za@gmail.com")]
     public class ApplicationRolesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -20,21 +20,6 @@ namespace Polly.Website.Controllers
         public async Task<ActionResult> Index()
         {
             return View(await db.IdentityRoles.ToListAsync());
-        }
-
-        // GET: ApplicationRoles/Details/5
-        public async Task<ActionResult> Details(string id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            ApplicationRole applicationRole = await db.IdentityRoles.FindAsync(id);
-            if (applicationRole == null)
-            {
-                return HttpNotFound();
-            }
-            return View(applicationRole);
         }
 
         // GET: ApplicationRoles/Create

@@ -83,7 +83,7 @@ namespace Polly.Website.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: true);
+            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, true, shouldLockout: true);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -169,15 +169,22 @@ namespace Polly.Website.Controllers
                     // Send an email with this link
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    await UserManager.SendEmailAsync(user.Id, "Confirm your e-mail", $"<p>Hi {user.UserName}</p><p>Please confirm your PriceBoar e-mail by clicking <a href=\" {callbackUrl} \">here</a>.</p><p>Kind Regards</p><p>PriceBoar.</p>");
+                    await UserManager.SendEmailAsync(user.Id, "Confirm your e-mail", $"<p>Hi {user.UserName}</p><p>Please confirm your PriceBoar e-mail by clicking <a href=\" {callbackUrl} \">here</a>.</p><p>Kind Regards</p><p>PriceBoar</p>");
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("PendingConfirmEmail");
                 }
                 AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult PendingConfirmEmail()
+        {
+            return View();
         }
 
         //

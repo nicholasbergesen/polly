@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Polly.Data;
 using Polly.Website.Models;
-
+//F49D1A dark orange
+//EDCA5C yellow
 namespace Polly.Website.Controllers
 {
     public class HomeController : Controller

@@ -1,4 +1,4 @@
-const apiUrl = "https://priceboar.com/api/";
+const apiUrl = "http://localhost/api/";
 const apiProducts = apiUrl + "products/";
 
 window.addEventListener('load', function () {
@@ -66,10 +66,10 @@ function createPriceNode(result, currentPrice) {
     if (result.Price != 0) {
         let discount = (result.Price - currentPrice) / result.Price * 100;
         textNode = document.createTextNode("R " + result.Price + " (" + Math.round(discount) + "%)");
-        priceLink.setAttribute('style', 'top:200; left: 130px; z-index:1000; display: block; position:absolute;');
+        priceLink.setAttribute('style', 'top:200; left: 130px; z-index:1000; display: block; position:absolute;font-family:script');
     }
     else {
-        priceLink.setAttribute('style', 'top:200; left: 110px; z-index:1000; display: block; position:absolute;');
+        priceLink.setAttribute('style', 'top:200; left: 110px; z-index:1000; display: block; position:absolute;font-family:script');
     }
     priceNode.style.color = "blue";
     priceNode.style.cssFloat = "right";
@@ -90,7 +90,9 @@ function updateProductHtml(parentElement) {
     let udpatesRequired = new Array();
     $.ajax({
         url: apiProducts + productId + "/" + currentPrice,
-        success: function (result) {
+        success: function (result, textStatus, xhr) {
+            console.log(xhr.status);
+            console.log(textStatus);
             let priceLink = createSimplePriceNode(result, currentPrice);
             let realPrice = document.getElementById("#realPrice");
             realPrice.insertBefore(priceLink, realPrice.childNodes[1]);
@@ -227,7 +229,9 @@ function addPriceColumnToWishlist(wishlistTable) {
         let currentPrice = realTable.rows[i].cells[5].innerText.replace(',', '').replace('R', '').replace(' ', '');
         $.ajax({
             url: apiProducts + productId + "/" + currentPrice,
-            success: function (result) {
+            success: function (result, textStatus, xhr) {
+                console.log(xhr.status);
+                console.log(textStatus);
                 let display = "unchanged";
                 if(result.Price > 0){
                     let discount = (result.Price - currentPrice) / result.Price * 100;

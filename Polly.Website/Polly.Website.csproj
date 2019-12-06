@@ -168,8 +168,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\PercentageDataTypeAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminUserRoleController.cs" />
     <Compile Include="Controllers\ApplicationRolesController.cs" />
-    <Compile Include="Controllers\ApplicationUsersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
@@ -179,6 +179,7 @@
     </Compile>
     <Compile Include="Helpers\BrowserHelper.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AdminUserRoleView.cs" />
     <Compile Include="Models\DealModel.cs" />
     <Compile Include="Models\DiscountProduct.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -300,16 +301,16 @@
     <Content Include="Views\Account\VerifyCode.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\ApplicationUsers\Create.cshtml" />
-    <Content Include="Views\ApplicationUsers\Delete.cshtml" />
-    <Content Include="Views\ApplicationUsers\Details.cshtml" />
-    <Content Include="Views\ApplicationUsers\Edit.cshtml" />
-    <Content Include="Views\ApplicationUsers\Index.cshtml" />
     <Content Include="Views\ApplicationRoles\Create.cshtml" />
     <Content Include="Views\ApplicationRoles\Delete.cshtml" />
-    <Content Include="Views\ApplicationRoles\Details.cshtml" />
     <Content Include="Views\ApplicationRoles\Edit.cshtml" />
     <Content Include="Views\ApplicationRoles\Index.cshtml" />
+    <Content Include="Views\AdminUserRole\Create.cshtml" />
+    <Content Include="Views\AdminUserRole\Delete.cshtml" />
+    <Content Include="Views\AdminUserRole\Details.cshtml" />
+    <Content Include="Views\AdminUserRole\Edit.cshtml" />
+    <Content Include="Views\AdminUserRole\Index.cshtml" />
+    <Content Include="Views\Account\PendingConfirmEmail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Roles\" />

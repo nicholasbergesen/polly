@@ -53,6 +53,6 @@ namespace Polly.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        public System.Data.Entity.DbSet<Polly.Data.ApplicationRole> IdentityRoles { get; set; }
+        public DbSet<Polly.Data.ApplicationRole> IdentityRoles { get; set; }
     }
 }

@@ -12,6 +12,8 @@ using Polly.Domain;
 
 namespace Polly.Website.Controllers
 {
+    //add anon method to check if authenticated 
+    [Authorize]
     [RoutePrefix("api/products")]
     public class ProductsController : ApiController
     {

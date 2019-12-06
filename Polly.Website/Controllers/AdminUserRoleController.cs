@@ -1,0 +1,183 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using Polly.Data;
+using Polly.Website.Models;
+using Microsoft.AspNet.Identity.Owin;
+
+namespace Polly.Website.Controllers
+{
+    [Authorize(Users = "nicholasb.za@gmail.com")]
+    public class AdminUserRoleController : Controller
+    {
+        private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationUserManager _userManager;
+
+        public AdminUserRoleController()
+        {
+        }
+
+        public AdminUserRoleController(ApplicationUserManager userManager)
+        {
+            UserManager = userManager;
+        }
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
+
+        // GET: AdminUserRole
+        public async Task<ActionResult> Index()
+        {
+            var users = await db.Users.ToListAsync();
+            List<AdminUserRoleView> viewUsers = new List<AdminUserRoleView>();
+            foreach (var user in users)
+            {
+                viewUsers.Add(new AdminUserRoleView(user, await UserManager.GetRolesAsync(user.Id)));
+            }
+            return View(viewUsers);
+        }
+
+        // GET: AdminUserRole/Details/5
+        public async Task<ActionResult> Details(string id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            AdminUserRoleView adminUserRoleView = new AdminUserRoleView(await UserManager.FindByIdAsync(id), (await UserManager.GetRolesAsync(id))?.ToList());
+
+            if (adminUserRoleView == null)
+            {
+                return HttpNotFound();
+            }
+            return View(adminUserRoleView);
+        }
+
+        // GET: AdminUserRole/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: AdminUserRole/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create([Bind(Include = "Id,Email,IsEnabled,EmailConfirmed,Roles")] AdminUserRoleView adminUserRoleView)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser { UserName = adminUserRoleView.Email, Email = adminUserRoleView.Email, EmailConfirmed = adminUserRoleView.EmailConfirmed, IsEnabled = adminUserRoleView.IsEnabled };
+                var result = await UserManager.CreateAsync(user);
+                return RedirectToAction("Index");
+            }
+
+            return View(adminUserRoleView);
+        }
+
+        // GET: AdminUserRole/Edit/5
+        public async Task<ActionResult> Edit(string id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            AdminUserRoleView adminUserRoleView = new AdminUserRoleView(await UserManager.FindByIdAsync(id), await UserManager.GetRolesAsync(id));
+            if (adminUserRoleView == null)
+            {
+                return HttpNotFound();
+            }
+            return View(adminUserRoleView);
+        }
+
+        // POST: AdminUserRole/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Email,IsEnabled,EmailConfirmed,Roles")] AdminUserRoleView adminUserRoleView)
+        {
+            if (ModelState.IsValid)
+            {
+                var newRoles = adminUserRoleView.Roles?.Split(',') ?? new string[0];
+                var currentRoles = await UserManager.GetRolesAsync(adminUserRoleView.Id);
+                var sharedRoles = newRoles.Intersect(currentRoles);
+                newRoles = newRoles.Except(sharedRoles).ToArray();
+                var removeRoles = currentRoles.Except(sharedRoles).ToArray();
+                if (newRoles.Length > 0)
+                {
+                    foreach (var role in newRoles)
+                    {
+                        await UserManager.AddToRoleAsync(adminUserRoleView.Id, role);
+                    }
+                    //await UserManager.AddToRolesAsync(adminUserRoleView.Id, newRoles);
+                }
+                if (removeRoles.Length > 0)
+                {
+                    await UserManager.RemoveFromRolesAsync(adminUserRoleView.Id, removeRoles);
+                }
+
+                var user = db.Users.Find(adminUserRoleView.Id);
+                user.Email = adminUserRoleView.Email;
+                user.UserName = adminUserRoleView.Email;
+                user.EmailConfirmed = adminUserRoleView.EmailConfirmed;
+                user.IsEnabled = adminUserRoleView.IsEnabled;
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View(adminUserRoleView);
+        }
+
+        // GET: AdminUserRole/Delete/5
+        public async Task<ActionResult> Delete(string id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            AdminUserRoleView adminUserRoleView = new AdminUserRoleView(await UserManager.FindByIdAsync(id), null);
+            if (adminUserRoleView == null)
+            {
+                return HttpNotFound();
+            }
+            return View(adminUserRoleView);
+        }
+
+        // POST: AdminUserRole/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteConfirmed(string id)
+        {
+            ApplicationUser applicationUser = db.Users.Find(id);
+            db.Users.Remove(applicationUser);
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
+}

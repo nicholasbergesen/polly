@@ -43,7 +43,7 @@ namespace Polly.Domain
                 originalPrice = null;
 
             Data.Product product = await _productRepository.FetchFullProductByUniqueIdAsync(jsonObject.data_layer.prodid);
-            product.LastChecked = jsonObject.meta.date_retrieved;
+
 
             if (product != null)
             {
@@ -71,6 +71,7 @@ namespace Polly.Domain
                 product.Url = jsonObject.desktop_href;
             }
 
+            product.LastChecked = jsonObject.meta.date_retrieved;
             return product;
         }
 
