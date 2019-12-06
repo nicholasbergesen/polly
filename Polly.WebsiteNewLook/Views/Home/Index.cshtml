@@ -1,31 +1,153 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
-
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+﻿<div id="myCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+    <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class=""></li>
+        <li data-target="#myCarousel" data-slide-to="1" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="2" class=""></li>
+        <li data-target="#myCarousel" data-slide-to="3" class=""></li>
+    </ol>
+    <div class="carousel-inner">
+        <div class="carousel-item">
+            <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="100%" height="400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+                <rect width="100%" height="100%" fill="#777"></rect>
+            </svg>
+            <div class="container">
+                <div class="carousel-caption text-left">
+                    <h1>Example headline.</h1>
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item active">
+            <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="100%" height="400px" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+                <rect width="100%" height="600px" fill="#777"></rect>
+            </svg>
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>Another example headline.</h1>
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="100%" height="400px" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+                <rect width="100%" height="100%" fill="#777"></rect>
+            </svg>
+            <div class="container">
+                <div class="carousel-caption text-right">
+                    <h1>One more for good measure.</h1>
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="400px" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Last slide">
+                <title>Placeholder</title>
+                <rect width="100%" height="100%" fill="#777"></rect>
+                <text x="50%" y="50%" fill="#555" dy=".3em">Last slide</text>
+            </svg>
+            <div class="carousel-caption d-none d-md-block">
+                <h5>First slide label</h5>
+                <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+            </div>
+        </div>
+    </div>
+    <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
 </div>
+<div class="container marketing">
+    <!-- Three columns of text below the carousel -->
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+
+    <!-- ADD THE PRICE!-->
+
+
+    <div class="row">
+        <div class="card">
+            <div class="card-header">
+                <span class="badge badge-warning">30%</span> Apple Watch Series 4 44mm GPS Only Space Grey Aluminum
+            </div>
+            <div class="card-body">
+                <img src="https://media.takealot.com/covers_tsins/55572987/190198843555-2-pdpxl.jpg" width="144" height="144" alt="no u">
+            </div>
+        </div><!-- /.col-lg-4 -->
+        <div class="card" style="width: 18rem;">
+            <img src="https://media.takealot.com/covers_tsins/55572987/190198843555-2-pdpxl.jpg" width="144" height="144" alt="no u">
+            <div class="card-body">
+                <p class="card-text"><span class="badge badge-warning font-weight-bold">30%</span> Apple Watch Series 4 44mm GPS Only Space Grey Aluminum</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <img src="https://media.takealot.com/covers_tsins/44329637/44329637_1-pdpxl.jpg" class="img-thumbnail" alt="no u">
+            <h2>Smeg - 2 Slice Toaster</h2>
+            <p>
+                Smeg - 2 Slice Toaster
+                Thanks to the new collection of 50’s Style small appliances personalizing your kitchen with a touch of fabulous Smeg design has never been easier!
+            </p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+        </div><!-- /.col-lg-4 -->
+        <div class="col-lg-4">
+            <img src="https://media.takealot.com/covers_tsins/59383161/59383161-1-pdpxl.jpeg" class="img-thumbnail" alt="no u">
+            <h2>Metal Magnetic Double Sided Tempered Glass Case for Huawei P30</h2>
+            <p>
+                Double Sided Tempered Glass Back Magnet Flip Cases Cover
+                Magnetic Metal Glass Phone Case
+                Original Phone Hand Feeling
+                8 Magnets, Super adsorption
+                9H Tempered glass back cover with tempered glass material, to prevent scratches
+                Easy to Install
+                Support wireless charging
+            </p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+        </div><!-- /.col-lg-4 -->
+    </div><!-- /.row -->
+    <!-- START THE FEATURETTES -->
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+        <div class="col-md-7">
+            <h2 class="featurette-heading">First featurette heading. <span class="text-muted">It’ll blow your mind.</span></h2>
+            <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+        </div>
+        <div class="col-md-5">
+            <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 500x500"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"></rect><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+        <div class="col-md-7 order-md-2">
+            <h2 class="featurette-heading">Oh yeah, it’s that good. <span class="text-muted">See for yourself.</span></h2>
+            <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+        </div>
+        <div class="col-md-5 order-md-1">
+            <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 500x500"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"></rect><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+        <div class="col-md-7">
+            <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
+            <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+        </div>
+        <div class="col-md-5">
+            <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 500x500"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"></rect><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg>
+        </div>
     </div>
+
+    <hr class="featurette-divider">
+
+    <!-- /END THE FEATURETTES -->
+
 </div>
