@@ -3,7 +3,6 @@
     export class PriceHistoryGraph {
 
         constructor(options: Options) {
-
             var ctx = <HTMLCanvasElement>document.getElementById("myChart");
 
             var myChart = new Chart(ctx, {
@@ -13,8 +12,8 @@
                     datasets: [{
                         label: 'Price',
                         data: options.data,
-                        backgroundColor: ['rgba(255, 99, 132, 0.2)'],
-                        borderColor: ['rgba(255,99,132,1)'],
+                        backgroundColor: ['rgb(237,202,92, 0.2)'],
+                        borderColor: ['rgb(244,157,26)'],
                         borderWidth: 1
                     }]
                 },

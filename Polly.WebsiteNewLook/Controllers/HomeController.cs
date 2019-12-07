@@ -6,6 +6,14 @@ using System.Web.Mvc;
 
 namespace Polly.WebsiteNewLook.Controllers
 {
+    public class TempModel
+    {
+        public decimal Price { get; set; }
+        public int Discount { get; set; }
+        public string Title { get; set; }
+        public string ImageSrc { get; set; }
+    }
+
     public class HomeController : Controller
     {
         public ActionResult Index()
