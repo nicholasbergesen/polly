@@ -25,3 +25,28 @@ textarea {
 .bg-secondary-yellow {
     background-color: #EDCA5C;
 }
+
+.pulsate {
+    -webkit-animation: pulsate 3s ease-out;
+    -webkit-animation-iteration-count: infinite;
+    opacity: 0.5;
+    background-color: #EDCA5C;
+}
+
+@-webkit-keyframes pulsate {
+    0% {
+        opacity: 0.5;
+        color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(237, 202, 92, 0.0);
+    }
+
+    50% {
+        opacity: 1.0;
+        background-color: rgba(237, 202, 92, 0.5);
+    }
+
+    100% {
+        opacity: 0.5;
+        background-color: rgba(237, 202, 92, 0.0);
+    }
+}
