@@ -181,6 +181,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\PercentageDataTypeAttribute.cs" />
+    <Compile Include="Caches\TopTenCache.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminUserRoleController.cs" />
     <Compile Include="Controllers\ApplicationRolesController.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Models\AdminUserRoleView.cs" />
     <Compile Include="Models\DealModel.cs" />
     <Compile Include="Models\DiscountProduct.cs" />
+    <Compile Include="Models\IndexProductView.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PriceHistoryModel.cs" />
     <Compile Include="Models\ProductModel.cs" />
@@ -215,6 +217,10 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="googlef80c376664308507.html" />
+    <Content Include="Images\Chrome.png" />
+    <Content Include="Images\ChromeStore.png" />
+    <Content Include="Images\priceboar32.png" />
+    <Content Include="Images\PriceBoarLogoWithText.png" />
     <Content Include="robots.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -363,13 +369,11 @@
     <Content Include="Views\Manage\ManageLogins.cshtml" />
     <Content Include="Views\Manage\SetPassword.cshtml" />
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
     <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
@@ -397,6 +401,8 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
+    <Content Include="Views\Shared\_AccountStatusPartial.cshtml" />
+    <Content Include="Views\Shared\_ForgotPasswordPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Roles\" />

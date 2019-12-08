@@ -1,62 +1,49 @@
-﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+﻿* {
+    font-family: sans-serif;
 }
 
-/* Set padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
 .dl-horizontal dt {
     white-space: normal;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-/*input,
-select,
-textarea {
-    max-width: 280px;
-}*/
-
-#custom-search-input {
-    padding: 3px;
-    border: solid 1px #E4E4E4;
-    border-radius: 6px;
-    background-color: #fff;
+.carousel {
+    margin-bottom: 4rem;
 }
 
-    #custom-search-input input {
-        border: 0;
-        box-shadow: none;
+.bg-main-yellow {
+    background-color: #F49D1A;
+}
+
+.bg-secondary-yellow {
+    background-color: #EDCA5C;
+}
+
+.pulsate {
+    -webkit-animation: pulsate 3s ease-out;
+    -webkit-animation-iteration-count: infinite;
+    opacity: 0.5;
+    background-color: #EDCA5C;
+}
+
+@-webkit-keyframes pulsate {
+    0% {
+        opacity: 0.5;
+        color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(237, 202, 92, 0.0);
     }
 
-    #custom-search-input button {
-        margin: 2px 0 0 0;
-        background: none;
-        box-shadow: none;
-        border: 0;
-        color: #666666;
-        padding: 0 8px 0 10px;
-        border-left: solid 1px #ccc;
+    50% {
+        opacity: 1.0;
+        background-color: rgba(237, 202, 92, 0.5);
     }
 
-        #custom-search-input button:hover {
-            border: 0;
-            box-shadow: none;
-            border-left: solid 1px #ccc;
-        }
-
-    #custom-search-input .glyphicon-search {
-        font-size: 23px;
+    100% {
+        opacity: 0.5;
+        background-color: rgba(237, 202, 92, 0.0);
     }
+}
 
-
-/* CUSTOM */
+/* Bruce */
 
 .pl_readmore {
     overflow-y: hidden;
@@ -87,7 +74,6 @@ textarea {
 
 .pl_bold{
     font-weight:bold;
-
 }
 
 .pl_inlineSearch {

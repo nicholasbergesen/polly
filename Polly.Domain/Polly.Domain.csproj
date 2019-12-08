@@ -60,6 +60,8 @@
     <Compile Include="Mappers\JsonMapperBase.cs" />
     <Compile Include="Mappers\Takealot\ITakealotMapper.cs" />
     <Compile Include="Mappers\Takealot\Json\TakealotJson1-8-1.cs" />
+    <Compile Include="Mappers\Takealot\Json\TakealotJsonPromotions1-9-0.cs" />
+    <Compile Include="Mappers\Takealot\Json\TakealotProductLines1-9-0.cs" />
     <Compile Include="Mappers\Takealot\TakelaotMapper.cs" />
     <Compile Include="Processor\ITakealotProcessor.cs" />
     <Compile Include="Processor\TakealotProcessor.cs" />

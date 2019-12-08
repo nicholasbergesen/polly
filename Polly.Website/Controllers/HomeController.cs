@@ -16,11 +16,10 @@ namespace Polly.Website.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            return View(TopTenCache.Products);
         }
 
         [HttpPost]
-        [Authorize]
         public ActionResult Index(string searchString)
         {
             Product product = null;

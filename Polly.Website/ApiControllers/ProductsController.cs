@@ -12,8 +12,7 @@ using Polly.Domain;
 
 namespace Polly.Website.Controllers
 {
-    //add anon method to check if authenticated 
-    [Authorize]
+    //add anonymous method to check if authenticated 
     [RoutePrefix("api/products")]
     public class ProductsController : ApiController
     {
@@ -99,8 +98,14 @@ namespace Polly.Website.Controllers
         [Route("pricehistory/{productId}")]
         public async Task<ApiPriceHistory> GetPriceHistory(string productId)
         {
-            if (productPriceHistory.TryGetValue(productId, out ApiPriceHistory apiPriceHistory))
+            if (productPriceHistory.TryGetValue(productId, out ApiPriceHistory apiPriceHistory) && (apiPriceHistory.Added - DateTime.Now).TotalDays < 14)
+            {
                 return apiPriceHistory;
+            }
+            else
+            {
+                productPriceHistory.Remove(productId);
+            }
 
             var productdb = await _productRepository.FetchFullProductByUniqueIdAsync(productId);
 
@@ -111,26 +116,11 @@ namespace Polly.Website.Controllers
                 prices.Price.Add(price.Price);
                 prices.Date.Add(price.TimeStamp.ToShortDateString());
             }
+            prices.Added = DateTime.Now;
 
             productPriceHistory.Add(productId, prices);
 
             return prices;
-        }
-
-        //add a private key on send and check on receive
-        [HttpPost, Route("sendTakealotJson/{key}")]
-        public async Task<HttpResponseMessage> SendTakelotJson([FromUri] string key, [FromBody] TakealotJson data)
-        {
-            if (key == "19c45699-a11a-43d1-a2fd-07feea88afdf")
-                //await SaveProductFromJsonObject(data);
-                return null;
-            else
-                throw new HttpResponseException(HttpStatusCode.NotFound);
-
-            if (data != null)
-                return new HttpResponseMessage(HttpStatusCode.OK);
-            else
-                return new HttpResponseMessage(HttpStatusCode.NoContent);
         }
 
         private static class Status
@@ -156,6 +146,7 @@ namespace Polly.Website.Controllers
             }
             public ICollection<decimal> Price { get; set; }
             public ICollection<string> Date { get; set; }
+            public DateTime Added { get; set; }
         }
 
         private const string TakealotApi = "https://api.takealot.com/rest/v-1-8-0/product-details";

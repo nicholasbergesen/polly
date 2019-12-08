@@ -16,6 +16,17 @@ namespace Polly.Data
         public long PriceId { get; set; }
     }
 
+    public class ProductIdAndPrice
+    {
+        public string UniqueIdentifier { get; set; }
+        public decimal SellingPrice { get; set; }
+        public decimal Discount { get; set; }
+        public string ImageSrc { get; set; }
+        public string Title { get; set; }
+        public string TakealotLink { get; set; }
+        public string PriceBoarLink { get; set; }
+    }
+
     [Obsolete]
     public class DataAccess
     {
@@ -90,6 +101,37 @@ namespace Polly.Data
                 await context.SaveChangesAsync();
             }
         }
+
+        public static async Task<IEnumerable<ProductIdAndPrice>> GetTopDiscountProducts(IEnumerable<ProductIdAndPrice> productIdandPrice)
+        {
+            var productIds = productIdandPrice.Select(x => x.UniqueIdentifier);
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                context.Database.CommandTimeout = 300;
+                var products = context.Product.Include(x => x.PriceHistory).Where(x => productIds.Contains(x.UniqueIdentifier));
+                foreach (var prod in products)
+                {
+                    var currentPrice = productIdandPrice.FirstOrDefault(x => x.UniqueIdentifier == prod.UniqueIdentifier);
+                    var latestPrice = prod.PriceHistory.Where(x => x.Price != currentPrice.SellingPrice).OrderByDescending(x => x.TimeStamp).FirstOrDefault();
+                    if (latestPrice.Price == currentPrice.SellingPrice)
+                        continue;
+                    else
+                    {
+                        currentPrice.Discount = (latestPrice.Price - currentPrice.SellingPrice) / latestPrice.Price * 100;
+                        currentPrice.ImageSrc = prod.Image;
+                        currentPrice.Title = prod.Title;
+                        currentPrice.PriceBoarLink = $"/Home/Details/{prod.Id}";
+                        currentPrice.TakealotLink = prod.Url;
+                        context.PriceHistory.Add(new PriceHistory(latestPrice, currentPrice.SellingPrice));
+                    }
+                }
+                await context.SaveChangesAsync();
+            }
+
+            return productIdandPrice.OrderByDescending(x => x.Discount).Take(20);
+        }
+
+
 
         public static async Task SaveAsync(PriceHistory priceHistory)
         {
