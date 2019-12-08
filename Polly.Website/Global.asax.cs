@@ -35,7 +35,7 @@ namespace Polly.Website
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            TopTenCache.PopulateTopTenCache().Wait();
+            //TopTenCache.PopulateTopTenCache().Wait();
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)
