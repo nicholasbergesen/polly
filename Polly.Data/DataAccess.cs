@@ -113,7 +113,7 @@ namespace Polly.Data
                 {
                     var currentPrice = productIdandPrice.FirstOrDefault(x => x.UniqueIdentifier == prod.UniqueIdentifier);
                     var latestPrice = prod.PriceHistory.Where(x => x.Price != currentPrice.SellingPrice).OrderByDescending(x => x.TimeStamp).FirstOrDefault();
-                    if (latestPrice.Price == currentPrice.SellingPrice)
+                    if (latestPrice == null || latestPrice.Price == currentPrice.SellingPrice)
                         continue;
                     else
                     {
@@ -128,7 +128,7 @@ namespace Polly.Data
                 await context.SaveChangesAsync();
             }
 
-            return productIdandPrice.OrderByDescending(x => x.Discount).Take(20);
+            return productIdandPrice.OrderByDescending(x => x.Discount).Take(50);
         }
 
 

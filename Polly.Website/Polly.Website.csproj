@@ -404,9 +404,7 @@
     <Content Include="Views\Shared\_AccountStatusPartial.cshtml" />
     <Content Include="Views\Shared\_ForgotPasswordPartial.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Roles\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

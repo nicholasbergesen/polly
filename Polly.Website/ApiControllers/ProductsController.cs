@@ -36,6 +36,7 @@ namespace Polly.Website.Controllers
             ApiProd returnPrice;
             if (!productPrices.TryGetValue(productId, out returnPrice))
             {
+                productPriceHistory.Remove(productId);
                 var thirtyoneDays = DateTime.Today.Subtract(TimeSpan.FromDays(31));
 
                 var productdb = await _productRepository.FetchFullProductByUniqueIdAsync(productId);
@@ -73,7 +74,6 @@ namespace Polly.Website.Controllers
                             Url = "https://www.priceboar.com/Home/Details/" + productdb.Id,
                             Status = Status.HasValidPrice
                         };
-
                     productPrices.Add(productId, returnPrice);
                 }
                 else //add product if it doesn't exist
@@ -98,7 +98,7 @@ namespace Polly.Website.Controllers
         [Route("pricehistory/{productId}")]
         public async Task<ApiPriceHistory> GetPriceHistory(string productId)
         {
-            if (productPriceHistory.TryGetValue(productId, out ApiPriceHistory apiPriceHistory) && (apiPriceHistory.Added - DateTime.Now).TotalDays < 14)
+            if (productPriceHistory.TryGetValue(productId, out ApiPriceHistory apiPriceHistory))
             {
                 return apiPriceHistory;
             }

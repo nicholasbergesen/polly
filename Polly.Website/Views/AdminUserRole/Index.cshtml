@@ -5,10 +5,18 @@
 }
 
 <h2>Index</h2>
+<p>Top 10 Cache</p>
+<ul>
+    <li>Last Populated: @TopTenCache.LastPopulated.GetValueOrDefault()</li>
+    <li>Item Count: @TopTenCache.Products.Count</li>
+    <li>Repopulated: @TopTenCache.RepopulatedCount</li>
+    <li>Failed to populated: @TopTenCache.FailedPopulateAttempts</li>
+</ul>
 
+<a class="btn btn-primary" href="/AdminUserRole/LoadTop10Cache">Reload Cache</a>
 <p>
     @Html.ActionLink("Create User", "Create") |
-    @Html.ActionLink("Create Role", "Create", "ApplicationRolesController")
+    @Html.ActionLink("Create Role", "Index", "ApplicationRolesController")
 </p>
 <table class="table">
     <tr>

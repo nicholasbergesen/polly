@@ -82,7 +82,6 @@ function createPriceNode(result, currentPrice) {
 
 ///PRODUCT
 function updateProductHtml(parentElement) {
-    addChartToPage();
     let productId = getProductIdFromUrl(window.location.href);
     $(parentElement).attr("id", "#realPrice"); //workaround for takealot being shit, allows me to append to the parent element
     let currentPrice = $(parentElement).find(".buybox-module_price_2YUFa").children("span.currency").text();
@@ -99,6 +98,10 @@ function updateProductHtml(parentElement) {
             if(result.Status == "UpdateRequeired") {
                 udpatesRequired.push("https://api.takealot.com/rest/v-1-8-0/product-details/" + productId + "?platform=desktop")
             }
+            addChartToPage();
+
+        },
+        complete: function() {
         }
     });
 

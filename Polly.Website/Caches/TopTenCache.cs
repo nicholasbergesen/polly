@@ -12,22 +12,46 @@ namespace Polly.Website
 {
     public static class TopTenCache
     {
-        public static List<IndexProductView> Products = new List<IndexProductView>();
-        private static DateTime _lastPopulateAttempt = DateTime.Now;
+        private static List<IndexProductView> _products = new List<IndexProductView>();
+        private static object _lock = new object();
+        public static int RepopulatedCount = 0;
+        public static int FailedPopulateAttempts = 0;
+        public static List<IndexProductView> Products
+        {
+            get 
+            {
+                //for dev environment
+                if (!LastPopulated.HasValue)
+                    return _products;
+
+                var today = DateTime.Today;
+                if (LastPopulated?.Date != today)
+                {
+                    lock (_lock)
+                    {
+                        if (LastPopulated?.Date != today)
+                            PopulateTopTenCache().Wait();
+                    }
+                }
+
+                return _products;
+            }
+        }
+
+        public static DateTime? LastPopulated { get; private set; }
 
         private static int RetryCount = 0;
         public static async Task PopulateTopTenCache()
         {
-            Products = new List<IndexProductView>();
+            _products = new List<IndexProductView>();
 
             //reset retry count if a new day
-            if (_lastPopulateAttempt.Date != DateTime.Now.Date)
+            if (LastPopulated?.Date != DateTime.Now.Date)
                 RetryCount = 0;
 
             if (RetryCount > 5)
                 return;
 
-            _lastPopulateAttempt = DateTime.Now;
             try
             {
                 List<ProductIdAndPrice> productIds = new List<ProductIdAndPrice>();
@@ -69,10 +93,13 @@ namespace Polly.Website
                         Title = prod.Title
                     });
                 }
+                RepopulatedCount++;
+                LastPopulated = DateTime.Now;
             }
-            catch
+            catch(Exception e)
             {
                 RetryCount++;
+                FailedPopulateAttempts++;
                 //fail silently
             }
         }
