@@ -82,6 +82,10 @@
     <Compile Include="Migrations\201902142058408_ManualIndexes1.Designer.cs">
       <DependentUpon>201902142058408_ManualIndexes1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201912091630461_AddUserTables.cs" />
+    <Compile Include="Migrations\201912091630461_AddUserTables.designer.cs">
+      <DependentUpon>201912091630461_AddUserTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\IdentityClasses.cs" />
     <Compile Include="Models\ProductCategory.cs" />
     <Compile Include="Models\Category.cs" />
@@ -118,6 +122,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902142058408_ManualIndexes1.resx">
       <DependentUpon>201902142058408_ManualIndexes1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912091630461_AddUserTables.resx">
+      <DependentUpon>201912091630461_AddUserTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
