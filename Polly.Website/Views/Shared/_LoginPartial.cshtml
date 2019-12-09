@@ -41,7 +41,7 @@
             </div>
             <div class="modal-footer justify-content-between bg-light">
                 <div>
-                    @Html.ActionLink("Register", "Register", "Account", routeValues:null, htmlAttributes: new { @class = "btn btn-outline-success" })
+                    <button type="submit" class="btn btn-outline-success" formaction="/Account/Register">Register</button>
                 </div>
                 <div>
                     <button type="submit" form="loginForm" class="btn btn-primary multi-collapse collapse show">Log in</button>

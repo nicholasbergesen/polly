@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Polly.Data;
 
@@ -14,12 +9,12 @@ namespace Polly.Website.Controllers
     [Authorize(Users = "nicholasb.za@gmail.com")]
     public class ApplicationRolesController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private PollyDbContext db = new PollyDbContext();
 
         // GET: ApplicationRoles
         public async Task<ActionResult> Index()
         {
-            return View(await db.IdentityRoles.ToListAsync());
+            return View(await db.Roles.ToListAsync());
         }
 
         // GET: ApplicationRoles/Create
@@ -33,11 +28,11 @@ namespace Polly.Website.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Name")] ApplicationRole applicationRole)
+        public async Task<ActionResult> Create([Bind(Include = "Name")] Role applicationRole)
         {
             if (ModelState.IsValid)
             {
-                db.IdentityRoles.Add(applicationRole);
+                db.Roles.Add(applicationRole);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
@@ -46,13 +41,13 @@ namespace Polly.Website.Controllers
         }
 
         // GET: ApplicationRoles/Edit/5
-        public async Task<ActionResult> Edit(string id)
+        public ActionResult Edit(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ApplicationRole applicationRole = await db.IdentityRoles.FindAsync(id);
+            Role applicationRole = db.Roles.Find(id);
             if (applicationRole == null)
             {
                 return HttpNotFound();
@@ -65,7 +60,7 @@ namespace Polly.Website.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name")] ApplicationRole applicationRole)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name")] Role applicationRole)
         {
             if (ModelState.IsValid)
             {
@@ -77,13 +72,13 @@ namespace Polly.Website.Controllers
         }
 
         // GET: ApplicationRoles/Delete/5
-        public async Task<ActionResult> Delete(string id)
+        public ActionResult Delete(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ApplicationRole applicationRole = await db.IdentityRoles.FindAsync(id);
+            Role applicationRole = db.Roles.Find(id);
             if (applicationRole == null)
             {
                 return HttpNotFound();
@@ -96,8 +91,8 @@ namespace Polly.Website.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(string id)
         {
-            ApplicationRole applicationRole = await db.IdentityRoles.FindAsync(id);
-            db.IdentityRoles.Remove(applicationRole);
+            Role applicationRole = db.Roles.Find(id);
+            db.Roles.Remove(applicationRole);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }

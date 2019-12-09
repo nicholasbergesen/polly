@@ -16,7 +16,7 @@ namespace Polly.Website.Controllers
     [Authorize(Users = "nicholasb.za@gmail.com")]
     public class AdminUserRoleController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private PollyDbContext db = new PollyDbContext();
         private ApplicationUserManager _userManager;
 
         public AdminUserRoleController()
@@ -60,7 +60,7 @@ namespace Polly.Website.Controllers
         }
 
         // GET: AdminUserRole/Details/5
-        public async Task<ActionResult> Details(string id)
+        public async Task<ActionResult> Details(long id)
         {
             if (id == null)
             {
@@ -91,7 +91,7 @@ namespace Polly.Website.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = adminUserRoleView.Email, Email = adminUserRoleView.Email, EmailConfirmed = adminUserRoleView.EmailConfirmed, IsEnabled = adminUserRoleView.IsEnabled };
+                var user = new User { UserName = adminUserRoleView.Email, Email = adminUserRoleView.Email, EmailConfirmed = adminUserRoleView.EmailConfirmed, IsEnabled = adminUserRoleView.IsEnabled };
                 var result = await UserManager.CreateAsync(user);
                 return RedirectToAction("Index");
             }
@@ -100,7 +100,7 @@ namespace Polly.Website.Controllers
         }
 
         // GET: AdminUserRole/Edit/5
-        public async Task<ActionResult> Edit(string id)
+        public async Task<ActionResult> Edit(long id)
         {
             if (id == null)
             {
@@ -153,7 +153,7 @@ namespace Polly.Website.Controllers
         }
 
         // GET: AdminUserRole/Delete/5
-        public async Task<ActionResult> Delete(string id)
+        public async Task<ActionResult> Delete(long id)
         {
             if (id == null)
             {
@@ -170,9 +170,9 @@ namespace Polly.Website.Controllers
         // POST: AdminUserRole/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(string id)
+        public async Task<ActionResult> DeleteConfirmed(long id)
         {
-            ApplicationUser applicationUser = db.Users.Find(id);
+            User applicationUser = db.Users.Find(id);
             db.Users.Remove(applicationUser);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");

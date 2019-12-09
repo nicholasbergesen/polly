@@ -1,15 +1,25 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Common;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.Entity.SqlServer;
+using System.Threading.Tasks;
 
 namespace Polly.Data
 {
     [DbConfigurationType(typeof(MyConfiguration))]
-    public class PollyDbContext : DbContext
+    public class PollyDbContext : IdentityDbContext<User, Role, long, UserLogin, UserRole, UserClaim>
     {
         static PollyDbContext()
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<PollyDbContext, Migrations.Configuration>());
+        }
+
+        public static PollyDbContext Create()
+        {
+            return new PollyDbContext();
         }
 
         public PollyDbContext()

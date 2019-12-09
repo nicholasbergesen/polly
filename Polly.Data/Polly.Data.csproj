@@ -74,7 +74,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess.cs" />
-    <Compile Include="DbContext\IdentityModels.cs" />
     <Compile Include="Migrations\201902142005213_NewDatabase.cs" />
     <Compile Include="Migrations\201902142005213_NewDatabase.Designer.cs">
       <DependentUpon>201902142005213_NewDatabase.cs</DependentUpon>
@@ -83,6 +82,7 @@
     <Compile Include="Migrations\201902142058408_ManualIndexes1.Designer.cs">
       <DependentUpon>201902142058408_ManualIndexes1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\IdentityClasses.cs" />
     <Compile Include="Models\ProductCategory.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\DataSourceType.cs" />
@@ -105,15 +105,6 @@
     <Compile Include="Repositories\DownloadQueueRepository.cs" />
     <Compile Include="Repositories\ProductCategoryRepository.cs" />
     <Compile Include="Repositories\ProductRepository.cs" />
-    <Compile Include="UserMigrations\201912031657529_NewDatabase.cs" />
-    <Compile Include="UserMigrations\201912031657529_NewDatabase.Designer.cs">
-      <DependentUpon>201912031657529_NewDatabase.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserMigrations\201912041940416_AddedRoleModel.cs" />
-    <Compile Include="UserMigrations\201912041940416_AddedRoleModel.Designer.cs">
-      <DependentUpon>201912041940416_AddedRoleModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserMigrations\Configuration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -127,12 +118,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902142058408_ManualIndexes1.resx">
       <DependentUpon>201902142058408_ManualIndexes1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserMigrations\201912031657529_NewDatabase.resx">
-      <DependentUpon>201912031657529_NewDatabase.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserMigrations\201912041940416_AddedRoleModel.resx">
-      <DependentUpon>201912041940416_AddedRoleModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -13,7 +13,7 @@ namespace Polly.Website.Models
             
         }
 
-        public AdminUserRoleView(ApplicationUser user, IList<string> roles)
+        public AdminUserRoleView(User user, IList<string> roles)
         {
             Id = user.Id;
             Email = user.Email;
@@ -23,7 +23,7 @@ namespace Polly.Website.Models
                 Roles = string.Join(",", roles);
         }
 
-        public string Id { get; set; }
+        public long Id { get; set; }
         public string Email { get; set; }
         public bool IsEnabled { get; set; }
         public bool EmailConfirmed { get; set; }
