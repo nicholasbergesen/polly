@@ -1,5 +1,6 @@
 ﻿@using Polly.Website.Models
 @model LoginViewModel
+@Scripts.Render("~/bundles/jqueryval")
 
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -17,7 +18,7 @@
                         @Html.AntiForgeryToken()
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                         <div class="form-group">
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "Email", id="EmailLoginPartial" })
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "Email", id = "EmailLoginPartial" })
                             @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
@@ -39,12 +40,13 @@
                     @Html.Partial("_ForgotPasswordPartial", new ForgotPasswordViewModel())
                 </div>
             </div>
+            <!--toggle body with loading spinner and disable buttons while ajax call is loading-->
             <div class="modal-footer justify-content-between bg-light">
                 <div>
                     <button type="submit" class="btn btn-outline-success" formaction="/Account/Register">Register</button>
                 </div>
                 <div>
-                    <button type="submit" form="loginForm" class="btn btn-primary multi-collapse collapse show">Log in</button>
+                    <button type="button" onclick="login()" class="btn btn-primary multi-collapse collapse show">Log in</button>
                     <button type="button" class="btn btn-secondary" onclick="onClose()" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -52,15 +54,30 @@
     </div>
 </div>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
-
 <script>
     function onClose() {
         let resetLink = $("#resetLink");
         if (resetLink.is(":hidden")) {
             $(".multi-collapse").collapse("toggle");
+        }
+    }
+
+    function login() {
+        var loginForm = $("#loginForm");
+        loginForm.validate();
+
+        if (loginForm.valid()) {
+            $.ajax({
+                data: loginForm.serialize(),
+                method: "post",
+                url: "/Account/Login"
+            })
+            .onSuccess(function (result) {
+                $('#loginModal').modal('toggle');//closes dialog
+            })
+            .onFail(function (failedText) {
+                alert(failedText);
+            });
         }
     }
 </script>

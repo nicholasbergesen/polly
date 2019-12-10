@@ -65,16 +65,18 @@ namespace Polly.Website.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
+            //this should neevr happen, client side validation should handle this.
             if (!ModelState.IsValid)
             {
-                return View(model);
-            }
+                Response.StatusCode = 406;
+                return Json(new { success = false, message = ModelState.Values.Select(x => string.Concat(x.Errors.Select(y => y.ErrorMessage + ","))) });
 
+            }
             var user = await UserManager.FindByNameAsync(model.Email);
             if(!user.IsEnabled)
             {
-                ModelState.AddModelError("", "This account is pending admin activation which can take up to 24 hours.");
-                return View(model);
+                Response.StatusCode = 401;
+                return Json(new { success = false, message = "This account is pending admin activation which can take up to 24 hours." });
             }
 
             // This doesn't count login failures towards account lockout
@@ -83,9 +85,9 @@ namespace Polly.Website.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    return Json(new { success = true, message = "" });
                 case SignInStatus.LockedOut:
-                    return View("Lockout");
+                    return RedirectToAction("Lockout");
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
