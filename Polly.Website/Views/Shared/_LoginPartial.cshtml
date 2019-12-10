@@ -35,15 +35,17 @@
                         </div>
                     }
                 </div>
-                <a href=".multi-collapse" data-toggle="collapse" id="resetLink" class="multi-collapse collapse show">Reset your password</a>
-                <div class="collapse multi-collapse">
-                    @Html.Partial("_ForgotPasswordPartial", new ForgotPasswordViewModel())
+                <div>
+                    <a href=".multi-collapse" data-toggle="collapse" id="resetLink" class="collapse show pb-1">Reset your password</a>
+                    <div class="collapse multi-collapse mt-1">
+                        @Html.Partial("_ForgotPasswordPartial", new ForgotPasswordViewModel())
+                    </div>
                 </div>
             </div>
             <!--toggle body with loading spinner and disable buttons while ajax call is loading-->
             <div class="modal-footer justify-content-between bg-light">
                 <div>
-                    <button type="button" onclick="loginOrRegister('/Account/Register')" class="btn btn-outline-success">Register</button>
+                    <button type="button" onclick="loginOrRegister('/Account/Register')" class="btn btn-outline-success multi-collapse show">Register</button>
                 </div>
                 <div>
                     <button type="button" onclick="loginOrRegister('/Account/Login')" class="btn btn-primary multi-collapse collapse show">Log in</button>
@@ -92,6 +94,9 @@
                 .always(function () {
                     $('#loginModal :button').prop('disabled', false);
                 });
+        }
+        else {
+            $('#loginModal :button').prop('disabled', false);
         }
     }
 </script>
