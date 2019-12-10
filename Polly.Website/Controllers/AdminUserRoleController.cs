@@ -13,7 +13,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace Polly.Website.Controllers
 {
-    [Authorize(Users = "nicholasb.za@gmail.com")]
+    //[Authorize(Users = "nicholasb.za@gmail.com")]
     public class AdminUserRoleController : Controller
     {
         private PollyDbContext db = new PollyDbContext();
@@ -62,7 +62,7 @@ namespace Polly.Website.Controllers
         // GET: AdminUserRole/Details/5
         public async Task<ActionResult> Details(long id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
@@ -102,7 +102,7 @@ namespace Polly.Website.Controllers
         // GET: AdminUserRole/Edit/5
         public async Task<ActionResult> Edit(long id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
@@ -155,7 +155,7 @@ namespace Polly.Website.Controllers
         // GET: AdminUserRole/Delete/5
         public async Task<ActionResult> Delete(long id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }

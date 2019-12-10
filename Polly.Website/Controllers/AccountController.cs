@@ -63,19 +63,19 @@ namespace Polly.Website.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        public async Task<ActionResult> Login(LoginViewModel model)
         {
             //this should neevr happen, client side validation should handle this.
             if (!ModelState.IsValid)
             {
-                Response.StatusCode = 406;
+                HttpContext.Response.StatusCode = 406;
                 return Json(new { success = false, message = ModelState.Values.Select(x => string.Concat(x.Errors.Select(y => y.ErrorMessage + ","))) });
 
             }
             var user = await UserManager.FindByNameAsync(model.Email);
-            if(!user.IsEnabled)
+            if(user == default || !user.IsEnabled)
             {
-                Response.StatusCode = 401;
+                HttpContext.Response.StatusCode = 401;
                 return Json(new { success = false, message = "This account is pending admin activation which can take up to 24 hours." });
             }
 
@@ -89,49 +89,9 @@ namespace Polly.Website.Controllers
                 case SignInStatus.LockedOut:
                     return RedirectToAction("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
-            }
-        }
-
-        [AllowAnonymous]
-        public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
-        {
-            // Require that the user has already logged in via username/password or external login
-            if (!await SignInManager.HasBeenVerifiedAsync())
-            {
-                return View("Error");
-            }
-            return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> VerifyCode(VerifyCodeViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            // The following code protects for brute force attacks against the two factor codes. 
-            // If a user enters incorrect codes for a specified amount of time then the user account 
-            // will be locked out for a specified amount of time. 
-            // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
-            switch (result)
-            {
-                case SignInStatus.Success:
-                    return RedirectToLocal(model.ReturnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid code.");
                     return View(model);
             }
         }
@@ -155,7 +115,15 @@ namespace Polly.Website.Controllers
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     await UserManager.SendEmailAsync(user.Id, "Confirm your e-mail", $"<p>Hi {user.UserName}</p><p>Please confirm your PriceBoar e-mail by clicking <a href=\" {callbackUrl} \">here</a>.</p><p>Kind Regards</p><p>PriceBoar</p>");
 
-                    return RedirectToAction("PendingConfirmEmail");
+                    return Json(new { success = true, message = @"<h4 class=""alert-heading"">Thank you for registering with PriceBoar</h4>
+                                                                <br/>
+                                                                <div>
+                                                                    <h4>You're only 2 steps away from complting registration!</h4>
+                                                                    <ol>
+                                                                        <li>Check your mail box to confirm your e-mail.</li>
+                                                                        <li>Once confirmed, your account will be active within 24 hours.</li>
+                                                                    </ol>
+                                                                </div>" });
                 }
                 AddErrors(result);
             }
@@ -271,41 +239,6 @@ namespace Polly.Website.Controllers
         }
 
         //
-        // GET: /Account/SendCode
-        [AllowAnonymous]
-        public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
-        {
-            var userId = await SignInManager.GetVerifiedUserIdAsync();
-            if (userId == null)
-            {
-                return View("Error");
-            }
-            var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
-            var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
-            return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
-        }
-
-        //
-        // POST: /Account/SendCode
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SendCode(SendCodeViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
-
-            // Generate the token and send it
-            if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
-            {
-                return View("Error");
-            }
-            return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
-        }
-
-        //
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -313,14 +246,6 @@ namespace Polly.Website.Controllers
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Index", "Home");
-        }
-
-        //
-        // GET: /Account/ExternalLoginFailure
-        [AllowAnonymous]
-        public ActionResult ExternalLoginFailure()
-        {
-            return View();
         }
 
         protected override void Dispose(bool disposing)

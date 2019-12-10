@@ -13,7 +13,7 @@
             </div>
             <div class="modal-body">
                 <div class="multi-collapse collapse show">
-                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = HttpContext.Current.Request.Url }, FormMethod.Post, new { role = "form", id = "loginForm" }))
+                    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { role = "form", id = "loginForm" }))
                     {
                         @Html.AntiForgeryToken()
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -43,15 +43,22 @@
             <!--toggle body with loading spinner and disable buttons while ajax call is loading-->
             <div class="modal-footer justify-content-between bg-light">
                 <div>
-                    <button type="submit" class="btn btn-outline-success" formaction="/Account/Register">Register</button>
+                    <button type="button" onclick="loginOrRegister('/Account/Register')" class="btn btn-outline-success">Register</button>
                 </div>
                 <div>
-                    <button type="button" onclick="login()" class="btn btn-primary multi-collapse collapse show">Log in</button>
-                    <button type="button" class="btn btn-secondary" onclick="onClose()" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="loginOrRegister('/Account/Login')" class="btn btn-primary multi-collapse collapse show">Log in</button>
+                    <button type="button" onclick="onClose()" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<div id="loginAlert" class="alert alert-info alert-dismissible fade collapse position-absolute col-4 offset-3" data-toggle="collapse" role="alert">
+    <span></span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 
 <script>
@@ -62,22 +69,29 @@
         }
     }
 
-    function login() {
+    function loginOrRegister(postUrl) {
         var loginForm = $("#loginForm");
         loginForm.validate();
+
+        $('#loginModal :button').prop('disabled', true);
 
         if (loginForm.valid()) {
             $.ajax({
                 data: loginForm.serialize(),
                 method: "post",
-                url: "/Account/Login"
+                url: postUrl
             })
-            .onSuccess(function (result) {
-                $('#loginModal').modal('toggle');//closes dialog
-            })
-            .onFail(function (failedText) {
-                alert(failedText);
-            });
+                .done(function (result) {
+                    $('#loginModal').modal('toggle');//closes dialog
+                    $('#loginAlert span:first').html(result.message).text();
+                    $('#loginAlert').collapse('show');
+                })
+                .fail(function (failedText) {
+                    alert(failedText.message);
+                })
+                .always(function () {
+                    $('#loginModal :button').prop('disabled', false);
+                });
         }
     }
 </script>

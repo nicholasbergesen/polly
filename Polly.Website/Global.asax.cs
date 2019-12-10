@@ -42,5 +42,9 @@ namespace Polly.Website
         {
             HttpContext.Current.Response.AddHeader("Access-Control-Allow-Origin", "*");
         }
+
+        protected void Application_EndRequest(object sender, EventArgs e)
+        {
+        }
     }
 }
