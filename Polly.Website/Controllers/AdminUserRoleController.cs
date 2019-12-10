@@ -13,7 +13,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace Polly.Website.Controllers
 {
-    //[Authorize(Users = "nicholasb.za@gmail.com")]
+    [Authorize(Users = "nicholasb.za@gmail.com")]
     public class AdminUserRoleController : Controller
     {
         private PollyDbContext db = new PollyDbContext();

@@ -4,132 +4,115 @@
     var isMobile = BrowserHelper.IsMobile();
 }
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-12 col-xs-12">
-            <h2>@Html.DisplayFor(model => model.Title)</h2>
-            <div class="list-inline">
-                <h5>Last Checked: @Model.LastChecked</h5>
-                @Html.ActionLink("Back", "Index") |
-                <a href="@Model.Url" class="right">View on Takealot</a>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3 col-xs-12">
-            <img class="img-responsive" src="@Model.Image" />
-        </div>
-        @if (!isMobile)
-        {
-            <div class="col-md-6 col-xs-12">
-                <h4>Description:</h4>
-                @if (string.IsNullOrEmpty(Model.Description))
-                {
-                    <p>No description available.</p>
-                }
-                else
-                {
-                    <div class="pl_readmore js_readmore">@Html.Raw(Model.Description)</div>
-                }
-            </div>
-        }
-        @*  Removed until better "deal" logic can be decided.
-            <div class="col-md-3 col-xs-12 well well-lg">
-            <div class="pl_deal text-center">
-                <h2 class="pl_dealH2 @Model.Deal.GetDealTypeClass()">@Model.Deal.GetDealTypeText()</h2>
-
-                <div class="@Html.RenderWhenTrue(Model.Deal.LowestPrice == Model.Deal.CurrentPrice, "pl_bold")">
-                    <p>Lowest Price: @Html.DisplayFor(item => item.Deal.LowestPrice)</p>
-                    <p class="pl_bold">Current Price: @Html.DisplayFor(item => item.Deal.CurrentPrice)</p>
-                    <p>Highest Price: @Html.DisplayFor(item => item.Deal.HighestPrice)</p>
+    <div class="container pt-4">
+        <div class="row">
+            <div class="col-md-12 col-xs-12">
+                <h2>@Html.DisplayFor(model => model.Title)</h2>
+                <div class="list-inline">
+                    <h5>Last Checked: @Model.LastChecked</h5>
+                    @Html.ActionLink("Back", "Index") |
+                    <a href="@Model.Url" class="right">View on Takealot</a>
                 </div>
-                <p>
-                    Actual Discount: @Html.DisplayFor(item => item.Deal.ActualDiscount)
-                    <br /><small class="pl_bold">(relative to highest price)</small>
-                </p>
-                <p>
-                    Claimed Discount: @Html.DisplayFor(item => item.Deal.ClaimedDiscount)
-                    <br /><small class="pl_bold">(relative to highest original price)</small>
-                </p>
-                <sub class="pl_bold">The above values are calculated over the past @Model.Deal.Threshold</sub>
             </div>
-        </div>*@
-    </div>
-    <div class="row">
-        <div class="col-md-12 col-xs-12">
-            @{Html.RenderPartial("_PriceHistoryGraph", Model.PriceHistory.List); }
         </div>
-        <div class="col-md-12 col-xs-12">
-            <h4>Price history</h4>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>
-                                Date
-                            </th>
-                            <th>
-                                Price
-                            </th>
-                            @if (!isMobile)
-                            {
+        <div class="row mb-4">
+            <div class="col-md-3 col-xs-12">
+                <img class="img-fluid" src="@Model.Image" />
+            </div>
+            @if (!isMobile)
+            {
+                <div class="col-md-6 col-xs-12">
+                    <h4>Description:</h4>
+                    @if (string.IsNullOrEmpty(Model.Description))
+                    {
+                        <p>No description available.</p>
+                    }
+                    else
+                    {
+                        <div class="pl_readmore js_readmore">@Html.Raw(Model.Description)</div>
+                    }
+                </div>
+            }
+        </div>
+        <h4>Price history</h4>
+        <hr class="featurette-divider">
+        <div class="row">
+            <div class="col-md-12 col-xs-12">
+                @{Html.RenderPartial("_PriceHistoryGraph", Model.PriceHistory.List); }
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12 col-xs-12">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
                                 <th>
-                                    Price Change
+                                    Date
                                 </th>
                                 <th>
-                                    Price Change %
+                                    Price
                                 </th>
-                                <th>
-                                    Discount
-                                </th>
-                            }
-                            <th>
-                                Discount %
-                            </th>
-                            <th>
-                                Original price
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.PriceHistory.List.OrderByDescending(x => x.TimeStamp))
-                        {
-                            <tr class="
-                                @Html.RenderWhenTrue(item == Model.PriceHistory.Current, "pl_currentDeal") 
-                                @Html.RenderWhenTrue(item == Model.PriceHistory.Lowest, "pl_goodDeal") 
-                                @Html.RenderWhenTrue(item == Model.PriceHistory.Highest, "pl_badDeal")">
-                                <td>
-                                    @(isMobile ? item.TimeStamp.ToShortDateString() : item.TimeStamp.ToLongDateString())
-                                </td>
-                                <td>
-                                    <strong>@Html.DisplayFor(modelItem => item.Price)</strong>
-                                </td>
                                 @if (!isMobile)
                                 {
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.PriceChangeAmount)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.PriceChangePercent)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.DiscountAmount)
-                                    </td>
+                                    <th>
+                                        Price Change
+                                    </th>
+                                    <th>
+                                        Price Change %
+                                    </th>
+                                    <th>
+                                        Discount
+                                    </th>
                                 }
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.DiscountPercentage)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.OriginalPrice)
-                                </td>
+                                <th>
+                                    Discount %
+                                </th>
+                                <th>
+                                    Original price
+                                </th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.PriceHistory.List.OrderByDescending(x => x.TimeStamp))
+                            {
+                                <tr class="
+                                @Html.RenderWhenTrue(item == Model.PriceHistory.Current, "pl_currentDeal")
+                                @Html.RenderWhenTrue(item == Model.PriceHistory.Lowest, "pl_goodDeal")
+                                @Html.RenderWhenTrue(item == Model.PriceHistory.Highest, "pl_badDeal")">
+                                    <td>
+                                        @(isMobile ? item.TimeStamp.ToShortDateString() : item.TimeStamp.ToLongDateString())
+                                    </td>
+                                    <td>
+                                        <strong>@Html.DisplayFor(modelItem => item.Price)</strong>
+                                    </td>
+                                    @if (!isMobile)
+                                    {
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.PriceChangeAmount)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.PriceChangePercent)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.DiscountAmount)
+                                        </td>
+                                    }
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.DiscountPercentage)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.OriginalPrice)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <script type="text/javascript">
     $(function () {

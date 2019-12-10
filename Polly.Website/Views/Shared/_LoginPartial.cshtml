@@ -85,8 +85,13 @@
             })
                 .done(function (result) {
                     $('#loginModal').modal('toggle');//closes dialog
-                    $('#loginAlert span:first').html(result.message).text();
-                    $('#loginAlert').collapse('show');
+                    if (!result.success) {
+                        $('#loginAlert').collapse('show');
+                        $('#loginAlert span:first').html(result.message).text();
+                    }
+                    else {
+                        location.reload();
+                    }
                 })
                 .fail(function (failedText) {
                     alert(failedText.message);

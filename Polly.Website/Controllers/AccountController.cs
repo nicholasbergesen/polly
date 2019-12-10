@@ -103,7 +103,7 @@ namespace Polly.Website.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email, Email = model.Email };
+                var user = new User { UserName = model.Email, Email = model.Email, IsEnabled = model.Email == "nicholasb.za@gmail.com" };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -132,15 +132,6 @@ namespace Polly.Website.Controllers
             return View(model);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult PendingConfirmEmail()
-        {
-            return View();
-        }
-
-        //
-        // GET: /Account/ConfirmEmail
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(long userId, string code)
         {
@@ -152,16 +143,12 @@ namespace Polly.Website.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-        //
-        // GET: /Account/ForgotPassword
         [AllowAnonymous]
         public ActionResult ForgotPassword()
         {
             return View();
         }
 
-        //
-        // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -230,16 +217,12 @@ namespace Polly.Website.Controllers
             return View();
         }
 
-        //
-        // GET: /Account/ResetPasswordConfirmation
         [AllowAnonymous]
         public ActionResult ResetPasswordConfirmation()
         {
             return View();
         }
 
-        //
-        // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()

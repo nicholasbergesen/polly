@@ -20,7 +20,7 @@ namespace Polly.Website
         {
             get 
             {
-                //for dev environment
+                //first time populated must be manual
                 if (!LastPopulated.HasValue)
                     return _products;
 
@@ -100,7 +100,6 @@ namespace Polly.Website
             {
                 RetryCount++;
                 FailedPopulateAttempts++;
-                //fail silently
             }
         }
     }    

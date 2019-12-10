@@ -12,7 +12,7 @@ using Polly.Domain;
 
 namespace Polly.Website.Controllers
 {
-    //add anonymous method to check if authenticated 
+    [Authorize]
     [RoutePrefix("api/products")]
     public class ProductsController : ApiController
     {
@@ -149,7 +149,7 @@ namespace Polly.Website.Controllers
             public DateTime Added { get; set; }
         }
 
-        private const string TakealotApi = "https://api.takealot.com/rest/v-1-8-0/product-details";
+        private const string TakealotApi = "https://api.takealot.com/rest/v-1-9-0/product-details";
 
         protected string BuildDownloadUrl(string productId)
         {

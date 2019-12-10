@@ -35,7 +35,7 @@ namespace Polly.Website.Controllers
             if (product != null)
                 return RedirectToAction("Details", new { id = product.Id });
             else
-                return View(new List<Product>());
+                return View(new List<IndexProductView>());
         }
 
         public ActionResult Details(long? id)

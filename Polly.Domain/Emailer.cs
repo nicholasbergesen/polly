@@ -10,6 +10,7 @@ namespace Polly.Domain
 {
     public static class Emailer
     {
+        public const string PriceBoarGmail = "priceboar@gmail.com";
         public class EmailContext
         {
             public string Subject { get; set; }
@@ -29,6 +30,9 @@ namespace Polly.Domain
             {
                 using (var message = new MailMessage("accounts@priceboar.com", context.To))
                 {
+                    if(!context.To.Equals(PriceBoarGmail))
+                        message.Bcc.Add(new MailAddress("priceboar@gmail.com"));
+
                     message.Subject = context.Subject;
                     message.Body = context.Body;
                     message.IsBodyHtml = true;
