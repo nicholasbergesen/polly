@@ -134,16 +134,10 @@ namespace Polly.Website.Controllers
             }
         }
 
-        [AllowAnonymous]
-        public ActionResult Register()
-        {
-            return View();
-        }
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        public async Task<ActionResult> Register(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -180,7 +174,7 @@ namespace Polly.Website.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(long userId, string code)
         {
-            if (userId == null || code == null)
+            if (userId == 0 || code == null)
             {
                 return View("Error");
             }

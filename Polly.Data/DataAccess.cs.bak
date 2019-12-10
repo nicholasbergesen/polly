@@ -245,7 +245,7 @@ namespace Polly.Data
             using (PollyDbContext context = new PollyDbContext())
             {
                 var prod = await context.Product.FindAsync(productId);
-                //await context.Entry(prod).Reference(p => p.PriceHistory).LoadAsync();
+                await context.Entry(prod).Reference(p => p.PriceHistory).LoadAsync();
                 return prod;
             }
         }

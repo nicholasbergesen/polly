@@ -12,7 +12,7 @@
             </div>
             <div class="modal-body">
                 <div class="multi-collapse collapse show">
-                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form", id = "loginForm" }))
+                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = HttpContext.Current.Request.Url }, FormMethod.Post, new { role = "form", id = "loginForm" }))
                     {
                         @Html.AntiForgeryToken()
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })

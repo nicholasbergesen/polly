@@ -1,10 +1,23 @@
 ﻿@{
-    ViewBag.Title = "Confirm Email";
+    ViewBag.Title = "Email Confirmed! :D";
 }
 
-<h2>@ViewBag.Title.</h2>
-<div>
-    <p>
-        Thank you for confirming your email. Please @Html.ActionLink("Click here to Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
-    </p>
+<div class="container pt-4">
+    <h2>@ViewBag.Title</h2>
+    <div>
+        <p>
+            Thank you for confirming your email. You can now log in.
+        </p>
+    </div>
 </div>
+
+<script>
+    //pulse login
+    $(function () {
+        $("#loginNav").on('click', function () {
+            $(this).removeClass('pulsate rounded');
+        });
+
+        $("#loginNav").addClass('pulsate rounded');
+    });
+</script>
