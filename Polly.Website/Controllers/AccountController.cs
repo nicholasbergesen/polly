@@ -115,7 +115,7 @@ namespace Polly.Website.Controllers
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     await UserManager.SendEmailAsync(user.Id, "Confirm your e-mail", $"<p>Hi {user.UserName}</p><p>Please confirm your PriceBoar e-mail by clicking <a href=\" {callbackUrl} \">here</a>.</p><p>Kind Regards</p><p>PriceBoar</p>");
 
-                    return Json(new { success = true, message = @"<h4 class=""alert-heading"">Thank you for registering with PriceBoar</h4>
+                    return Json(new { success = false, message = @"<h4 class=""alert-heading"">Thank you for registering with PriceBoar</h4>
                                                                 <br/>
                                                                 <div>
                                                                     <h4>You're only 2 steps away from complting registration!</h4>
@@ -125,7 +125,17 @@ namespace Polly.Website.Controllers
                                                                     </ol>
                                                                 </div>" });
                 }
-                AddErrors(result);
+                //AddErrors(result);
+                //if user already exists, pretend its new
+                return Json(new { success = false, message = @"<h4 class=""alert-heading"">Thank you for registering with PriceBoar</h4>
+                                                                <br/>
+                                                                <div>
+                                                                    <h4>You're only 2 steps away from complting registration!</h4>
+                                                                    <ol>
+                                                                        <li>Check your mail box to confirm your e-mail.</li>
+                                                                        <li>Once confirmed, your account will be active within 24 hours.</li>
+                                                                    </ol>
+                                                                </div>" });
             }
 
             // If we got this far, something failed, redisplay form
