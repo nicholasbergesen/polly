@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 using Polly.Data;
@@ -33,9 +35,11 @@ namespace Polly.Website
                     OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, User, long>(
                         validateInterval: TimeSpan.FromHours(12),
                         regenerateIdentityCallback: (manager, user) => user.GenerateUserIdentityAsync(manager),
-                        getUserIdCallback: id => id.GetUserId<long>())
+                        getUserIdCallback: id => id.GetUserId<long>()),
                 },
                 ExpireTimeSpan = TimeSpan.FromDays(365.0),
+                CookieSecure = CookieSecureOption.Always,
+                CookieSameSite = SameSiteMode.None,
                 CookieHttpOnly = false,
                 CookieName = "xmf"
             });            

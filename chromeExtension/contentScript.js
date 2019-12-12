@@ -1,10 +1,31 @@
-const apiUrl = "https://polly/api/products/";
+const apiUrl = "https://localhost/api/products/";
 
-window.addEventListener('load', function () {
+console.log("called" + new Date().toLocaleString());
+setTimeout(() => {
+    checkPage();
+    console.log("called again" + new Date().toLocaleString());
+}, 1000);
+
+/*$(function () {
+});
+
+$(document).ready(function() {
+    console.log( "1document loaded" );
+});
+
+
+$(window).on( "load", function() {
+    console.log( "3window loaded" );
+});
+
+window.onload = function(){
+    console.log( "4javascript window loaded" );
+  };
+$(window).on("load", function() { 
     setTimeout(() => {
         checkPage();
-    }, 1000);
-});
+    }, 1000); 
+});*/
 
 function checkPage() {
     let dailyDealItems = $('.daily-deal-item');
@@ -82,36 +103,51 @@ function createPriceNode(result, currentPrice) {
 
 ///PRODUCT
 function updateProductHtml(parentElement) {
-    let productId = getProductIdFromUrl(window.location.href);
+    var productId = getProductIdFromUrl(window.location.href);
     $(parentElement).attr("id", "#realPrice"); //workaround for takealot being shit, allows me to append to the parent element
-    let currentPrice = $(parentElement).find(".buybox-module_price_2YUFa").children("span.currency").text();
-    currentPrice = currentPrice.replace(',', '').replace('R', '');
+    let currentPrice = "";
+    currentPrice = $(parentElement).find(".buybox-module_price_2YUFa span:first").text();
+    currentPrice = currentPrice.replace(',', '').replace(' ', '').replace('R', '');
+    var url = apiUrl + productId + "/" + currentPrice;
     $.ajax({
-        url: apiUrl + productId + "/" + currentPrice,
+        url: url,
         success: function (result) {
+            console.log(result);
             if(result.status == "Complete") {
+                console.log("complete called");
                 let priceLink = createSimplePriceNode(tryGetProductResult, currentPrice);
                 let realPrice = document.getElementById("#realPrice");
                 realPrice.insertBefore(priceLink, realPrice.childNodes[1]);
                 addChartToPage();
             }
             else {
-                $.ajax({
-                    url: "https://api.takealot.com/rest/v-1-9-0/product-details/" + productId + "?platform=desktop",
-                    success: function (takealotJSON) {
+                chrome.runtime.sendMessage(
+                {
+                    contentScriptQuery: "fetchProduct", 
+                    itemId: productId
+                },
+                function (backgroundResponse) {
+                        console.log("background replied");
+                        console.log(backgroundResponse);
                         $.ajax({
                             url: apiUrl + "addproduct",
-                            method: "POST",
-                            data: takealotJSON,
+                            type: "POST",
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            data: backgroundResponse,
                             success: function(productIdResult) {
+                                console.log("post compelte");
                                 let priceLink = createSimplePriceNode(productIdResult, currentPrice);
                                 let realPrice = document.getElementById("#realPrice");
                                 realPrice.insertBefore(priceLink, realPrice.childNodes[1]);
                                 addChartToPage();
+                            },
+                            fail: function(result) {
+                                console.log("failed post result");
+                                console.log(result);
                             }
                         });
-                    }
-                });
+                    });
             }
         }
     });

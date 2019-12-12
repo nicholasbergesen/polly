@@ -86,15 +86,18 @@ namespace Polly.Website.Controllers
 
         [HttpPost]
         [Route("addproduct")]
-        public async Task<HttpResponseMessage> AddProduct(TakealotJson takealotJson)
+        public async Task<HttpResponseMessage> AddProduct([FromBody] TakealotJson takealotJson)
         {
-            var productInternal = await _takealotMapper.MapAndSaveFullAsync(takealotJson);
+            if (takealotJson == null)
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+            var productInternal = await _takealotMapper.MapAndSaveFullAsync((TakealotJson)takealotJson);
             var returnPrice = new ApiProd() { Price = 0, Url = "https://priceboar.com/Home/Details/" + productInternal.Id, Status = Status.Complete };
 
             if (productPrices.ContainsKey(productInternal.UniqueIdentifier))
                 productPrices[productInternal.UniqueIdentifier] = returnPrice;
 
-            return Request.CreateResponse(HttpStatusCode.Created, returnPrice);
+            return Request.CreateResponse(HttpStatusCode.Created, 500);
         }
 
         [HttpGet]
