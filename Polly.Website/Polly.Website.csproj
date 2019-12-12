@@ -393,6 +393,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Shared\_AccountStatusPartial.cshtml" />
     <Content Include="Views\Shared\_ForgotPasswordPartial.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

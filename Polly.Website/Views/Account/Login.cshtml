@@ -1,0 +1,21 @@
+﻿@using Polly.Website.Models
+@model LoginViewModel
+
+@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div>
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+    </div>
+    <div>
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+    </div>
+    <div>
+        @Html.CheckBoxFor(m => m.RememberMe)
+    </div>
+    <input type="submit" value="Log in" class="btn btn-default" />
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

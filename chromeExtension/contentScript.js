@@ -1,5 +1,4 @@
-const apiUrl = "http://localhost/api/";
-const apiProducts = apiUrl + "products/";
+const apiUrl = "https://polly/api/products/";
 
 window.addEventListener('load', function () {
     setTimeout(() => {
@@ -31,29 +30,30 @@ function showDailyDealPrice(parentElement) {
     let productId = getProductIdFromUrl(parentElement.childNodes[0].getAttribute("href"));
     let currentPrice = $(parentElement).find(".price").find("span")[1].innerText;
     currentPrice = currentPrice.replace(',', '');
-    let udpatesRequired = new Array();
     $.ajax({
-        url: apiProducts + productId + "/" + currentPrice,
+        url: apiUrl + productId + "/" + currentPrice,
         success: function (result) {
-            let priceLink = createPriceNode(result, currentPrice);
-            parentElement.childNodes[3].appendChild(priceLink);
-            if(result.Status == "UpdateRequeired") {
-                udpatesRequired.push("https://api.takealot.com/rest/v-1-8-0/product-details/" + productId + "?platform=desktop")
+            if(result.status == "Complete"){
+                let priceLink = createPriceNode(result, currentPrice);
+                parentElement.childNodes[3].appendChild(priceLink);
             }
-        }
-    });
-
-    udpatesRequired.forEach(updateUrl => {
-        $.ajax({
-            url: updateUrl,
-            success: function (takealotJSON) {
+            else {
                 $.ajax({
-                    url: apiUrl,
-                    type: "POST",
-                    data: takealotJSON
+                    url: "https://api.takealot.com/rest/v-1-9-0/product-details/" + productId + "?platform=desktop",
+                    success: function (takealotJSON) {
+                        $.ajax({
+                            url: apiUrl + "addproduct",
+                            method: "POST",
+                            data: takealotJSON,
+                            success: function(productIdResult) {
+                                let priceLink = createPriceNode(productIdResult, currentPrice);
+                                parentElement.childNodes[3].appendChild(priceLink);
+                            }
+                        });
+                    }
                 });
             }
-        });
+        }
     });
 }
 
@@ -86,36 +86,34 @@ function updateProductHtml(parentElement) {
     $(parentElement).attr("id", "#realPrice"); //workaround for takealot being shit, allows me to append to the parent element
     let currentPrice = $(parentElement).find(".buybox-module_price_2YUFa").children("span.currency").text();
     currentPrice = currentPrice.replace(',', '').replace('R', '');
-    let udpatesRequired = new Array();
     $.ajax({
-        url: apiProducts + productId + "/" + currentPrice,
-        success: function (result, textStatus, xhr) {
-            console.log(xhr.status);
-            console.log(textStatus);
-            let priceLink = createSimplePriceNode(result, currentPrice);
-            let realPrice = document.getElementById("#realPrice");
-            realPrice.insertBefore(priceLink, realPrice.childNodes[1]);
-            if(result.Status == "UpdateRequeired") {
-                udpatesRequired.push("https://api.takealot.com/rest/v-1-8-0/product-details/" + productId + "?platform=desktop")
+        url: apiUrl + productId + "/" + currentPrice,
+        success: function (result) {
+            if(result.status == "Complete") {
+                let priceLink = createSimplePriceNode(tryGetProductResult, currentPrice);
+                let realPrice = document.getElementById("#realPrice");
+                realPrice.insertBefore(priceLink, realPrice.childNodes[1]);
+                addChartToPage();
             }
-            addChartToPage();
-
-        },
-        complete: function() {
-        }
-    });
-
-    udpatesRequired.forEach(updateUrl => {
-        $.ajax({
-            url: updateUrl,
-            success: function (takealotJSON) {
+            else {
                 $.ajax({
-                    url: apiUrl,
-                    type: "POST",
-                    data: takealotJSON
+                    url: "https://api.takealot.com/rest/v-1-9-0/product-details/" + productId + "?platform=desktop",
+                    success: function (takealotJSON) {
+                        $.ajax({
+                            url: apiUrl + "addproduct",
+                            method: "POST",
+                            data: takealotJSON,
+                            success: function(productIdResult) {
+                                let priceLink = createSimplePriceNode(productIdResult, currentPrice);
+                                let realPrice = document.getElementById("#realPrice");
+                                realPrice.insertBefore(priceLink, realPrice.childNodes[1]);
+                                addChartToPage();
+                            }
+                        });
+                    }
                 });
             }
-        });
+        }
     });
 }
 
@@ -131,7 +129,7 @@ function addChartToPage() {
     mainPage.insertBefore(chartElement, mainPage.childNodes[1]);
 
     $.ajax({
-        url: apiProducts + "pricehistory/" + productId,
+        url: apiUrl + "pricehistory/" + productId,
         success: function (result) {
             createChartNode(result.Price, result.Date);
         }
@@ -217,16 +215,36 @@ function addPriceColumnToWishlist(wishlistTable) {
         let productId = getProductIdFromUrl($(realTable.rows[i].cells[2]).find("a")[0].getAttribute("href"));
         let currentPrice = realTable.rows[i].cells[5].innerText.replace(',', '').replace('R', '').replace(' ', '');
         $.ajax({
-            url: apiProducts + productId + "/" + currentPrice,
-            success: function (result, textStatus, xhr) {
-                console.log(xhr.status);
-                console.log(textStatus);
-                let display = "unchanged";
-                if(result.Price > 0){
-                    let discount = (result.Price - currentPrice) / result.Price * 100;
-                    display = "R " + result.Price + " (" + Math.round(discount) + "%)";
+            url: apiUrl + productId + "/" + currentPrice,
+            success: function (result) {
+                if(result.status == "Complete") {
+                    let display = "unchanged";
+                    if(result.Price > 0) {
+                        let discount = (result.Price - currentPrice) / result.Price * 100;
+                        display = "R " + result.Price + " (" + Math.round(discount) + "%)";
+                    }
+                    createCell(realTable.rows[i].insertCell(realTable.rows[i].cells.length), display, 'col-price');
                 }
-                createCell(realTable.rows[i].insertCell(realTable.rows[i].cells.length), display, 'col-price');
+                else {
+                    $.ajax({
+                        url: "https://api.takealot.com/rest/v-1-9-0/product-details/" + productId + "?platform=desktop",
+                        success: function (takealotJSON) {
+                            $.ajax({
+                                url: apiUrl + "addproduct",
+                                method: "POST",
+                                data: takealotJSON,
+                                success: function(productIdResult) {
+                                    let display = "unchanged";
+                                    if(productIdResult.Price > 0) {
+                                        let discount = (productIdResult.Price - currentPrice) / productIdResult.Price * 100;
+                                        display = "R " + productIdResult.Price + " (" + Math.round(discount) + "%)";
+                                    }
+                                    createCell(realTable.rows[i].insertCell(realTable.rows[i].cells.length), display, 'col-price');
+                                }
+                            });
+                        }
+                    });
+                }
             }
         });
     }

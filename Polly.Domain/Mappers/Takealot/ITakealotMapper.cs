@@ -6,6 +6,8 @@ namespace Polly.Domain
     public interface IMapper
     {
         Task<Data.Product> MapAndSaveAsync(string dataString);
+        Task<Data.Product> MapAndSaveFullAsync(TakealotJson json);
+        Task<Data.Product> MapAndSavePriceAsync(TakealotJson json);
     }
 
     public interface ITakealotMapper : IMapper

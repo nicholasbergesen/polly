@@ -16,7 +16,10 @@ namespace Polly.Website.Controllers
 
         public ActionResult Index()
         {
-            return View(TopTenCache.Products);
+            if (User.Identity.IsAuthenticated)
+                return View(TopTenCache.Products);
+            else
+                return View(TopTenCache.Products.Take(5));
         }
 
         [HttpPost]

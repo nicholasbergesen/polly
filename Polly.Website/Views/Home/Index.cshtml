@@ -36,5 +36,16 @@
                 </div>
             </div>
         }
+
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <div class="col-sm-3 pb-4">
+                <div class="card h-100 w-100">
+                    <div class="card-body text-center">
+                        <div class="card-text font-weight-bold">Log in to view more...</div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </div>

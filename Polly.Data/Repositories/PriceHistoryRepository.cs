@@ -19,6 +19,18 @@ namespace Polly.Data
             }
         }
 
+        public async Task<PriceHistory> AddPriceIfNewer(long productId, decimal newPrice)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await (from priceHistory in context.PriceHistory
+                              where priceHistory.ProductId == productId
+                              orderby priceHistory.TimeStamp descending
+                              select priceHistory)
+                        .FirstOrDefaultAsync();
+            }
+        }
+
         public async Task SaveAsync(PriceHistory priceHistory)
         {
             using (PollyDbContext context = new PollyDbContext())

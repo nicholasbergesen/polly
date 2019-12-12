@@ -27,7 +27,6 @@ namespace Polly.Data
         public string PriceBoarLink { get; set; }
     }
 
-    [Obsolete]
     public class DataAccess
     {
         public static IEnumerable<Website> GetWebsites()

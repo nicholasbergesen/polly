@@ -30,6 +30,34 @@ namespace Polly.Domain
                 return default;
         }
 
+        public async Task<Data.Product> MapAndSaveFullAsync(TakealotJson json)
+        {
+            if (IsValid(json))
+            {
+                var product = await MapInternal(json);
+
+                await _productRepository.SaveAsync(product);
+
+                return product;
+            }
+            else
+                return default;
+        }
+
+        public async Task<Data.Product> MapAndSavePriceAsync(TakealotJson json)
+        {
+            if (IsValid(json))
+            {
+                var product = await MapInternal(json);
+
+                await _productRepository.SaveAsync(product);
+
+                return product;
+            }
+            else
+                return default;
+        }
+
         protected override async Task<Data.Product> MapInternal(TakealotJson jsonObject)
         {
             bool hasPurchasePrice = !jsonObject.event_data.documents.product.purchase_price.HasValue;
