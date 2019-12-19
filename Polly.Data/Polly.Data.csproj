@@ -86,12 +86,14 @@
     <Compile Include="Migrations\201912091630461_AddUserTables.designer.cs">
       <DependentUpon>201912091630461_AddUserTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201912191143448_RemoveDownloadQueueTables.cs" />
+    <Compile Include="Migrations\201912191143448_RemoveDownloadQueueTables.designer.cs">
+      <DependentUpon>201912191143448_RemoveDownloadQueueTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\IdentityClasses.cs" />
     <Compile Include="Models\ProductCategory.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\DataSourceType.cs" />
-    <Compile Include="Models\DownloadData.cs" />
-    <Compile Include="Models\DownloadQueue.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="DbContext\PollyDbContext.cs" />
     <Compile Include="Models\PriceHistory.cs" />
@@ -99,15 +101,14 @@
     <Compile Include="Repositories\CategoryRepository.cs" />
     <Compile Include="Repositories\DownloadQueueFileRepository.cs" />
     <Compile Include="Repositories\ICategoryRepository.cs" />
+    <Compile Include="Repositories\IDownloadQueueRepository.cs" />
     <Compile Include="Repositories\IProductCategoryRepository.cs" />
     <Compile Include="Repositories\PriceHistoryRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Website.cs" />
     <Compile Include="RegisterDI.cs" />
-    <Compile Include="Repositories\IDownloadQueueRepository.cs" />
     <Compile Include="Repositories\IPriceHistoryRepository.cs" />
     <Compile Include="Repositories\IProductRepository.cs" />
-    <Compile Include="Repositories\DownloadQueueRepository.cs" />
     <Compile Include="Repositories\ProductCategoryRepository.cs" />
     <Compile Include="Repositories\ProductRepository.cs" />
     <Compile Include="RepositoryModels\DownloadQueueRepositoryItem.cs" />
@@ -127,6 +128,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201912091630461_AddUserTables.resx">
       <DependentUpon>201912091630461_AddUserTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912191143448_RemoveDownloadQueueTables.resx">
+      <DependentUpon>201912191143448_RemoveDownloadQueueTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

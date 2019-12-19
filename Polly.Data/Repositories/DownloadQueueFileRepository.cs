@@ -10,7 +10,7 @@ namespace Polly.Data
 {
     public class DownloadQueueFileRepository : IDownloadQueueRepository
     {
-        private static object _locker = new Object();
+        private static object _locker = new object();
 
         public HashSet<string> GetExistingItems()
         {
