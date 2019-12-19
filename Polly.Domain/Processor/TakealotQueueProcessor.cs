@@ -33,7 +33,7 @@ namespace Polly.Domain
         public async Task DownloadAsync()
         {
             DateTime startTime = DateTime.Now;
-            var downloadQueueIds = new ConcurrentQueue<long>(await _downloadQueueRepository.GetTopDownloadQueueItems(BatchSize));
+            var downloadQueueIds = new ConcurrentQueue<long>();//(await _downloadQueueRepository.GetTopDownloadQueueItems(BatchSize));
 
             Task[] tasks = new Task[Threads];
             for (int i = 0; i < Threads; i++)

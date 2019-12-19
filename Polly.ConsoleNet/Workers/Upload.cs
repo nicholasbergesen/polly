@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Polly.ConsoleNet
 {
-    public class Upload : AsyncWorkerBase
+    public class Upload : SimpleWorker
     {
         readonly IDownloader _downloader;
         readonly object _lock = new object();
@@ -24,20 +24,6 @@ namespace Polly.ConsoleNet
         {
             ServicePointManager.DefaultConnectionLimit = 150;
             _downloader = downloader;
-            OnProgress += Upload_OnProgress;
-            OnStart += Upload_OnStart;
-        }
-
-        private void Upload_OnStart(object sender, EventArgs e)
-        {
-            Console.Clear();
-        }
-
-        private void Upload_OnProgress(object sender, ProgressEventArgs e)
-        {
-            Console.CursorTop = 0;
-            Console.CursorLeft = 0;
-            Console.WriteLine(e.ProgressString);
         }
 
         protected override async Task DoWorkInternalAsync(CancellationToken token)

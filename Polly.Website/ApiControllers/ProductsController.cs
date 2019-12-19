@@ -91,13 +91,19 @@ namespace Polly.Website.Controllers
             if (takealotJson == null)
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
 
-            var productInternal = await _takealotMapper.MapAndSaveFullAsync((TakealotJson)takealotJson);
+            var productInternal = await _takealotMapper.MapAndSaveFullAsync(takealotJson);
             var returnPrice = new ApiProd() { Price = 0, Url = "https://priceboar.com/Home/Details/" + productInternal.Id, Status = Status.Complete };
 
             if (productPrices.ContainsKey(productInternal.UniqueIdentifier))
                 productPrices[productInternal.UniqueIdentifier] = returnPrice;
 
-            return Request.CreateResponse(HttpStatusCode.Created, 500);
+            var response = Request.CreateResponse(HttpStatusCode.Created, returnPrice);
+            response.Headers.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue()
+            {
+                MaxAge = TimeSpan.FromHours(12),
+                Public = true
+            };
+            return response;
         }
 
         [HttpGet]

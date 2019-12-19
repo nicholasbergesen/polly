@@ -191,7 +191,7 @@ namespace Polly.Data
             }
         }
 
-        public static async Task<IList<ProductDownload>> GetRefreshItems()
+        public static async Task<IList<ProductDownload>> GetRefreshItemsAsync()
         {
             using (PollyDbContext context = new PollyDbContext())
             {
@@ -207,6 +207,25 @@ namespace Polly.Data
                         PriceId = x.PriceHistory.OrderByDescending(y => y.Id).FirstOrDefault().Id
                     })
                     .Take(1000)
+                    .ToListAsync();
+            }
+        }
+
+        public static async Task <IList<DownloadQueueRepositoryItem>> GetRefreshItems(int skip, int take)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                var twoWeeksAgo = DateTime.Now.AddDays(-14);
+                return await context.Product
+                    .Where(x => x.LastChecked < twoWeeksAgo)
+                    .OrderByDescending(x => x.LastChecked)
+                    .Select(x => new DownloadQueueRepositoryItem()
+                    {
+                        websiteId = 1,
+                        DownloadLink = "https://api.takealot.com/rest/v-1-9-0/product-details/" + x.UniqueIdentifier + "?platform=desktop"
+                    })
+                    .Skip(skip)
+                    .Take(take)
                     .ToListAsync();
             }
         }

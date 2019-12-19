@@ -1,31 +1,12 @@
 const apiUrl = "https://localhost/api/products/";
 
 console.log("called" + new Date().toLocaleString());
-setTimeout(() => {
-    checkPage();
-    console.log("called again" + new Date().toLocaleString());
-}, 1000);
-
-/*$(function () {
-});
-
-$(document).ready(function() {
-    console.log( "1document loaded" );
-});
-
-
-$(window).on( "load", function() {
-    console.log( "3window loaded" );
-});
-
-window.onload = function(){
-    console.log( "4javascript window loaded" );
-  };
-$(window).on("load", function() { 
+$(function () {
     setTimeout(() => {
         checkPage();
-    }, 1000); 
-});*/
+        console.log("called again" + new Date().toLocaleString());
+    }, 1000);
+});
 
 function checkPage() {
     let dailyDealItems = $('.daily-deal-item');
@@ -59,20 +40,24 @@ function showDailyDealPrice(parentElement) {
                 parentElement.childNodes[3].appendChild(priceLink);
             }
             else {
-                $.ajax({
-                    url: "https://api.takealot.com/rest/v-1-9-0/product-details/" + productId + "?platform=desktop",
-                    success: function (takealotJSON) {
+                chrome.runtime.sendMessage(
+                {
+                    contentScriptQuery: "fetchProduct", 
+                    itemId: productId
+                },
+                function (backgroundResponse) {
                         $.ajax({
                             url: apiUrl + "addproduct",
-                            method: "POST",
-                            data: takealotJSON,
+                            type: "POST",
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            data: backgroundResponse,
                             success: function(productIdResult) {
                                 let priceLink = createPriceNode(productIdResult, currentPrice);
                                 parentElement.childNodes[3].appendChild(priceLink);
                             }
                         });
-                    }
-                });
+                    });
             }
         }
     });
@@ -112,9 +97,7 @@ function updateProductHtml(parentElement) {
     $.ajax({
         url: url,
         success: function (result) {
-            console.log(result);
             if(result.status == "Complete") {
-                console.log("complete called");
                 let priceLink = createSimplePriceNode(tryGetProductResult, currentPrice);
                 let realPrice = document.getElementById("#realPrice");
                 realPrice.insertBefore(priceLink, realPrice.childNodes[1]);
@@ -127,8 +110,6 @@ function updateProductHtml(parentElement) {
                     itemId: productId
                 },
                 function (backgroundResponse) {
-                        console.log("background replied");
-                        console.log(backgroundResponse);
                         $.ajax({
                             url: apiUrl + "addproduct",
                             type: "POST",
@@ -136,15 +117,10 @@ function updateProductHtml(parentElement) {
                             contentType: 'application/json',
                             data: backgroundResponse,
                             success: function(productIdResult) {
-                                console.log("post compelte");
                                 let priceLink = createSimplePriceNode(productIdResult, currentPrice);
                                 let realPrice = document.getElementById("#realPrice");
                                 realPrice.insertBefore(priceLink, realPrice.childNodes[1]);
                                 addChartToPage();
-                            },
-                            fail: function(result) {
-                                console.log("failed post result");
-                                console.log(result);
                             }
                         });
                     });
@@ -267,7 +243,7 @@ function addPriceColumnToWishlist(wishlistTable) {
                         success: function (takealotJSON) {
                             $.ajax({
                                 url: apiUrl + "addproduct",
-                                method: "POST",
+                                type: "POST",
                                 data: takealotJSON,
                                 success: function(productIdResult) {
                                     let display = "unchanged";

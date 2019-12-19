@@ -56,6 +56,11 @@
     <Compile Include="Download\TakealotDownloader.cs" />
     <Compile Include="Emailer.cs" />
     <Compile Include="Ilogger.cs" />
+    <Compile Include="LinkSource\ILinkSource.cs" />
+    <Compile Include="LinkSource\RefreshDatabase.cs" />
+    <Compile Include="LinkSource\RobotsBase.cs" />
+    <Compile Include="LinkSource\LootRobots.cs" />
+    <Compile Include="LinkSource\TakealotRobots.cs" />
     <Compile Include="Mappers\Loot\LootMapper.cs" />
     <Compile Include="Mappers\JsonMapperBase.cs" />
     <Compile Include="Mappers\Takealot\ITakealotMapper.cs" />
@@ -69,10 +74,6 @@
     <Compile Include="ProgressEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterDI.cs" />
-    <Compile Include="Scheduler\IScheduler.cs" />
-    <Compile Include="Scheduler\Scheduler.cs" />
-    <Compile Include="Scheduler\LootScheduler.cs" />
-    <Compile Include="Scheduler\TakelaotScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

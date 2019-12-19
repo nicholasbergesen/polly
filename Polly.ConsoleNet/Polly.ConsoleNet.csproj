@@ -77,14 +77,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DownloadQueueFileRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Workers\QueueLinks.cs" />
     <Compile Include="Workers\Base\IAsyncWorker.cs" />
     <Compile Include="Workers\Base\AsyncWorkerBase.cs" />
-    <Compile Include="Workers\DownloadFromQueue.cs" />
-    <Compile Include="Workers\QueueLootLinks.cs" />
-    <Compile Include="Workers\QueueTakealotLinks.cs" />
+    <Compile Include="Workers\Base\SimpleWorker.cs" />
     <Compile Include="Workers\Compress.cs" />
     <Compile Include="Workers\Refresh.cs" />
     <Compile Include="Workers\Upload.cs" />

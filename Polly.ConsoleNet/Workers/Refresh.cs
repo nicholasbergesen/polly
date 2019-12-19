@@ -14,29 +14,16 @@ using System.Threading.Tasks;
 
 namespace Polly.ConsoleNet
 {
-    public class Refresh : AsyncWorkerBase
+    public class Refresh : SimpleWorker
     {
         readonly IDownloader _downloader;
         readonly object _lock = new object();
 
         public Refresh(IDownloader downloader)
+            :base()
         {
             ServicePointManager.DefaultConnectionLimit = 150;
             _downloader = downloader;
-            OnProgress += Upload_OnProgress;
-            OnStart += Upload_OnStart;
-        }
-
-        private void Upload_OnStart(object sender, EventArgs e)
-        {
-            Console.Clear();
-        }
-
-        private void Upload_OnProgress(object sender, ProgressEventArgs e)
-        {
-            Console.CursorTop = 0;
-            Console.CursorLeft = 0;
-            Console.WriteLine(e.ProgressString);
         }
 
         protected override async Task DoWorkInternalAsync(CancellationToken token)
@@ -53,7 +40,7 @@ namespace Polly.ConsoleNet
 
                 while (!toDo.IsAddingCompleted)
                 {
-                    var newItems = await DataAccess.GetRefreshItems()
+                    var newItems = await DataAccess.GetRefreshItemsAsync()
                         .ConfigureAwait(false);
 
                     foreach (var item in newItems)

@@ -1,25 +1,21 @@
 ﻿using Polly.Data;
-using RobotsSharpParser;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Polly.Domain
 {
-    public class TakelaotScheduler : Scheduler, ITakealotScheduler
+    public class TakealotRobots : RobotsBase, ILinkSource
     {
         private const string TakealotApi = "https://api.takealot.com/rest/v-1-8-0/product-details";
-
-        public TakelaotScheduler(IDownloadQueueRepository downloadQueueRepository)
-            : base(downloadQueueRepository)
-        {
-        }
-
-        protected override string Domain => "https://www.takealot.com/";
         protected override int WebsiteId => 1;
+        protected override string Domain => "https://www.takealot.com/";
+
+        public async Task<IEnumerable<DownloadQueueRepositoryItem>> GetNextBatchAsync(int batchSize)
+        {
+            return await GetNextBatchInternalAsync(batchSize);
+        }
 
         protected override string BuildDownloadUrl(string loc)
         {

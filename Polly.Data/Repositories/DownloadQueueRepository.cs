@@ -89,5 +89,15 @@ namespace Polly.Data
         {
             throw new System.NotImplementedException();
         }
+
+        public void SaveBatch(IEnumerable<DownloadQueueRepositoryItem> saveBatch)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public HashSet<string> GetExistingItems()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

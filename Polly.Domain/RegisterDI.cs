@@ -14,16 +14,12 @@ namespace Polly.Domain
                 container.Register<IDownloader, TakealotDownloader>();
                 container.Register<ITakealotMapper, TakelaotMapper>();
                 container.Register<ITakealotProcessor, TakealotProcessor>();
-                container.Register<ITakealotScheduler, TakelaotScheduler>();
-                container.Register<ILootScheduler, LootScheduler>();
             }
             else
             {
                 container.Register<IDownloader, TakealotDownloader>(lifestyle);
                 container.Register<ITakealotMapper, TakelaotMapper>(lifestyle);
                 container.Register<ITakealotProcessor, TakealotProcessor>(lifestyle);
-                container.Register<ITakealotScheduler, TakelaotScheduler>(lifestyle);
-                container.Register<ILootScheduler, LootScheduler>(lifestyle);
             }
         }
     }

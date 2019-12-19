@@ -104,4 +104,10 @@
             $('#loginModal :button').prop('disabled', false);
         }
     }
+
+    //reset login/register and password reset forms
+    $('#loginModal').on('hidden.bs.modal', function (e) {
+        $("#loginForm")[0].reset();
+        $("#resetForm")[0].reset();
+    });
 </script>

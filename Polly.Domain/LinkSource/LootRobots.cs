@@ -1,24 +1,20 @@
 ﻿using Polly.Data;
-using RobotsSharpParser;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Polly.Domain
 {
-    public class LootScheduler : Scheduler, ILootScheduler
+    public class LootRobots : RobotsBase, ILinkSource
     {
-        public LootScheduler(IDownloadQueueRepository downloadQueueRepository)
-            : base(downloadQueueRepository)
-        {
-        }
-
+        protected override int WebsiteId => 2;
         protected override string Domain => "https://www.loot.co.za/";
 
-        protected override int WebsiteId => 2;
+        public async Task<IEnumerable<DownloadQueueRepositoryItem>> GetNextBatchAsync(int batchSize)
+        {
+            return await GetNextBatchInternalAsync(batchSize);
+        }
 
         protected override string BuildDownloadUrl(string loc)
         {

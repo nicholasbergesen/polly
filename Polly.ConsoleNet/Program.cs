@@ -1,4 +1,5 @@
-﻿using SimpleInjector;
+﻿using Polly.Domain;
+using SimpleInjector;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,9 +18,8 @@ namespace Polly.ConsoleNet
         static Program()
         {
             _container = new Container();
-            Domain.RegisterDI.Register(_container);
+            RegisterDI.Register(_container);
             Data.RegisterDI.Register(_container);
-            _container.Register<Data.IDownloadQueueRepository, DownloadQueueFileRepository>();
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
@@ -31,12 +31,26 @@ namespace Polly.ConsoleNet
         private static Container _container;
         private static Dictionary<int, IAsyncWorker> MenuItems => new Dictionary<int, IAsyncWorker>()
         {
-            { 1, _container.GetInstance<QueueTakealotLinks>() },
-            { 2, _container.GetInstance<QueueLootLinks>() },
-            //{ 2, _container.GetInstance<DownloadFromQueue>() },
+            { 1, new QueueLinks(new List<ILinkSource>()
+                {
+                    new RefreshDatabase(),
+                    new TakealotRobots(),
+                    new LootRobots(),
+                }, 
+                new Data.DownloadQueueFileRepository())
+            },
+            { 2, new QueueLinks(new List<ILinkSource>()
+                {
+                    new RefreshDatabase()
+                },
+                new Data.DownloadQueueFileRepository())
+            },
             { 3, _container.GetInstance<Upload>() },
-            { 4, _container.GetInstance<Compress>() },
-            { 5, _container.GetInstance<Refresh>() },
+            { 4, _container.GetInstance<Compress>() }
+            //{ 1, _container.GetInstance<QueueTakealotLinks>() },
+            //{ 2, _container.GetInstance<QueueLootLinks>() },
+            //{ 2, _container.GetInstance<DownloadFromQueue>() },
+            //{ 4, _container.GetInstance<Refresh>() },
         };
 
         static void Main(string[] args)
@@ -55,16 +69,10 @@ namespace Polly.ConsoleNet
 
         public static int GetMenuOption()
         {
-            Console.WriteLine("1.Populate download queue from Takealot robots.");
-            Console.WriteLine("2.Populate download queue from Loot robots.");
-            Console.WriteLine("3.Update products from sitemap links");
-            Console.WriteLine("4.Compress");
-            Console.WriteLine("5.Refresh old products (2 weeks)");
-            //Console.WriteLine("3.Populate download queue with products older than 2 days.");
-            //Console.WriteLine("4.Run Downloader (PriceOnly).");
-            //Console.WriteLine("5.Run Downloader (PriceAndProduct).");
-            //Console.WriteLine("6.Check for new price where older than 2 days.");
-            //Console.WriteLine("7.Get daily deal prices.");
+            Console.WriteLine("1.Queue links.");
+            Console.WriteLine("2.Queue links (database only).");
+            Console.WriteLine("3.Upload from queue.");
+            Console.WriteLine("4.Clean product descriptions.");
 
             if (int.TryParse(Console.ReadLine(), out int menuOption)
                 && menuOption > 0

@@ -23,10 +23,15 @@ namespace Polly.ConsoleNet
         public event EventHandler OnEnd;
         public event ProgressEventHandler OnProgress;
 
+        protected DateTime WorkerStartTime { get; private set; }
+        protected DateTime WorkerEndTime { get; private set; }
+
         public delegate void ProgressEventHandler(object sender, ProgressEventArgs e);
 
         protected void RaiseOnStart()
         {
+            WorkerStartTime = DateTime.Now;
+
             if (OnStart == null) return;
 
             OnStart(this, new EventArgs());
@@ -34,6 +39,8 @@ namespace Polly.ConsoleNet
 
         protected void RaiseOnEnd()
         {
+            WorkerEndTime = DateTime.Now;
+
             if (OnEnd == null) return;
 
             OnEnd(this, new EventArgs());
@@ -50,26 +57,11 @@ namespace Polly.ConsoleNet
             OnProgress(this, new ProgressEventArgs(progressString));
         }
 
-        protected void RaiseOnProgress(int count, DateTime startTime)
-        {
-            if (OnProgress == null) return;
-
-            double rate = Math.Max(count / Math.Max(DateTime.Now.Subtract(startTime).TotalSeconds, 1), 1);
-            string progressString = $"{count} {rate:0.##}/s       ";
-
-            OnProgress(this, new ProgressEventArgs(progressString));
-        }
-
         protected void RaiseOnProgress(string progressMessage)
         {
             if (OnProgress == null) return;
 
             OnProgress(this, new ProgressEventArgs(progressMessage));
-        }
-
-        private void DownloadFromQueue_OnEnd(object sender, EventArgs e)
-        {
-            Console.WriteLine("Finished");
         }
     }
 

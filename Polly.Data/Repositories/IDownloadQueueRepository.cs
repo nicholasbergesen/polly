@@ -6,12 +6,7 @@ namespace Polly.Data
 {
     public interface IDownloadQueueRepository
     {
-        Task<IReadOnlyList<long>> GetTopDownloadQueueItems(int size);
-        Task<IReadOnlyList<long>> GetDownloadQueueItems();
-        Task RemoveAsync(long downloadQueue);
-        Task<int> DownloadQueueCountAsync();
-        Task<DownloadQueue> FetchByIdAsync(long id);
-        Task RemoveAsync(DownloadQueue downloadQueue);
-        Task SaveAsync(IEnumerable<DownloadQueue> saveBatch);
+        void SaveBatch(IEnumerable<DownloadQueueRepositoryItem> saveBatch);
+        HashSet<string> GetExistingItems();
     }
 }

@@ -14,25 +14,12 @@ using System.Threading.Tasks;
 
 namespace Polly.ConsoleNet
 {
-    public class Compress : AsyncWorkerBase
+    public class Compress : SimpleWorker
     {
         public Compress()
+            :base()
         {
             ServicePointManager.DefaultConnectionLimit = 150;
-            OnProgress += Compress_OnProgress;
-            OnStart += Compress_OnStart;
-        }
-
-        private void Compress_OnStart(object sender, EventArgs e)
-        {
-            Console.Clear();
-        }
-
-        private void Compress_OnProgress(object sender, ProgressEventArgs e)
-        {
-            Console.CursorTop = 0;
-            Console.CursorLeft = 0;
-            Console.WriteLine(e.ProgressString);
         }
 
         protected override async Task DoWorkInternalAsync(CancellationToken token)
@@ -48,7 +35,6 @@ namespace Polly.ConsoleNet
                 lastProcessedId = long.Parse(File.ReadAllText("processed.txt"));
                 productCount -= int.Parse(lastProcessedId.ToString());
             }
-
 
             while (lastProcessedId <= lastId)
             {

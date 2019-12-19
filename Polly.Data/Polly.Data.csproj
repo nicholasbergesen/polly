@@ -97,6 +97,7 @@
     <Compile Include="Models\PriceHistory.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Repositories\CategoryRepository.cs" />
+    <Compile Include="Repositories\DownloadQueueFileRepository.cs" />
     <Compile Include="Repositories\ICategoryRepository.cs" />
     <Compile Include="Repositories\IProductCategoryRepository.cs" />
     <Compile Include="Repositories\PriceHistoryRepository.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Repositories\DownloadQueueRepository.cs" />
     <Compile Include="Repositories\ProductCategoryRepository.cs" />
     <Compile Include="Repositories\ProductRepository.cs" />
+    <Compile Include="RepositoryModels\DownloadQueueRepositoryItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
