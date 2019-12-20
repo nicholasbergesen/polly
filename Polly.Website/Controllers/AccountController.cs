@@ -121,7 +121,7 @@ namespace Polly.Website.Controllers
                                                                     <h4>You're only 2 steps away from complting registration!</h4>
                                                                     <ol>
                                                                         <li>Check your mail box to confirm your e-mail.</li>
-                                                                        <li>Once confirmed, your account will be active within 24 hours.</li>
+                                                                        <li>Once confirmed, an admin will active your account.</li>
                                                                     </ol>
                                                                 </div>" });
                 }
@@ -133,7 +133,7 @@ namespace Polly.Website.Controllers
                                                                     <h4>You're only 2 steps away from complting registration!</h4>
                                                                     <ol>
                                                                         <li>Check your mail box to confirm your e-mail.</li>
-                                                                        <li>Once confirmed, your account will be active within 24 hours.</li>
+                                                                        <li>Once confirmed, an admin will active your account.</li>
                                                                     </ol>
                                                                 </div>" });
             }

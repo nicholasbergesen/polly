@@ -50,20 +50,6 @@ namespace Polly.Domain
                 return default;
         }
 
-        public async Task<Data.Product> MapAndSavePriceAsync(TakealotJson json)
-        {
-            if (IsValid(json))
-            {
-                var product = await MapInternal(json);
-
-                await _productRepository.SaveAsync(product);
-
-                return product;
-            }
-            else
-                return default;
-        }
-
         protected override async Task<Data.Product> MapInternal(TakealotJson takealotObject)
         {
             if (!takealotObject.event_data.documents.product.purchase_price.HasValue)
@@ -123,6 +109,8 @@ namespace Polly.Domain
                 if(!await _productCategoryRepository.HasCategories(product.Id))
                     await _productCategoryRepository.SaveAsync(categoryIds.Select(x => new ProductCategory() { CategoryId = x, ProductId = product.Id }));
             }
+
+            return product;
         }
 
         protected override bool IsValid(TakealotJson takaleotDTO)

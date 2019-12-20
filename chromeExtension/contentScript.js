@@ -1,4 +1,4 @@
-const apiUrl = "https://localhost/api/products/";
+const apiUrl = "https://priceboar.com/api/products/";
 
 console.log("called" + new Date().toLocaleString());
 $(function () {

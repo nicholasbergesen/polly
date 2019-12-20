@@ -24,7 +24,7 @@ namespace Polly.Website.Controllers
         public ProductsController()
         {
             _productRepository = new ProductRepository();
-            _takealotMapper = new TakelaotMapper(new PriceHistoryRepository(), _productRepository);
+            _takealotMapper = new TakelaotMapper(new PriceHistoryRepository(), _productRepository, new CategoryRepository(), new ProductCategoryRepository());
         }
 
         [HttpGet]
