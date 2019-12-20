@@ -68,9 +68,6 @@
     <Compile Include="Mappers\Takealot\Json\TakealotJsonPromotions1-9-0.cs" />
     <Compile Include="Mappers\Takealot\Json\TakealotProductLines1-9-0.cs" />
     <Compile Include="Mappers\Takealot\TakelaotMapper.cs" />
-    <Compile Include="Processor\ITakealotProcessor.cs" />
-    <Compile Include="Processor\TakealotProcessor.cs" />
-    <Compile Include="Processor\TakealotQueueProcessor.cs" />
     <Compile Include="ProgressEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterDI.cs" />

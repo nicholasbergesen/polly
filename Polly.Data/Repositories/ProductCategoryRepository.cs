@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,14 @@ namespace Polly.Data
             {
                 context.ProductCategory.AddRange(productCategory);
                 await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<bool> HasCategories(long productId)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                return await context.ProductCategory.FirstOrDefaultAsync(x => x.ProductId == productId) != null;
             }
         }
     }

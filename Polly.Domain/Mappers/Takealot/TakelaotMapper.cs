@@ -1,5 +1,6 @@
 ﻿using Polly.Data;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,11 +10,16 @@ namespace Polly.Domain
     {
         IPriceHistoryRepository _priceHistoryRepository;
         IProductRepository _productRepository;
+        ICategoryRepository _categoryRepository;
+        IProductCategoryRepository _productCategoryRepository;
 
-        public TakelaotMapper(IPriceHistoryRepository priceHistoryRepository, IProductRepository productRepository)
+        public TakelaotMapper(IPriceHistoryRepository priceHistoryRepository, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductCategoryRepository productCategoryRepository)
         {
             _priceHistoryRepository = priceHistoryRepository;
             _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
+            _productCategoryRepository = productCategoryRepository;
+
         }
 
         public async Task<Data.Product> MapAndSaveAsync(string json)
@@ -58,49 +64,65 @@ namespace Polly.Domain
                 return default;
         }
 
-        protected override async Task<Data.Product> MapInternal(TakealotJson jsonObject)
+        protected override async Task<Data.Product> MapInternal(TakealotJson takealotObject)
         {
-            bool hasPurchasePrice = !jsonObject.event_data.documents.product.purchase_price.HasValue;
-            if (hasPurchasePrice)
+            if (!takealotObject.event_data.documents.product.purchase_price.HasValue)
                 return null;
 
-            decimal price = jsonObject.event_data.documents.product.purchase_price.Value;
-            decimal? originalPrice = jsonObject.event_data.documents.product.original_price;
-
+            var uniqueIdentifier = takealotObject.data_layer.prodid;
+            decimal price = takealotObject.event_data.documents.product.purchase_price.Value;
+            decimal? originalPrice = takealotObject.event_data.documents.product.original_price;
             if (price >= originalPrice)//prevent bad data
                 originalPrice = null;
 
-            Data.Product product = await _productRepository.FetchFullProductByUniqueIdAsync(jsonObject.data_layer.prodid);
+            var product = await _productRepository.FetchFullProductByUniqueIdAsync(uniqueIdentifier);
+            bool isNew = product == null;
+            HashSet<int> categoryIds = new HashSet<int>();
 
-
-            if (product != null)
+            if (isNew)
             {
-                var lastPrice = await _priceHistoryRepository.FetchLastPriceForProductId(product.Id);
-                if (lastPrice.Price != price)
+                product = new Data.Product();
+                product.UniqueIdentifier = uniqueIdentifier;
+                product.Breadcrumb = takealotObject.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
+                product.Title = takealotObject.title;
+                product.Description = takealotObject.description?.html;
+                if (takealotObject.gallery.images.Any())
+                    product.Image = takealotObject.gallery.images[0].Replace("{size}", "pdpxl");
+                product.Url = takealotObject.desktop_href;
+                product.Category = takealotObject.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
+                if (product.Category != null)
                 {
-                    product.PriceHistory.Add(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
-                    return product;
+                    var categories = product.Category.Split(',');
+                    foreach (string description in categories)
+                    {
+                        if (!_categoryRepository.TryGet(description, out Category category))
+                            category = await _categoryRepository.Create(description);
+
+                        categoryIds.Add(category.Id);
+                    }
                 }
             }
-            else//new product
+
+            product.LastChecked = takealotObject.meta.date_retrieved;
+            await _productRepository.SaveAsync(product);
+
+            if (isNew)
             {
-                product = new Data.Product()
-                {
-                    UniqueIdentifier = jsonObject.data_layer.prodid
-                };
-                product.PriceHistory.Add(new PriceHistory(null, price, originalPrice) { ProductId = product.Id });
-
-                product.Breadcrumb = jsonObject.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
-                product.Title = jsonObject.title;
-                product.Description = jsonObject.description?.html;
-                product.Category = jsonObject.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
-                if (jsonObject.gallery.images.Any())
-                    product.Image = jsonObject.gallery.images[0].Replace("{size}", "pdpxl");
-                product.Url = jsonObject.desktop_href;
+                await _priceHistoryRepository.SaveAsync(new PriceHistory(null, price, originalPrice) { ProductId = product.Id });
+                await _productCategoryRepository.SaveAsync(categoryIds.Select(x => new ProductCategory() { CategoryId = x, ProductId = product.Id }));
             }
+            else
+            {
+                var lastPrice = await _priceHistoryRepository.FetchLastPriceForProductId(product.Id);
+                if (price != lastPrice?.Price)
+                    await _priceHistoryRepository.SaveAsync(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
+                else
+                    return null;
 
-            product.LastChecked = jsonObject.meta.date_retrieved;
-            return product;
+                //temporaroty until all products have categories
+                if(!await _productCategoryRepository.HasCategories(product.Id))
+                    await _productCategoryRepository.SaveAsync(categoryIds.Select(x => new ProductCategory() { CategoryId = x, ProductId = product.Id }));
+            }
         }
 
         protected override bool IsValid(TakealotJson takaleotDTO)

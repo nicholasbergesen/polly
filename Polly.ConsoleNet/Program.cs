@@ -34,8 +34,8 @@ namespace Polly.ConsoleNet
             { 1, new QueueLinks(new List<ILinkSource>()
                 {
                     new RefreshDatabase(),
-                    new TakealotRobots(),
-                    new LootRobots(),
+                    //new TakealotRobots(),
+                    //new LootRobots(),
                 }, 
                 new Data.DownloadQueueFileRepository())
             },
