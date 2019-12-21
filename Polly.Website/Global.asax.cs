@@ -46,5 +46,9 @@ namespace Polly.Website
         protected void Application_EndRequest(object sender, EventArgs e)
         {
         }
+
+        protected void Application_Error(object sender, EventArgs e)
+        {
+        }
     }
 }

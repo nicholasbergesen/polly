@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Results;
 using Polly.Data;
 using Polly.Domain;
 
@@ -126,6 +127,16 @@ namespace Polly.Website.Controllers
                 productPriceHistory.Add(uniqueIdentifier, prices);
 
             return prices;
+        }
+
+        [HttpGet]
+        [Route("tquery")]
+        public async Task<string> TQuery(string downloadString)
+        {
+            using(var downloader = new TakealotDownloader())
+            {
+                return await downloader.DownloadStringAsync(downloadString);
+            }
         }
 
         private static class Status

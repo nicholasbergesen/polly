@@ -90,6 +90,11 @@
     <Compile Include="Migrations\201912191143448_RemoveDownloadQueueTables.designer.cs">
       <DependentUpon>201912191143448_RemoveDownloadQueueTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201912201300088_AddErrorTable.cs" />
+    <Compile Include="Migrations\201912201300088_AddErrorTable.designer.cs">
+      <DependentUpon>201912201300088_AddErrorTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Error.cs" />
     <Compile Include="Models\IdentityClasses.cs" />
     <Compile Include="Models\ProductCategory.cs" />
     <Compile Include="Models\Category.cs" />
@@ -131,6 +136,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201912191143448_RemoveDownloadQueueTables.resx">
       <DependentUpon>201912191143448_RemoveDownloadQueueTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912201300088_AddErrorTable.resx">
+      <DependentUpon>201912201300088_AddErrorTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

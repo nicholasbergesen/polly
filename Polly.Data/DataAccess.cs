@@ -275,5 +275,15 @@ namespace Polly.Data
                 await context.SaveChangesAsync();
             }
         }
+
+        public async static Task LogError(Exception exception)
+        {
+            using (PollyDbContext context = new PollyDbContext())
+            {
+                var error = new Error(exception);
+                context.Error.Add(error);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

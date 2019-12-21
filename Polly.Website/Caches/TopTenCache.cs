@@ -12,29 +12,35 @@ namespace Polly.Website
 {
     public static class TopTenCache
     {
-        private static List<IndexProductView> _products = new List<IndexProductView>();
         private static object _lock = new object();
         public static int RepopulatedCount = 0;
         public static int FailedPopulateAttempts = 0;
+        public const string Top10 = "Top10";
         public static List<IndexProductView> Products
         {
-            get 
+            get
             {
                 //first time populated must be manual
                 if (!LastPopulated.HasValue)
-                    return _products;
+                    return new List<IndexProductView>();
 
-                var today = DateTime.Today;
-                if (LastPopulated?.Date != today)
+                var cacheObject = HttpContext.Current.Cache.Get(Top10);
+                if (cacheObject is List<IndexProductView> top10)
+                {
+                    return top10;
+                }
+                else
                 {
                     lock (_lock)
                     {
-                        if (LastPopulated?.Date != today)
-                            PopulateTopTenCache().Wait();
+                        PopulateTopTenCache().Wait();
                     }
+                    cacheObject = HttpContext.Current.Cache.Get(Top10);
+                    if (cacheObject is List<IndexProductView> top102)
+                        return top102;
                 }
 
-                return _products;
+                return new List<IndexProductView>();
             }
         }
 
@@ -43,7 +49,7 @@ namespace Polly.Website
         private static int RetryCount = 0;
         public static async Task PopulateTopTenCache()
         {
-            _products = new List<IndexProductView>();
+            List<IndexProductView> _products = new List<IndexProductView>();
 
             //reset retry count if a new day
             if (LastPopulated?.Date != DateTime.Now.Date)
@@ -57,7 +63,7 @@ namespace Polly.Website
                 List<ProductIdAndPrice> productIds = new List<ProductIdAndPrice>();
                 using (var download = new TakealotDownloader())
                 {
-                    var takealotPromotionsResponse = await download.DownloadAsync("https://api.takealot.com/rest/v-1-9-0/promotions?is_bundle_included=True");
+                    var takealotPromotionsResponse = await download.DownloadStringAsync("https://priceboar.com/api/products/tquery?downloadString=https://api.takealot.com/rest/v-1-9-0/promotions?is_bundle_included=True");
                     TakealotPromotionJson promotions = JsonConvert.DeserializeObject<TakealotPromotionJson>(takealotPromotionsResponse);
                     if (promotions.status_code == 200)
                     {
@@ -65,7 +71,7 @@ namespace Polly.Website
                         int start = 0;
                         int max = 100;
 
-                        var dailyDeals = await download.DownloadAsync($"https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={start}&detail=listing&filter=Available:true&filter=Promotions:{dailyDealPromotionId}");
+                        var dailyDeals = await download.DownloadStringAsync($"https://priceboar.com/api/products/tquery?downloadString=https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={start}&detail=listing&filter=Available:true&filter=Promotions:{dailyDealPromotionId}");
                         TakealotProductLine productLine = JsonConvert.DeserializeObject<TakealotProductLine>(dailyDeals);
                         productIds.AddRange(productLine.results.productlines.Select(x => new ProductIdAndPrice() { UniqueIdentifier = x.uuid, SellingPrice = x.selling_price }));
 
@@ -73,7 +79,7 @@ namespace Polly.Website
                         while (start < max)
                         {
                             start += 100;
-                            dailyDeals = await download.DownloadAsync($"https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={start}&detail=listing&filter=Available:true&filter=Promotions:{dailyDealPromotionId}");
+                            dailyDeals = await download.DownloadStringAsync($"https://priceboar.com/api/products/tquery?downloadString=https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={start}&detail=listing&filter=Available:true&filter=Promotions:{dailyDealPromotionId}");
                             productLine = JsonConvert.DeserializeObject<TakealotProductLine>(dailyDeals);
                             productIds.AddRange(productLine.results.productlines.Select(x => new ProductIdAndPrice() { UniqueIdentifier = x.uuid, SellingPrice = x.selling_price }));
                         }
@@ -83,7 +89,7 @@ namespace Polly.Website
                 var biggestDiscountProducts = await DataAccess.GetTopDiscountProducts(productIds);
                 foreach (var prod in biggestDiscountProducts)
                 {
-                    Products.Add(new IndexProductView()
+                    _products.Add(new IndexProductView()
                     {
                         DiscountPercentage = prod.Discount,
                         ImageSrc = prod.ImageSrc,
@@ -93,14 +99,17 @@ namespace Polly.Website
                         Title = prod.Title
                     });
                 }
+                HttpContext.Current.Cache.Add(Top10, _products, null, DateTime.Today.AddDays(1).Date, System.Web.Caching.Cache.NoSlidingExpiration, System.Web.Caching.CacheItemPriority.Default, null);
                 RepopulatedCount++;
                 LastPopulated = DateTime.Now;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 RetryCount++;
                 FailedPopulateAttempts++;
+                await DataAccess.LogError(e);
+                throw;
             }
         }
-    }    
+    }
 }

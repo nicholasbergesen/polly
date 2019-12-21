@@ -34,6 +34,7 @@ namespace Polly.Data
         public DbSet<DataSourceType> DataSourceType { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<ProductCategory> ProductCategory { get; set; }
+        public DbSet<Error> Error { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

@@ -5,6 +5,15 @@
 }
 
 <div class="container pt-4">
+    <h3>Stats</h3>
+    <hr />
+    <div class="row">
+        <ul>
+            <li>Machine: @Environment.MachineName</li>
+            <li>Memory: @Environment.OSVersion.VersionString</li>
+            <li>Memory: @(GC.GetTotalMemory(false) / 1024 / 1024) MBytes</li>
+        </ul>
+    </div>
     <h3>Top 10 Cache</h3>
     <hr />
     <div class="row">
