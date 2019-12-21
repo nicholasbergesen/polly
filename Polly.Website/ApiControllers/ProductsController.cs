@@ -135,7 +135,7 @@ namespace Polly.Website.Controllers
         {
             using(var downloader = new TakealotDownloader())
             {
-                return await downloader.DownloadStringAsync(downloadString);
+                return await downloader.DownloadAsync(downloadString);
             }
         }
 

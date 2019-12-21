@@ -63,7 +63,7 @@ namespace Polly.Website
                 List<ProductIdAndPrice> productIds = new List<ProductIdAndPrice>();
                 using (var download = new TakealotDownloader())
                 {
-                    var takealotPromotionsResponse = await download.DownloadStringAsync("https://priceboar.com/api/products/tquery?downloadString=https://api.takealot.com/rest/v-1-9-0/promotions?is_bundle_included=True");
+                    var takealotPromotionsResponse = await download.DownloadAsync("https://api.takealot.com/rest/v-1-9-0/promotions?is_bundle_included=True");
                     TakealotPromotionJson promotions = JsonConvert.DeserializeObject<TakealotPromotionJson>(takealotPromotionsResponse);
                     if (promotions.status_code == 200)
                     {
@@ -71,7 +71,7 @@ namespace Polly.Website
                         int start = 0;
                         int max = 100;
 
-                        var dailyDeals = await download.DownloadStringAsync($"https://priceboar.com/api/products/tquery?downloadString=https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={start}&detail=listing&filter=Available:true&filter=Promotions:{dailyDealPromotionId}");
+                        var dailyDeals = await download.DownloadAsync($"https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={start}&detail=listing&filter=Available:true&filter=Promotions:{dailyDealPromotionId}");
                         TakealotProductLine productLine = JsonConvert.DeserializeObject<TakealotProductLine>(dailyDeals);
                         productIds.AddRange(productLine.results.productlines.Select(x => new ProductIdAndPrice() { UniqueIdentifier = x.uuid, SellingPrice = x.selling_price }));
 
@@ -79,7 +79,7 @@ namespace Polly.Website
                         while (start < max)
                         {
                             start += 100;
-                            dailyDeals = await download.DownloadStringAsync($"https://priceboar.com/api/products/tquery?downloadString=https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={start}&detail=listing&filter=Available:true&filter=Promotions:{dailyDealPromotionId}");
+                            dailyDeals = await download.DownloadAsync($"https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=100&daily_deals_rows=100&start={start}&detail=listing&filter=Available:true&filter=Promotions:{dailyDealPromotionId}");
                             productLine = JsonConvert.DeserializeObject<TakealotProductLine>(dailyDeals);
                             productIds.AddRange(productLine.results.productlines.Select(x => new ProductIdAndPrice() { UniqueIdentifier = x.uuid, SellingPrice = x.selling_price }));
                         }

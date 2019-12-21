@@ -41,7 +41,8 @@ namespace Polly.Website
                 CookieSecure = CookieSecureOption.Always,
                 CookieSameSite = SameSiteMode.None,
                 CookieHttpOnly = false,
-                CookieName = "xmf"
+                CookieName = "xmf",
+                CookieDomain = "priceboar.com"
             });            
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
