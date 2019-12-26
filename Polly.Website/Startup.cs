@@ -1,7 +1,7 @@
 ﻿using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartupAttribute(typeof(Polly.Website.Startup))]
+[assembly: OwinStartup(typeof(Polly.Website.Startup))]
 namespace Polly.Website
 {
     public partial class Startup

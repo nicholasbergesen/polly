@@ -75,11 +75,11 @@ namespace Polly.ConsoleNet
                                 }
                             }
                         }
-                        catch (System.Data.Entity.Core.EntityException e)
+                        catch (System.Data.Entity.Core.EntityException)
                         {
                             toDo.Enqueue(line);
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             await sw.WriteLineAsync(url);
                         }

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Polly.Data;
 using System.Threading.Tasks;
 
 namespace Polly.Domain

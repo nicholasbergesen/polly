@@ -10,7 +10,7 @@
     <div class="row">
         <ul>
             <li>Machine: @Environment.MachineName</li>
-            <li>Memory: @Environment.OSVersion.VersionString</li>
+            <li>OS: @Environment.OSVersion.VersionString</li>
             <li>Memory: @(GC.GetTotalMemory(false) / 1024 / 1024) MBytes</li>
         </ul>
     </div>
@@ -25,7 +25,7 @@
         </ul>
     </div>
     <div class="row">
-        <a class="btn btn-primary" href="/AdminUserRole/LoadTop10Cache">Reload Cache</a>
+        <button class="btn btn-primary" onclick="getCacheItems()">Reload Cache</button>
     </div>
     <br />
     <h3>Users</h3>
@@ -78,3 +78,58 @@
         </table>
     </div>
 </div>
+
+<script>
+    function getCacheItems() {
+        $.ajax({
+            url: "https://api.takealot.com/rest/v-1-9-0/promotions?is_bundle_included=True",
+            method: "GET"
+        })
+        .done(function (result) {
+            var promotionJson = result.response;
+            let promotions = [];
+
+            for (var i = 0; i < promotionJson.length; i++) {
+                if (promotionJson[i].display_name == "Daily Deals") {
+                    var promotionsId = promotionJson[i].promotion_id;
+
+                    $.when(getproductLine(0, promotionsId, promotions),
+                        getproductLine(200, promotionsId, promotions),
+                        getproductLine(400, promotionsId, promotions))
+                        .done(function () {
+                            let concatresults = promotions[0].concat(promotions[1]).concat(promotions[2]);
+                            postData(concatresults);
+                        });
+                    break;
+                }
+            }
+        });
+    }
+
+    function getproductLine(start, promotionsId, promotions) {
+        return $.ajax({
+            url: "https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=200&daily_deals_rows=200&start=" + start + "&detail=listing&filter=Available:true&filter=Promotions:" + promotionsId,
+            type: 'GET',
+            timeout: 30000,
+            error: function (msg) {
+                console.log(msg);
+            },
+            success: function (data) {
+                promotions.push(data.results.productlines);
+            }
+        });
+    }
+
+    function postData(promotions) {
+        var send = JSON.stringify(promotions);
+        console.log(send);
+        console.log(promotions);
+        $.ajax({
+            url: '/api/products/cache',
+            method: "post",
+            data: send,
+            dataType: "json",
+            contentType: "application/json"
+        });
+    }
+</script>

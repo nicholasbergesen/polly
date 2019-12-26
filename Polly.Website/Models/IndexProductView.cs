@@ -14,5 +14,10 @@ namespace Polly.Website.Models
         public string Title { get; set; }
         public string TakealotLink { get; set; }
         public string PriceBoarLink { get; set; }
+
+        public override string ToString()
+        {
+            return $"{DiscountPercentage},{SellingPrice},{ImageSrc},{Title},{TakealotLink},{PriceBoarLink}";
+        }
     }
 }

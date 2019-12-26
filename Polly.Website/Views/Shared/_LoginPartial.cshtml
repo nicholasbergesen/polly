@@ -84,22 +84,22 @@
                 method: "post",
                 url: postUrl
             })
-                .done(function (result) {
-                    $('#loginModal').modal('toggle');//closes dialog
-                    if (!result.success) {
-                        $('#loginAlert').collapse('show');
-                        $('#loginAlert span:first').html(result.message).text();
-                    }
-                    else {
-                        location.reload();
-                    }
-                })
-                .fail(function (failedText) {
-                    //alert(failedText.message);
-                })
-                .always(function () {
-                    $('#loginModal :button').prop('disabled', false);
-                });
+            .done(function (result) {
+                $('#loginModal').modal('toggle');//closes dialog
+                if (!result.success) {
+                    $('#loginAlert').collapse('show');
+                    $('#loginAlert span:first').html(result.message).text();
+                }
+                else {
+                    location.reload();
+                }
+            })
+            .fail(function (failedText) {
+                //alert(failedText.message);
+            })
+            .always(function () {
+                $('#loginModal :button').prop('disabled', false);
+            });
         }
         else {
             $('#loginModal :button').prop('disabled', false);

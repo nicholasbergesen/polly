@@ -12,7 +12,6 @@ namespace Polly.Website
 {
     public static class TopTenCache
     {
-        private static object _lock = new object();
         public static int RepopulatedCount = 0;
         public static int FailedPopulateAttempts = 0;
         public const string Top10 = "Top10";
@@ -31,26 +30,37 @@ namespace Polly.Website
                 }
                 else
                 {
-                    lock (_lock)
-                    {
-                        PopulateTopTenCache().Wait();
-                    }
-                    cacheObject = HttpContext.Current.Cache.Get(Top10);
-                    if (cacheObject is List<IndexProductView> top102)
-                        return top102;
+                    return new List<IndexProductView>();
                 }
-
-                return new List<IndexProductView>();
             }
         }
 
-        public static DateTime? LastPopulated { get; private set; }
-
+        public static DateTime? LastPopulated { get; set; }
         private static int RetryCount = 0;
-        public static async Task PopulateTopTenCache()
+
+        public static async Task SetCacheItems(IEnumerable<ProductIdAndPrice> productIds)
         {
             List<IndexProductView> _products = new List<IndexProductView>();
+            var biggestDiscountProducts = await DataAccess.GetTopDiscountProducts(productIds);
+            foreach (var prod in biggestDiscountProducts)
+            {
+                _products.Add(new IndexProductView()
+                {
+                    DiscountPercentage = prod.Discount,
+                    ImageSrc = prod.ImageSrc,
+                    PriceBoarLink = prod.PriceBoarLink,
+                    SellingPrice = prod.SellingPrice.ToString(),
+                    TakealotLink = prod.TakealotLink,
+                    Title = prod.Title
+                });
+            }
+            HttpContext.Current.Cache.Add(Top10, _products, null, DateTime.Today.AddDays(1).Date, System.Web.Caching.Cache.NoSlidingExpiration, System.Web.Caching.CacheItemPriority.Default, null);
+            RepopulatedCount++;
+            LastPopulated = DateTime.Now;
+        }
 
+        public static async Task PopulateTopTenCache()
+        {
             //reset retry count if a new day
             if (LastPopulated?.Date != DateTime.Now.Date)
                 RetryCount = 0;
@@ -61,13 +71,16 @@ namespace Polly.Website
             try
             {
                 List<ProductIdAndPrice> productIds = new List<ProductIdAndPrice>();
+
                 using (var download = new TakealotDownloader())
                 {
                     var takealotPromotionsResponse = await download.DownloadAsync("https://api.takealot.com/rest/v-1-9-0/promotions?is_bundle_included=True");
                     TakealotPromotionJson promotions = JsonConvert.DeserializeObject<TakealotPromotionJson>(takealotPromotionsResponse);
                     if (promotions.status_code == 200)
                     {
-                        var dailyDealPromotionId = promotions.response.First(x => x.display_name == "Daily Deals" && x.is_active).promotion_id;
+                        var dailyDealPromotionId = promotions.response.FirstOrDefault(x => x.display_name.Equals("Daily Deals", StringComparison.InvariantCultureIgnoreCase))?.promotion_id;
+                        if (dailyDealPromotionId == null)
+                            throw new Exception("No active daily dails available in promotions");
                         int start = 0;
                         int max = 100;
 
@@ -86,22 +99,7 @@ namespace Polly.Website
                     }
                 }
 
-                var biggestDiscountProducts = await DataAccess.GetTopDiscountProducts(productIds);
-                foreach (var prod in biggestDiscountProducts)
-                {
-                    _products.Add(new IndexProductView()
-                    {
-                        DiscountPercentage = prod.Discount,
-                        ImageSrc = prod.ImageSrc,
-                        PriceBoarLink = prod.PriceBoarLink,
-                        SellingPrice = prod.SellingPrice.ToString(),
-                        TakealotLink = prod.TakealotLink,
-                        Title = prod.Title
-                    });
-                }
-                HttpContext.Current.Cache.Add(Top10, _products, null, DateTime.Today.AddDays(1).Date, System.Web.Caching.Cache.NoSlidingExpiration, System.Web.Caching.CacheItemPriority.Default, null);
-                RepopulatedCount++;
-                LastPopulated = DateTime.Now;
+                await SetCacheItems(productIds);
             }
             catch (Exception e)
             {

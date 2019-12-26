@@ -62,5 +62,10 @@ namespace Polly.ConsoleNet
                     break;
             }
         }
+
+        public override string ToString()
+        {
+            return "QueueLinks";
+        }
     }
 }

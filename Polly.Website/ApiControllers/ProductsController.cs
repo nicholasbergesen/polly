@@ -4,11 +4,14 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Results;
 using Polly.Data;
 using Polly.Domain;
+using Polly.Website.Models;
 
 namespace Polly.Website.Controllers
 {
@@ -130,13 +133,26 @@ namespace Polly.Website.Controllers
         }
 
         [HttpGet]
-        [Route("tquery")]
-        public async Task<string> TQuery(string downloadString)
+        [Route("test")]
+        public async Task test()
         {
-            using(var downloader = new TakealotDownloader())
+            await TopTenCache.PopulateTopTenCache();
+
+            StringBuilder sr = new StringBuilder();
+            var items = TopTenCache.Products;
+            foreach (var prod in items)
             {
-                return await downloader.DownloadAsync(downloadString);
+                sr.AppendLine(prod.ToString());
             }
+        }
+
+        [HttpPost]
+        [Route("cache")]
+        public async Task<HttpResponseMessage> PopulateTop10Cache([FromBody] TakealotProductLine.Productline[] productLines)
+        {
+            var biggestDiscountProducts = await DataAccess.GetTopDiscountProducts(productLines.Select(x => new ProductIdAndPrice() { UniqueIdentifier = x.uuid, SellingPrice = x.selling_price }));
+            await TopTenCache.SetCacheItems(biggestDiscountProducts);
+            return Request.CreateResponse(HttpStatusCode.Created);
         }
 
         private static class Status

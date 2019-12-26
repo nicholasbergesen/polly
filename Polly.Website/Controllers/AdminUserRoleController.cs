@@ -40,13 +40,6 @@ namespace Polly.Website.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<ActionResult> LoadTop10Cache()
-        {
-            await TopTenCache.PopulateTopTenCache();
-            return RedirectToAction("Index");
-        }
-
         // GET: AdminUserRole
         public async Task<ActionResult> Index()
         {
