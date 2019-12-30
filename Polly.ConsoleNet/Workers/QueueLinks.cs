@@ -14,7 +14,7 @@ namespace Polly.ConsoleNet
         IDownloadQueueRepository _repository;
         IEnumerable<ILinkSource> _linkSources;
         HashSet<string> _inQueue;
-
+        const int BatchSize = 10000;
         public QueueLinks(IEnumerable<ILinkSource> sources,
              IDownloadQueueRepository repository)
             :base()
@@ -42,7 +42,7 @@ namespace Polly.ConsoleNet
             foreach (var linkSource in _linkSources)
             {
                 Console.WriteLine($"Getting links from {linkSource}...");
-                var nextBatch = await linkSource.GetNextBatchAsync(500);
+                var nextBatch = await linkSource.GetNextBatchAsync(BatchSize);
                 while (nextBatch.Any())
                 {
                     nextBatch = nextBatch.Where(x => !_inQueue.Contains(x.ToString()));
@@ -54,7 +54,7 @@ namespace Polly.ConsoleNet
                     if (token.IsCancellationRequested)
                         break;
 
-                    nextBatch = await linkSource.GetNextBatchAsync(500);
+                    nextBatch = await linkSource.GetNextBatchAsync(BatchSize);
                 }
                 Console.WriteLine($"Getting links from {linkSource} complete.");
 

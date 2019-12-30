@@ -15,6 +15,42 @@ using Polly.Website.Models;
 
 namespace Polly.Website.Controllers
 {
+    [RoutePrefix("api/test")]
+    public class TestController : ApiController
+    {
+        [HttpGet]
+        [Route("1")]
+        public async Task Test()
+        {
+            try
+            {
+
+                await TopTenCache.PopulateTopTenCache();
+
+                StringBuilder sr = new StringBuilder();
+                var items = TopTenCache.Products;
+                foreach (var prod in items)
+                {
+                    sr.AppendLine(prod.ToString());
+                }
+            }
+            catch (AggregateException e)
+            {
+                await DataAccess.LogError(e);
+
+                foreach (var ex in e.InnerExceptions)
+                    await DataAccess.LogError(ex);
+            }
+            catch (Exception e)
+            {
+                await DataAccess.LogError(e);
+
+                if(e.InnerException != null)
+                    await DataAccess.LogError(e.InnerException);
+            }
+        }
+    }
+
     [Authorize]
     [RoutePrefix("api/products")]
     public class ProductsController : ApiController

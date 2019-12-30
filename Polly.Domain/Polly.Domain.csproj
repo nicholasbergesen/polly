@@ -54,7 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants.cs" />
     <Compile Include="Download\IDownloader.cs" />
     <Compile Include="Download\TakealotDownloader.cs" />
     <Compile Include="Emailer.cs" />

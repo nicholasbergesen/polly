@@ -83,11 +83,10 @@ namespace Polly.ConsoleNet
                         {
                             await sw.WriteLineAsync(url);
                         }
-                        lock (_lock)
-                        {
-                            RaiseOnProgress(++count, total, startTime);
-                        }
+                        Interlocked.Increment(ref count);
+                        RaiseOnProgress(count, total, startTime);
                     }
+                    count++;
                 })
                 .ContinueWith(ctask =>
                 {

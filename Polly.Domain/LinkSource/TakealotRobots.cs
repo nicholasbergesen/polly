@@ -8,7 +8,7 @@ namespace Polly.Domain
 {
     public class TakealotRobots : RobotsBase, ILinkSource
     {
-        private const string TakealotApi = "https://api.takealot.com/rest/v-1-8-0/product-details";
+        private const string TakealotApi = "https://api.takealot.com/rest/v-1-9-0/product-details";
         protected override int WebsiteId => 1;
         protected override string Domain => "https://www.takealot.com/";
 

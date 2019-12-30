@@ -126,7 +126,7 @@ namespace Polly.ConsoleNet
             await Task.WhenAll(tasks);
         }
 
-        private const string TakealotApi = "https://api.takealot.com/rest/v-1-8-0/product-details";
+        private const string TakealotApi = "https://api.takealot.com/rest/v-1-9-0/product-details";
 
         private string BuildDownloadUrl(string loc)
         {

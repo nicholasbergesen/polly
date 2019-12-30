@@ -33,7 +33,10 @@ namespace Polly.Domain
                 using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
                     if (!response.IsSuccessStatusCode)
+                    {
+                        await Data.DataAccess.LogError(new Exception(response.ToString()));
                         return null;
+                    }
 
                     using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     using (var decompressedStream = new GZipStream(responseStream, CompressionMode.Decompress))
