@@ -40,11 +40,7 @@ namespace Polly.Domain
         {
             if (IsValid(json))
             {
-                var product = await MapInternal(json);
-
-                await _productRepository.SaveAsync(product);
-
-                return product;
+                return await MapInternal(json);
             }
             else
                 return default;
@@ -90,10 +86,10 @@ namespace Polly.Domain
             }
 
             product.LastChecked = takealotObject.meta.date_retrieved;
-            await _productRepository.SaveAsync(product);
 
             if (isNew)
             {
+                await _productRepository.SaveAsync(product);//to get productId
                 await _priceHistoryRepository.SaveAsync(new PriceHistory(null, price, originalPrice) { ProductId = product.Id });
                 await _productCategoryRepository.SaveAsync(categoryIds.Select(x => new ProductCategory() { CategoryId = x, ProductId = product.Id }));
             }
@@ -108,6 +104,8 @@ namespace Polly.Domain
                 //temporaroty until all products have categories
                 if(!await _productCategoryRepository.HasCategories(product.Id))
                     await _productCategoryRepository.SaveAsync(categoryIds.Select(x => new ProductCategory() { CategoryId = x, ProductId = product.Id }));
+
+                await _productRepository.SaveAsync(product);
             }
 
             return product;

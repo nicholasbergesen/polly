@@ -11,8 +11,8 @@ namespace Polly.ConsoleNet
 {
     public class QueueLinks : SimpleWorker
     {
-        IDownloadQueueRepository _repository;
-        IEnumerable<ILinkSource> _linkSources;
+        readonly IDownloadQueueRepository _repository;
+        readonly IEnumerable<ILinkSource> _linkSources;
         HashSet<string> _inQueue;
         const int BatchSize = 10000;
         public QueueLinks(IEnumerable<ILinkSource> sources,
@@ -53,6 +53,9 @@ namespace Polly.ConsoleNet
 
                     if (token.IsCancellationRequested)
                         break;
+
+                    if (linkSource is RobotsBase)//doesn't batch, always loads all items
+                        continue;
 
                     nextBatch = await linkSource.GetNextBatchAsync(BatchSize);
                 }

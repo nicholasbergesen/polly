@@ -35,12 +35,12 @@ namespace Polly.Website
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+
             //TopTenCache.PopulateTopTenCache().Wait();
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-            HttpContext.Current.Response.AddHeader("Access-Control-Allow-Origin", "*");
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)

@@ -17,8 +17,16 @@ namespace Polly.Data
 
         public Error(Exception exception)
         {
-            StackTrace = exception.StackTrace;
-            Message = exception.Message;
+            if (exception is AggregateException agg && agg.InnerExceptions != null)
+            {
+                StackTrace = agg.InnerException.StackTrace;
+                Message = agg.InnerException.Message;
+            }
+            else
+            {
+                StackTrace = exception.StackTrace;
+                Message = exception.Message;
+            }
 
             if (TimeStamp == default(DateTime))
                 TimeStamp = DateTime.Now;

@@ -19,22 +19,24 @@ namespace Polly.Domain
         protected int Start = 0;
         private bool _downloadRunnung = false;
         private Task DownloadTask;
-        private List<string> _sitemapUrls = new List<string>();
-        private object _collectionLock = new object();
+        private readonly List<string> _sitemapUrls = new List<string>();
+        private readonly object _collectionLock = new object();
 
 
         protected async Task<IList<string>> GetSitemapLinks(int batchSize)
         {
-            if (!_downloadRunnung)
-                DownloadTask = DownloadFromRobots();
+            //if (!_downloadRunnung)
+            //    DownloadTask = DownloadFromRobots();
 
-            while(_sitemapUrls.Count < (Start + batchSize) && !DownloadTask.IsCompleted)
-                await Task.Delay(100);
+            //while(_sitemapUrls.Count < (Start + batchSize) && !DownloadTask.IsCompleted)
+            //    await Task.Delay(100);
 
-            lock (_collectionLock)
-            {
-                return _sitemapUrls.Skip(Start).Take(batchSize).ToList();
-            }
+            await DownloadFromRobots();
+            return _sitemapUrls.ToList();
+            //lock (_collectionLock)
+            //{
+            //    return _sitemapUrls.Skip(Start).Take(batchSize).ToList();
+            //}
         }
 
         protected async Task<IEnumerable<DownloadQueueRepositoryItem>> GetNextBatchInternalAsync(int batchSize)
@@ -56,7 +58,7 @@ namespace Polly.Domain
                 IgnoreErrors = true
             };
 
-            robots.Load();
+            await robots.LoadAsync();
             robots.OnProgress += Robots_OnProgress;
             var sitemaps = await robots.GetSitemapIndexesAsync();
 

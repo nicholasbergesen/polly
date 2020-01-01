@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace Polly.Website
 {
@@ -7,6 +8,8 @@ namespace Polly.Website
     {
         public static void Register(HttpConfiguration config)
         {
+            var corsAttr = new EnableCorsAttribute("https://www.takealot.com", "*", "*");
+            config.EnableCors(corsAttr);
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(

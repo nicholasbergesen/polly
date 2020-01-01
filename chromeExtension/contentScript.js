@@ -46,18 +46,18 @@ function showDailyDealPrice(parentElement) {
                     itemId: productId
                 },
                 function (backgroundResponse) {
-                        $.ajax({
-                            url: apiUrl + "addproduct",
-                            type: "POST",
-                            dataType: 'json',
-                            contentType: 'application/json',
-                            data: backgroundResponse,
-                            success: function(productIdResult) {
-                                let priceLink = createPriceNode(productIdResult, currentPrice);
-                                parentElement.childNodes[3].appendChild(priceLink);
-                            }
-                        });
+                    $.ajax({
+                        url: apiUrl + "addproduct",
+                        method: "POST",
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: backgroundResponse,
+                        success: function(productIdResult) {
+                            let priceLink = createPriceNode(productIdResult, currentPrice);
+                            parentElement.childNodes[3].appendChild(priceLink);
+                        }
                     });
+                });
             }
         }
     });
@@ -112,7 +112,7 @@ function updateProductHtml(parentElement) {
                 function (backgroundResponse) {
                         $.ajax({
                             url: apiUrl + "addproduct",
-                            type: "POST",
+                            method: "POST",
                             dataType: 'json',
                             contentType: 'application/json',
                             data: backgroundResponse,
@@ -243,7 +243,7 @@ function addPriceColumnToWishlist(wishlistTable) {
                         success: function (takealotJSON) {
                             $.ajax({
                                 url: apiUrl + "addproduct",
-                                type: "POST",
+                                method: "POST",
                                 data: takealotJSON,
                                 success: function(productIdResult) {
                                     let display = "unchanged";

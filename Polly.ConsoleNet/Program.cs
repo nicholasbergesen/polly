@@ -13,7 +13,7 @@ namespace Polly.ConsoleNet
 {
     class Program
     {
-        private static CancellationTokenSource source = new CancellationTokenSource();
+        private readonly static CancellationTokenSource source = new CancellationTokenSource();
 
         static Program()
         {
@@ -28,13 +28,13 @@ namespace Polly.ConsoleNet
             e.Cancel = true;
         }
 
-        private static Container _container;
+        private static readonly Container _container;
         private static Dictionary<int, IAsyncWorker> MenuItems => new Dictionary<int, IAsyncWorker>()
         {
             { 1, new QueueLinks(new List<ILinkSource>()
                 {
                     new TakealotRobots(),
-                    new RefreshDatabase(),
+                    //new RefreshDatabase(),
                     //new LootRobots(),
                 }, 
                 new Data.DownloadQueueFileRepository())

@@ -17,13 +17,15 @@ namespace Polly.ConsoleNet
     public class Upload : SimpleWorker
     {
         readonly IDownloader _downloader;
+        readonly ITakealotMapper _takealotMapper;
         readonly object _lock = new object();
         readonly object _writelock = new object();
 
-        public Upload(IDownloader downloader)
+        public Upload(IDownloader downloader, ITakealotMapper takealotMapper)
         {
             ServicePointManager.DefaultConnectionLimit = 150;
             _downloader = downloader;
+            _takealotMapper = takealotMapper;
         }
 
         protected override async Task DoWorkInternalAsync(CancellationToken token)
@@ -51,33 +53,24 @@ namespace Polly.ConsoleNet
                             {
                                 sw.WriteLine(url);
                             }
+                            Interlocked.Increment(ref count);
                             continue;
                         }
 
-                        try
-                        {
                             TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
 
-                            try
+                        try
+                        {
+                            await _takealotMapper.MapAndSaveFullAsync(jsonObject);
+                            lock (_writelock)
                             {
-                                await SaveProductFromJsonObject(jsonObject);
-                                lock (_writelock)
-                                {
-                                    sw.WriteLine(url);
-                                }
-                            }
-                            catch
-                            {
-                                await SaveProductFromJsonObject(jsonObject);
-                                lock (_writelock)
-                                {
-                                    sw.WriteLine(url);
-                                }
+                                sw.WriteLine(url);
                             }
                         }
                         catch (System.Data.Entity.Core.EntityException)
                         {
                             toDo.Enqueue(line);
+                            Interlocked.Decrement(ref count);
                         }
                         catch (Exception)
                         {
@@ -95,12 +88,11 @@ namespace Polly.ConsoleNet
                         Console.WriteLine();
                         Console.WriteLine($"A task ended unexpectedly:{ctask.Exception.Message}");
                     }
-                },
-                TaskContinuationOptions.OnlyOnFaulted)
-                .ContinueWith(ctask =>
+                }, TaskContinuationOptions.OnlyOnFaulted)
+                .ContinueWith(async ctask =>
                 {
-                },
-                TaskContinuationOptions.OnlyOnCanceled));
+                    await DataAccess.LogError(ctask.Exception);
+                }, TaskContinuationOptions.OnlyOnCanceled));
             }
             try
             {
@@ -143,48 +135,6 @@ namespace Polly.ConsoleNet
                     }
                 }
             return doneUrls;
-        }
-
-        private async Task<Data.Product> SaveProductFromJsonObject(TakealotJson jsonObject)
-        {
-            bool hasPurchasePrice = !jsonObject.event_data.documents.product.purchase_price.HasValue;
-            if (hasPurchasePrice)
-                return null;
-
-            decimal price = jsonObject.event_data.documents.product.purchase_price.Value;
-            decimal? originalPrice = jsonObject.event_data.documents.product.original_price;
-
-            if (price >= originalPrice)//prevent bad data
-                originalPrice = null;
-
-            Data.Product product = await DataAccess.FetchProductOrDefault(jsonObject.data_layer.prodid);
-            if (product != null)
-            {
-                var lastPrice = await DataAccess.FetchProductLastPrice(product.Id);
-                if (lastPrice.Price == price)
-                    return null;
-                await DataAccess.SaveAsync(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
-                return null;
-            }
-
-            product = new Data.Product()
-            {
-                UniqueIdentifier = jsonObject.data_layer.prodid
-            };
-            product.PriceHistory.Add(new PriceHistory(null, price, originalPrice) { ProductId = product.Id });
-
-            product.Breadcrumb = jsonObject.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
-            product.Title = jsonObject.title;
-            product.Description = jsonObject.description?.html;
-            product.Category = jsonObject.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
-            if (jsonObject.gallery.images.Any())
-                product.Image = jsonObject.gallery.images[0].Replace("{size}", "pdpxl");
-            product.Url = jsonObject.desktop_href;
-            product.LastChecked = jsonObject.meta.date_retrieved;
-
-            await DataAccess.SaveAsync(product);
-
-            return product;
         }
 
         public override string ToString()

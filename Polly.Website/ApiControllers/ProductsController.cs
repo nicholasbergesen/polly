@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.Results;
 using Polly.Data;
 using Polly.Domain;
@@ -24,7 +25,6 @@ namespace Polly.Website.Controllers
         {
             try
             {
-
                 await TopTenCache.PopulateTopTenCache();
 
                 StringBuilder sr = new StringBuilder();
