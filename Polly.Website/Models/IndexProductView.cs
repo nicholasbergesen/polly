@@ -20,4 +20,11 @@ namespace Polly.Website.Models
             return $"{DiscountPercentage},{SellingPrice},{ImageSrc},{Title},{TakealotLink},{PriceBoarLink}";
         }
     }
+
+    public class CacheTop10
+    {
+        public DateTime Created { get; set; }
+
+        public List<IndexProductView> products { get; set; }
+    }
 }

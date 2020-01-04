@@ -8,7 +8,7 @@ namespace Polly.Website
     {
         public static void Register(HttpConfiguration config)
         {
-            var corsAttr = new EnableCorsAttribute("https://www.takealot.com", "*", "*");
+            var corsAttr = new EnableCorsAttribute("*", "*", "*");
             config.EnableCors(corsAttr);
             config.MapHttpAttributeRoutes();
 

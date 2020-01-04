@@ -8,7 +8,7 @@ namespace Polly.Domain
 {
     public class TakealotDownloader : IDownloader
     {
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
         public TakealotDownloader()
         {
@@ -30,8 +30,9 @@ namespace Polly.Domain
                     if (!response.IsSuccessStatusCode)
                     {
                         await Data.DataAccess.LogError(new Exception(response.ToString()));
-                        return null;
+                        return response.ToString();
                     }
+                    response.EnsureSuccessStatusCode();
 
                     using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     using (var decompressedStream = new GZipStream(responseStream, CompressionMode.Decompress))

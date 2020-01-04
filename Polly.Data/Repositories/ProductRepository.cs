@@ -8,19 +8,12 @@ namespace Polly.Data
     {
         public async Task<Product> FetchFullProductByUniqueIdAsync(string uniqueIdentifier)
         {
-            try
+            using (PollyDbContext context = new PollyDbContext())
             {
-                using (PollyDbContext context = new PollyDbContext())
-                {
-                    context.Database.CommandTimeout = 300;
-                    return await context.Product
-                        .Include(x => x.PriceHistory)
-                        .FirstOrDefaultAsync(x => x.UniqueIdentifier == uniqueIdentifier);
-                }
-            }
-            catch (Exception e)
-            {
-                throw;
+                context.Database.CommandTimeout = 300;
+                return await context.Product
+                    .Include(x => x.PriceHistory)
+                    .FirstOrDefaultAsync(x => x.UniqueIdentifier == uniqueIdentifier);
             }
         }
 

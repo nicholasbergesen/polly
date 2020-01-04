@@ -17,8 +17,6 @@ namespace Polly.Domain
         protected abstract string BuildDownloadUrl(string loc);
         protected abstract Func<tUrl, bool> FilterProducts();
         protected int Start = 0;
-        private bool _downloadRunnung = false;
-        private Task DownloadTask;
         private readonly List<string> _sitemapUrls = new List<string>();
         private readonly object _collectionLock = new object();
 
@@ -52,7 +50,6 @@ namespace Polly.Domain
 
         private async Task DownloadFromRobots()
         {
-            _downloadRunnung = true;
             Robots robots = new Robots(Domain, UserAgent)
             {
                 IgnoreErrors = true

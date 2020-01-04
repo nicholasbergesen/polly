@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Polly.ConsoleNet.Properties;
 using Polly.Data;
 using Polly.Domain;
 using System;
@@ -18,8 +19,7 @@ namespace Polly.ConsoleNet
     {
         readonly IDownloader _downloader;
         readonly ITakealotMapper _takealotMapper;
-        readonly object _lock = new object();
-        readonly object _writelock = new object();
+        private StreamWriter _doneTxt;
 
         public Upload(IDownloader downloader, ITakealotMapper takealotMapper)
         {
@@ -30,15 +30,16 @@ namespace Polly.ConsoleNet
 
         protected override async Task DoWorkInternalAsync(CancellationToken token)
         {
-            var startTime = DateTime.Now;
             int count = 0;
             var doneUrls = await GetDone();
             var toDo = await GetToDo(doneUrls);
+            _doneTxt = new StreamWriter("done.txt", append: true);
             var total = toDo.Count;
-            StreamWriter sw = new StreamWriter("done.txt", append: true);
             List<Task> tasks = new List<Task>();
+            var startTime = DateTime.Now;
+            int progressLock = 0;
 
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < Settings.Default.ThreadCount; i++)
             {
                 tasks.Add(Task.Run(async () =>
                 {
@@ -49,50 +50,47 @@ namespace Polly.ConsoleNet
                         var httpResponse = await _downloader.DownloadAsync(url);
                         if (string.IsNullOrWhiteSpace(httpResponse))
                         {
-                            lock (_writelock)
-                            {
-                                sw.WriteLine(url);
-                            }
                             Interlocked.Increment(ref count);
+                            await TryWrite(url);
                             continue;
                         }
 
-                            TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
-
                         try
                         {
+                            Interlocked.Increment(ref count);
+                            TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
                             await _takealotMapper.MapAndSaveFullAsync(jsonObject);
-                            lock (_writelock)
-                            {
-                                sw.WriteLine(url);
-                            }
                         }
                         catch (System.Data.Entity.Core.EntityException)
                         {
                             toDo.Enqueue(line);
                             Interlocked.Decrement(ref count);
                         }
-                        catch (Exception)
+                        catch(JsonReaderException e)
                         {
-                            await sw.WriteLineAsync(url);
+                            await TryWrite(url + "," + e.Message);
+                            continue;
                         }
-                        Interlocked.Increment(ref count);
-                        RaiseOnProgress(count, total, startTime);
+
+                        await TryWrite(url);
+                        if (0 == Interlocked.Exchange(ref progressLock, 1))
+                        {
+                            RaiseOnProgress(count, total, startTime);
+                            Interlocked.Exchange(ref progressLock, 0);
+                        }
+
+                        if (token.IsCancellationRequested)
+                            break;
                     }
                     count++;
                 })
                 .ContinueWith(ctask =>
                 {
-                    lock (_lock)
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine($"A task ended unexpectedly:{ctask.Exception.Message}");
-                    }
-                }, TaskContinuationOptions.OnlyOnFaulted)
-                .ContinueWith(async ctask =>
-                {
-                    await DataAccess.LogError(ctask.Exception);
-                }, TaskContinuationOptions.OnlyOnCanceled));
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine($"Runnuing tasks remaining:{tasks.Select(x => !x.IsCompleted).Count()}{Environment.NewLine}");
+                    Console.WriteLine($"A task ended unexpectedly:{ctask.Exception.ToString()}");
+                }, TaskContinuationOptions.OnlyOnFaulted));
             }
             try
             {
@@ -100,8 +98,26 @@ namespace Polly.ConsoleNet
             }
             finally
             {
-                sw.Close();
-                sw.Dispose();
+                _doneTxt.Close();
+                _doneTxt.Dispose();
+            }
+        }
+
+        public async Task TryWrite(string text, int count = 0)
+        {
+            if (count > 0)
+                await Task.Delay(100 * count);
+
+            if (count == 4)
+                throw new Exception("Max write attempt reached for done.txt");
+
+            try
+            {
+                await _doneTxt.WriteLineAsync(text);
+            }
+            catch (InvalidOperationException)
+            {
+                await TryWrite(text, ++count);
             }
         }
 

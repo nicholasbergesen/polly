@@ -21,7 +21,7 @@ namespace Polly.Website.Controllers
     {
         [HttpGet]
         [Route("1")]
-        public async Task Test()
+        public async Task<string> Test()
         {
             try
             {
@@ -33,6 +33,8 @@ namespace Polly.Website.Controllers
                 {
                     sr.AppendLine(prod.ToString());
                 }
+
+                return "ok";
             }
             catch (AggregateException e)
             {
@@ -40,6 +42,7 @@ namespace Polly.Website.Controllers
 
                 foreach (var ex in e.InnerExceptions)
                     await DataAccess.LogError(ex);
+                return string.Concat(e.ToString(), " ", e.InnerExceptions);
             }
             catch (Exception e)
             {
@@ -47,6 +50,24 @@ namespace Polly.Website.Controllers
 
                 if(e.InnerException != null)
                     await DataAccess.LogError(e.InnerException);
+
+                return string.Concat(e.ToString());
+            }
+        }
+
+        [HttpGet]
+        [Route("2")]
+        public async Task<string> Test2(string testUrl)
+        {
+            try
+            {
+                var downloader = new TakealotDownloader();
+                var response = await downloader.DownloadAsync(testUrl);
+                return response;
+            }
+            catch(Exception e)
+            {
+                return e.ToString();
             }
         }
     }
@@ -55,8 +76,8 @@ namespace Polly.Website.Controllers
     [RoutePrefix("api/products")]
     public class ProductsController : ApiController
     {
-        private static Dictionary<string, ApiProd> productPrices = new Dictionary<string, ApiProd>();
-        private static Dictionary<string, ApiPriceHistory> productPriceHistory = new Dictionary<string, ApiPriceHistory>();
+        private readonly static Dictionary<string, ApiProd> productPrices = new Dictionary<string, ApiProd>();
+        private readonly static Dictionary<string, ApiPriceHistory> productPriceHistory = new Dictionary<string, ApiPriceHistory>();
 
         private readonly IProductRepository _productRepository;
         private readonly ITakealotMapper _takealotMapper;
@@ -71,8 +92,7 @@ namespace Polly.Website.Controllers
         [Route("{uniqueIdentifier}/{currentPrice:decimal}")]
         public async Task<HttpResponseMessage> CheckProductUpdate(string uniqueIdentifier, decimal currentPrice)
         {
-            ApiProd returnPrice;
-            if (!productPrices.TryGetValue(uniqueIdentifier, out returnPrice))
+            if (!productPrices.TryGetValue(uniqueIdentifier, out ApiProd returnPrice))
             {
                 productPriceHistory.Remove(uniqueIdentifier);
 
@@ -170,7 +190,7 @@ namespace Polly.Website.Controllers
 
         [HttpGet]
         [Route("test")]
-        public async Task test()
+        public async Task Test()
         {
             await TopTenCache.PopulateTopTenCache();
 

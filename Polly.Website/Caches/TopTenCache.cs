@@ -4,6 +4,7 @@ using Polly.Domain;
 using Polly.Website.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -19,19 +20,33 @@ namespace Polly.Website
         {
             get
             {
-                //first time populated must be manual
-                if (!LastPopulated.HasValue)
-                    return new List<IndexProductView>();
-
-                var cacheObject = HttpContext.Current.Cache.Get(Top10);
-                if (cacheObject is List<IndexProductView> top10)
+                try
                 {
-                    return top10;
+                    var productsJson = File.ReadAllText(HttpContext.Current.Server.MapPath("~/Caches/topCache.json"));
+                    var top10 = JsonConvert.DeserializeObject<CacheTop10>(productsJson);
+                    if (top10.Created.DayOfYear != DateTime.Now.DayOfYear)
+                    {
+                        PopulateTopTenCache().Wait();
+                        return new List<IndexProductView>();
+                    }
+                    else
+                    {
+                        return top10.products;
+                    }
                 }
-                else
+                catch
                 {
                     return new List<IndexProductView>();
                 }
+                //var cacheObject = HttpContext.Current.Cache.Get(Top10);
+                //if (cacheObject is List<IndexProductView> top10)
+                //{
+                //    return top10;
+                //}
+                //else
+                //{
+                //    return new List<IndexProductView>();
+                //}
             }
         }
 
@@ -54,7 +69,11 @@ namespace Polly.Website
                     Title = prod.Title
                 });
             }
-            HttpContext.Current.Cache.Add(Top10, _products, null, DateTime.Today.AddDays(1).Date, System.Web.Caching.Cache.NoSlidingExpiration, System.Web.Caching.CacheItemPriority.Default, null);
+            var jsonObject = new CacheTop10() { Created = DateTime.Now, products = _products };
+
+            var productsJson = JsonConvert.SerializeObject(jsonObject);
+            File.WriteAllText(HttpContext.Current.Server.MapPath("~/Caches/topCache.json"), productsJson);
+            //HttpContext.Current.Cache.Add(Top10, _products, null, DateTime.Today.AddDays(1).Date, System.Web.Caching.Cache.NoSlidingExpiration, System.Web.Caching.CacheItemPriority.Default, null);
             RepopulatedCount++;
             LastPopulated = DateTime.Now;
         }
