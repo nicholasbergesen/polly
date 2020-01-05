@@ -18,14 +18,13 @@
     <hr />
     <div class="row">
         <ul>
-            <li>Last Populated: @TopTenCache.LastPopulated.GetValueOrDefault()</li>
             <li>Item Count: @TopTenCache.Products.Count</li>
-            <li>Repopulated: @TopTenCache.RepopulatedCount</li>
-            <li>Failed to populated: @TopTenCache.FailedPopulateAttempts</li>
         </ul>
     </div>
     <div class="row">
-        <button class="btn btn-primary" onclick="getCacheItems()">Reload Cache</button>
+        <button class="btn btn-primary" onclick="getCacheItems()">Reload Cache (Client)</button>
+        <a class="btn btn-primary" href="~/api/products/populateServer">Reload Cache (Server)</a>
+        <a class="btn btn-primary" href="~/api/products/clearCache">Clear Cache</a>
     </div>
     <br />
     <h3>Users</h3>
@@ -83,7 +82,10 @@
     function getCacheItems() {
         $.ajax({
             url: "https://api.takealot.com/rest/v-1-9-0/promotions?is_bundle_included=True",
-            method: "GET"
+            method: "GET",
+            error: function (msg) {
+                console.log(msg);
+            },
         })
         .done(function (result) {
             var promotionJson = result.response;
@@ -109,7 +111,7 @@
     function getproductLine(start, promotionsId, promotions) {
         return $.ajax({
             url: "https://api.takealot.com/rest/v-1-9-0/productlines/search?sort=BestSelling%20Descending&rows=200&daily_deals_rows=200&start=" + start + "&detail=listing&filter=Available:true&filter=Promotions:" + promotionsId,
-            type: 'GET',
+            method: 'GET',
             timeout: 30000,
             error: function (msg) {
                 console.log(msg);
@@ -125,8 +127,8 @@
         console.log(send);
         console.log(promotions);
         $.ajax({
-            url: '/api/products/cache',
-            method: "post",
+            url: '/api/products/populateClient',
+            method: "POST",
             data: send,
             dataType: "json",
             contentType: "application/json"

@@ -1,11 +1,9 @@
 const apiUrl = "https://priceboar.com/api/products/";
 
-console.log("called" + new Date().toLocaleString());
 $(function () {
     setTimeout(() => {
         checkPage();
-        console.log("called again" + new Date().toLocaleString());
-    }, 1000);
+    }, 1500);
 });
 
 function checkPage() {
@@ -34,6 +32,9 @@ function showDailyDealPrice(parentElement) {
     currentPrice = currentPrice.replace(',', '');
     $.ajax({
         url: apiUrl + productId + "/" + currentPrice,
+        xhrFields: {
+            withCredentials: true
+        },
         success: function (result) {
             if(result.status == "Complete"){
                 let priceLink = createPriceNode(result, currentPrice);
@@ -52,6 +53,9 @@ function showDailyDealPrice(parentElement) {
                         dataType: 'json',
                         contentType: 'application/json',
                         data: backgroundResponse,
+                        xhrFields: {
+                            withCredentials: true
+                        },
                         success: function(productIdResult) {
                             let priceLink = createPriceNode(productIdResult, currentPrice);
                             parentElement.childNodes[3].appendChild(priceLink);
@@ -92,10 +96,14 @@ function updateProductHtml(parentElement) {
     $(parentElement).attr("id", "#realPrice"); //workaround for takealot being shit, allows me to append to the parent element
     let currentPrice = "";
     currentPrice = $(parentElement).find(".buybox-module_price_2YUFa span:first").text();
+    console.log(currentPrice);
     currentPrice = currentPrice.replace(',', '').replace(' ', '').replace('R', '');
     var url = apiUrl + productId + "/" + currentPrice;
     $.ajax({
         url: url,
+        xhrFields: {
+            withCredentials: true
+        },
         success: function (result) {
             if(result.status == "Complete") {
                 let priceLink = createSimplePriceNode(tryGetProductResult, currentPrice);
@@ -116,6 +124,9 @@ function updateProductHtml(parentElement) {
                             dataType: 'json',
                             contentType: 'application/json',
                             data: backgroundResponse,
+                            xhrFields: {
+                                withCredentials: true
+                            },
                             success: function(productIdResult) {
                                 let priceLink = createSimplePriceNode(productIdResult, currentPrice);
                                 let realPrice = document.getElementById("#realPrice");
@@ -142,6 +153,9 @@ function addChartToPage() {
 
     $.ajax({
         url: apiUrl + "pricehistory/" + productId,
+        xhrFields: {
+            withCredentials: true
+        },
         success: function (result) {
             createChartNode(result.Price, result.Date);
         }
@@ -228,6 +242,9 @@ function addPriceColumnToWishlist(wishlistTable) {
         let currentPrice = realTable.rows[i].cells[5].innerText.replace(',', '').replace('R', '').replace(' ', '');
         $.ajax({
             url: apiUrl + productId + "/" + currentPrice,
+            xhrFields: {
+                withCredentials: true
+            },
             success: function (result) {
                 if(result.status == "Complete") {
                     let display = "unchanged";

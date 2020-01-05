@@ -26,7 +26,6 @@ namespace Polly.Website
                     var top10 = JsonConvert.DeserializeObject<CacheTop10>(productsJson);
                     if (top10.Created.DayOfYear != DateTime.Now.DayOfYear)
                     {
-                        PopulateTopTenCache().Wait();
                         return new List<IndexProductView>();
                     }
                     else
@@ -38,55 +37,17 @@ namespace Polly.Website
                 {
                     return new List<IndexProductView>();
                 }
-                //var cacheObject = HttpContext.Current.Cache.Get(Top10);
-                //if (cacheObject is List<IndexProductView> top10)
-                //{
-                //    return top10;
-                //}
-                //else
-                //{
-                //    return new List<IndexProductView>();
-                //}
             }
         }
 
-        public static DateTime? LastPopulated { get; set; }
-        private static int RetryCount = 0;
-
-        public static async Task SetCacheItems(IEnumerable<ProductIdAndPrice> productIds)
+        public static void ClearCache()
         {
-            List<IndexProductView> _products = new List<IndexProductView>();
-            var biggestDiscountProducts = await DataAccess.GetTopDiscountProducts(productIds);
-            foreach (var prod in biggestDiscountProducts)
-            {
-                _products.Add(new IndexProductView()
-                {
-                    DiscountPercentage = prod.Discount,
-                    ImageSrc = prod.ImageSrc,
-                    PriceBoarLink = prod.PriceBoarLink,
-                    SellingPrice = prod.SellingPrice.ToString(),
-                    TakealotLink = prod.TakealotLink,
-                    Title = prod.Title
-                });
-            }
-            var jsonObject = new CacheTop10() { Created = DateTime.Now, products = _products };
-
-            var productsJson = JsonConvert.SerializeObject(jsonObject);
-            File.WriteAllText(HttpContext.Current.Server.MapPath("~/Caches/topCache.json"), productsJson);
-            //HttpContext.Current.Cache.Add(Top10, _products, null, DateTime.Today.AddDays(1).Date, System.Web.Caching.Cache.NoSlidingExpiration, System.Web.Caching.CacheItemPriority.Default, null);
-            RepopulatedCount++;
-            LastPopulated = DateTime.Now;
+            File.WriteAllText(HttpContext.Current.Server.MapPath("~/Caches/topCache.json"), "{}");
         }
+        
 
         public static async Task PopulateTopTenCache()
         {
-            //reset retry count if a new day
-            if (LastPopulated?.Date != DateTime.Now.Date)
-                RetryCount = 0;
-
-            if (RetryCount > 5)
-                return;
-
             try
             {
                 List<ProductIdAndPrice> productIds = new List<ProductIdAndPrice>();
@@ -122,11 +83,33 @@ namespace Polly.Website
             }
             catch (Exception e)
             {
-                RetryCount++;
                 FailedPopulateAttempts++;
                 await DataAccess.LogError(e);
                 throw;
             }
+        }
+
+        public static async Task SetCacheItems(IEnumerable<ProductIdAndPrice> productIds)
+        {
+            List<IndexProductView> _products = new List<IndexProductView>();
+            var biggestDiscountProducts = await DataAccess.GetTopDiscountProducts(productIds);
+            foreach (var prod in biggestDiscountProducts)
+            {
+                _products.Add(new IndexProductView()
+                {
+                    DiscountPercentage = prod.Discount,
+                    ImageSrc = prod.ImageSrc,
+                    PriceBoarLink = prod.PriceBoarLink,
+                    SellingPrice = prod.SellingPrice.ToString(),
+                    TakealotLink = prod.TakealotLink,
+                    Title = prod.Title
+                });
+            }
+            var jsonObject = new CacheTop10() { Created = DateTime.Now, products = _products };
+
+            var productsJson = JsonConvert.SerializeObject(jsonObject);
+            File.WriteAllText(HttpContext.Current.Server.MapPath("~/Caches/topCache.json"), productsJson);
+            RepopulatedCount++;
         }
     }
 }

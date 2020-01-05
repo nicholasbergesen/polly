@@ -6,13 +6,9 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
-using System.Web.Http.Cors;
-using System.Web.Http.Results;
 using Polly.Data;
 using Polly.Domain;
-using Polly.Website.Models;
 
 namespace Polly.Website.Controllers
 {
@@ -189,26 +185,27 @@ namespace Polly.Website.Controllers
         }
 
         [HttpGet]
-        [Route("test")]
-        public async Task Test()
+        [Route("populateServer")]
+        public async Task<HttpResponseMessage> PopulateCacheServer()
         {
             await TopTenCache.PopulateTopTenCache();
-
-            StringBuilder sr = new StringBuilder();
-            var items = TopTenCache.Products;
-            foreach (var prod in items)
-            {
-                sr.AppendLine(prod.ToString());
-            }
+            return Request.CreateResponse(HttpStatusCode.Created);
         }
 
         [HttpPost]
-        [Route("cache")]
-        public async Task<HttpResponseMessage> PopulateTop10Cache([FromBody] TakealotProductLine.Productline[] productLines)
+        [Route("populateClient")]
+        public async Task<HttpResponseMessage> PopulateCacheClient([FromBody] TakealotProductLine.Productline[] productLines)
         {
-            var biggestDiscountProducts = await DataAccess.GetTopDiscountProducts(productLines.Select(x => new ProductIdAndPrice() { UniqueIdentifier = x.uuid, SellingPrice = x.selling_price }));
-            await TopTenCache.SetCacheItems(biggestDiscountProducts);
+            await TopTenCache.SetCacheItems(productLines.Select(x => new ProductIdAndPrice() { UniqueIdentifier = x.uuid, SellingPrice = x.selling_price }));
             return Request.CreateResponse(HttpStatusCode.Created);
+        }
+
+        [HttpGet]
+        [Route("clearCache")]
+        public IHttpActionResult ClearCache()
+        {
+            TopTenCache.ClearCache();
+            return Ok();
         }
 
         private static class Status

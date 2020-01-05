@@ -99,7 +99,7 @@ namespace Polly.Domain
                 if (price != lastPrice?.Price)
                     await _priceHistoryRepository.SaveAsync(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
                 else
-                    return null;
+                    return product;
 
                 //temporaroty until all products have categories
                 if(!await _productCategoryRepository.HasCategories(product.Id))
