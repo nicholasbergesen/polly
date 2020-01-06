@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Polly.Data
 {
@@ -92,7 +88,7 @@ namespace Polly.Data
         public decimal? OriginalPrice { get; set; }
 
         [Index("IX_PriceHistory_DiscountAmount_PreviousPriceHistoryId", Order = 1), DataType(DataType.Currency)]
-        public decimal? DiscountAmount{ get; set; }
+        public decimal? DiscountAmount { get; set; }
 
         //IX_PriceHistory_DiscountPercentage added as script for "INCLUDE" sql feature
         public decimal? DiscountPercentage { get; set; }

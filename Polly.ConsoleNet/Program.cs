@@ -2,10 +2,6 @@
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +32,7 @@ namespace Polly.ConsoleNet
                     new TakealotRobots(),
                     //new RefreshDatabase(),
                     //new LootRobots(),
-                }, 
+                },
                 new Data.DownloadQueueFileRepository())
             },
             { 2, new QueueLinks(new List<ILinkSource>()

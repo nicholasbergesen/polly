@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Polly.Data;
+using Polly.Domain;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -7,8 +9,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Polly.Data;
-using Polly.Domain;
 
 namespace Polly.Website.Controllers
 {
@@ -44,7 +44,7 @@ namespace Polly.Website.Controllers
             {
                 await DataAccess.LogError(e);
 
-                if(e.InnerException != null)
+                if (e.InnerException != null)
                     await DataAccess.LogError(e.InnerException);
 
                 return string.Concat(e.ToString());
@@ -61,7 +61,7 @@ namespace Polly.Website.Controllers
                 var response = await downloader.DownloadAsync(testUrl);
                 return response;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return e.ToString();
             }
@@ -178,7 +178,7 @@ namespace Polly.Website.Controllers
             }
             prices.Added = DateTime.Now;
 
-            if(!productPriceHistory.ContainsKey(uniqueIdentifier))
+            if (!productPriceHistory.ContainsKey(uniqueIdentifier))
                 productPriceHistory.Add(uniqueIdentifier, prices);
 
             return prices;

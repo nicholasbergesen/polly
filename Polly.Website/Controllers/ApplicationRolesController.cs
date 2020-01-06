@@ -1,8 +1,8 @@
-﻿using System.Data.Entity;
-using System.Threading.Tasks;
+﻿using Polly.Data;
+using System.Data.Entity;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
-using Polly.Data;
 
 namespace Polly.Website.Controllers
 {

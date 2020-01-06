@@ -1,13 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
-using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 using Polly.Data;
-using Polly.Website.Models;
+using System;
 
 namespace Polly.Website
 {
@@ -42,7 +39,7 @@ namespace Polly.Website
                 CookieSameSite = SameSiteMode.None,
                 CookieHttpOnly = false,
                 CookieName = "xmf"
-            });            
+            });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Enables the application to temporarily store user information when they are verifying the second factor in the two-factor authentication process.

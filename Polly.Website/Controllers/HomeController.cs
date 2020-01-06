@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Polly.Data;
+using Polly.Website.Models;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using Polly.Data;
-using Polly.Website.Models;
 namespace Polly.Website.Controllers
 {
     public class HomeController : Controller
@@ -28,12 +26,12 @@ namespace Polly.Website.Controllers
             Product product = null;
             if (searchString.StartsWith("PLID"))
                 product = (from p in db.Product
-                            where p.UniqueIdentifier == searchString
-                            select p).FirstOrDefault();
+                           where p.UniqueIdentifier == searchString
+                           select p).FirstOrDefault();
             else if (searchString.StartsWith("https://www.takealot.com"))
                 product = (from p in db.Product
-                            where p.Url == searchString
-                            select p).FirstOrDefault();
+                           where p.Url == searchString
+                           select p).FirstOrDefault();
 
             if (product != null)
                 return RedirectToAction("Details", new { id = product.Id });

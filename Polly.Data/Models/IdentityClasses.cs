@@ -12,7 +12,7 @@ namespace Polly.Data
 
     public class User : IdentityUser<long, UserLogin, UserRole, UserClaim>
     {
-        public User() 
+        public User()
         {
         }
 

@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Data.Entity;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Polly.Data
 {
@@ -11,10 +10,10 @@ namespace Polly.Data
         {
             using (PollyDbContext context = new PollyDbContext())
             {
-                return await(from priceHistory in context.PriceHistory
-                             where priceHistory.ProductId == productId
-                             orderby priceHistory.TimeStamp descending
-                             select priceHistory)
+                return await (from priceHistory in context.PriceHistory
+                              where priceHistory.ProductId == productId
+                              orderby priceHistory.TimeStamp descending
+                              select priceHistory)
                         .FirstOrDefaultAsync();
             }
         }

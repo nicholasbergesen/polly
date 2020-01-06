@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.Data.Common;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.Entity.SqlServer;
-using System.Threading.Tasks;
 
 namespace Polly.Data
 {
@@ -23,7 +19,7 @@ namespace Polly.Data
         }
 
         public PollyDbContext()
-            :base("DefaultConnection")
+            : base("DefaultConnection")
         {
             Configuration.LazyLoadingEnabled = false;
         }

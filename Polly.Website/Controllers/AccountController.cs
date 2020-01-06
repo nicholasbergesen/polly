@@ -1,15 +1,12 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Polly.Data;
 using Polly.Website.Models;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace Polly.Website.Controllers
 {
@@ -35,9 +32,9 @@ namespace Polly.Website.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -73,7 +70,7 @@ namespace Polly.Website.Controllers
 
             }
             var user = await UserManager.FindByNameAsync(model.Email);
-            if(user == default || !user.IsEnabled)
+            if (user == default || !user.IsEnabled)
             {
                 HttpContext.Response.StatusCode = 401;
                 return Json(new { success = false, message = "This account is pending admin activation which can take up to 24 hours." });

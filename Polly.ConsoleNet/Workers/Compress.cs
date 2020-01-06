@@ -1,14 +1,7 @@
-﻿using Newtonsoft.Json;
-using Polly.Data;
-using Polly.Domain;
+﻿using Polly.Data;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +10,7 @@ namespace Polly.ConsoleNet
     public class Compress : SimpleWorker
     {
         public Compress()
-            :base()
+            : base()
         {
             ServicePointManager.DefaultConnectionLimit = 150;
         }
@@ -80,7 +73,7 @@ namespace Polly.ConsoleNet
                     int curLength = nextProduct.Description.Length;
                     nextProduct.Description = nextProduct.Description.Replace("    ", " ");
                     int reducedLength = nextProduct.Description.Length;
-                    while(curLength != reducedLength)
+                    while (curLength != reducedLength)
                     {
                         needssave = true;
                         curLength = nextProduct.Description.Length;

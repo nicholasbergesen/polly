@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Polly.ConsoleNet.Properties;
-using Polly.Data;
 using Polly.Domain;
 using System;
 using System.Collections.Concurrent;
@@ -8,8 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -70,7 +67,7 @@ namespace Polly.ConsoleNet
                             toDo.Enqueue(line);
                             Interlocked.Decrement(ref count);
                         }
-                        catch(JsonReaderException e)
+                        catch (JsonReaderException e)
                         {
                             _doneQueue.Add(url + "," + e.Message);
                             continue;
@@ -111,7 +108,7 @@ namespace Polly.ConsoleNet
 
         public async Task WriteToDo()
         {
-            while(!_doneQueue.IsCompleted)
+            while (!_doneQueue.IsCompleted)
             {
                 var text = _doneQueue.Take();
                 await _doneTxt.WriteLineAsync(text);

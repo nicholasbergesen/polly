@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
+﻿using Microsoft.AspNet.Identity.Owin;
 using Polly.Data;
 using Polly.Website.Models;
-using Microsoft.AspNet.Identity.Owin;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace Polly.Website.Controllers
 {
@@ -136,7 +134,7 @@ namespace Polly.Website.Controllers
 
                 var user = db.Users.Find(adminUserRoleView.Id);
                 if (!user.IsEnabled && adminUserRoleView.IsEnabled)
-                    await Domain.Emailer.Send(new Domain.Emailer.EmailContext() 
+                    await Domain.Emailer.Send(new Domain.Emailer.EmailContext()
                     {
                         Body = "<p>Welcome to PriceBoar</p><p>Please login on the <a href='https://priceboar.com'>PriceBoar</a> website to make use of all available features, including the <a href='https://chrome.google.com/webstore/detail/priceboar/mlodibghfmpfnnljfeljekfhagogpkdd'>chrome extension</a>.</p><p>Kind Regards</p><p>PriceBoar</p>",
                         Subject = "Priceboar account activated!",

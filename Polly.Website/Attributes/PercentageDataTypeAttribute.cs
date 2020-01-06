@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Polly.Website
 {
     public class PercentageDataTypeAttribute : DataTypeAttribute
     {
-        public PercentageDataTypeAttribute() 
+        public PercentageDataTypeAttribute()
             : base("Percentage")
         {
             DisplayFormat = new DisplayFormatAttribute();

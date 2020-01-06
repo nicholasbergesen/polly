@@ -1,8 +1,7 @@
 namespace Polly.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class ManualIndexes1 : DbMigration
     {
         public override void Up()
@@ -42,7 +41,7 @@ namespace Polly.Data.Migrations
                 INCLUDE ([Id],
 	                [ProductId])");
         }
-        
+
         public override void Down()
         {
             DropIndex("dbo.PriceHistory", "IX_PriceHistory_DiscountPercentage");

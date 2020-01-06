@@ -1,8 +1,5 @@
 ﻿using Polly.Data;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace Polly.Website.Models
 {
@@ -10,7 +7,7 @@ namespace Polly.Website.Models
     {
         public AdminUserRoleView()
         {
-            
+
         }
 
         public AdminUserRoleView(User user, IList<string> roles)
@@ -19,7 +16,7 @@ namespace Polly.Website.Models
             Email = user.Email;
             IsEnabled = user.IsEnabled;
             EmailConfirmed = user.EmailConfirmed;
-            if(roles != null)
+            if (roles != null)
                 Roles = string.Join(",", roles);
         }
 

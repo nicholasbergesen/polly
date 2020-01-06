@@ -1,4 +1,4 @@
-const apiUrl = "https://nicholasb.ddns.net/api/products/";
+const apiUrl = "https://priceboar.com/api/products/";
 
 $(function () {
     setTimeout(() => {
@@ -36,11 +36,11 @@ function showDailyDealPrice(parentElement) {
             withCredentials: true
         },
         success: function (result) {
-            if(result.status == "Complete"){
+            if(result.Status == "Complete") {
                 let priceLink = createPriceNode(result, currentPrice);
                 parentElement.childNodes[3].appendChild(priceLink);
             }
-            else {
+            else if(result.Status == "AddProduct"){
                 chrome.runtime.sendMessage(
                 {
                     contentScriptQuery: "fetchProduct", 
@@ -76,10 +76,10 @@ function createPriceNode(result, currentPrice) {
     if (result.Price != 0) {
         let discount = (result.Price - currentPrice) / result.Price * 100;
         textNode = document.createTextNode("R " + result.Price + " (" + Math.round(discount) + "%)");
-        priceLink.setAttribute('style', 'top:200; left: 130px; z-index:1000; display: block; position:absolute;font-family:script');
+        priceLink.setAttribute('style', 'top:200; left: 130px; z-index:1000; display: block; position:absolute;');
     }
     else {
-        priceLink.setAttribute('style', 'top:200; left: 110px; z-index:1000; display: block; position:absolute;font-family:script');
+        priceLink.setAttribute('style', 'top:200; left: 110px; z-index:1000; display: block; position:absolute;');
     }
     priceNode.style.color = "blue";
     priceNode.style.cssFloat = "right";
@@ -105,13 +105,13 @@ function updateProductHtml(parentElement) {
             withCredentials: true
         },
         success: function (result) {
-            if(result.status == "Complete") {
-                let priceLink = createSimplePriceNode(tryGetProductResult, currentPrice);
+            if(result.Status == "Complete") {
+                let priceLink = createSimplePriceNode(result, currentPrice);
                 let realPrice = document.getElementById("#realPrice");
                 realPrice.insertBefore(priceLink, realPrice.childNodes[1]);
                 addChartToPage();
             }
-            else {
+            else if (result.Status == "AddProduct") {
                 chrome.runtime.sendMessage(
                 {
                     contentScriptQuery: "fetchProduct", 
@@ -246,7 +246,7 @@ function addPriceColumnToWishlist(wishlistTable) {
                 withCredentials: true
             },
             success: function (result) {
-                if(result.status == "Complete") {
+                if(result.Status == "Complete") {
                     let display = "unchanged";
                     if(result.Price > 0) {
                         let discount = (result.Price - currentPrice) / result.Price * 100;
@@ -254,7 +254,7 @@ function addPriceColumnToWishlist(wishlistTable) {
                     }
                     createCell(realTable.rows[i].insertCell(realTable.rows[i].cells.length), display, 'col-price');
                 }
-                else {
+                else if (result.Status == "AddProduct") {
                     $.ajax({
                         url: "https://api.takealot.com/rest/v-1-9-0/product-details/" + productId + "?platform=desktop",
                         success: function (takealotJSON) {

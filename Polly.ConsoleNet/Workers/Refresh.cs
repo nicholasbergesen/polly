@@ -4,11 +4,7 @@ using Polly.Domain;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +16,7 @@ namespace Polly.ConsoleNet
         readonly object _lock = new object();
 
         public Refresh(IDownloader downloader)
-            :base()
+            : base()
         {
             ServicePointManager.DefaultConnectionLimit = 150;
             _downloader = downloader;

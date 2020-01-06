@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Polly.Domain
@@ -30,7 +26,7 @@ namespace Polly.Domain
             {
                 using (var message = new MailMessage("accounts@priceboar.com", context.To))
                 {
-                    if(!context.To.Equals(PriceBoarGmail))
+                    if (!context.To.Equals(PriceBoarGmail))
                         message.Bcc.Add(new MailAddress("priceboar@gmail.com"));
 
                     message.Subject = context.Subject;

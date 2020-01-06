@@ -1,7 +1,5 @@
 ﻿using Polly.Data;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace Polly.Website.Models
 {
@@ -18,7 +16,7 @@ namespace Polly.Website.Models
         [DataType(DataType.Html)]
         public string Description { get; }
         public string Breadcrumb { get; }
-        public string Category { get;  }
+        public string Category { get; }
 
         [DataType(DataType.ImageUrl)]
         public string Image { get; }

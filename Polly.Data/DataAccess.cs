@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -182,7 +181,7 @@ namespace Polly.Data
             }
         }
 
-        public static async Task <IList<DownloadQueueRepositoryItem>> GetRefreshItems(int skip, int take)
+        public static async Task<IList<DownloadQueueRepositoryItem>> GetRefreshItems(int skip, int take)
         {
             using (PollyDbContext context = new PollyDbContext())
             {

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Polly.Website.Models;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace Polly.Website.Controllers
 {
@@ -32,9 +30,9 @@ namespace Polly.Website.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -117,7 +115,7 @@ namespace Polly.Website.Controllers
             base.Dispose(disposing);
         }
 
-#region Helpers
+        #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -168,6 +166,6 @@ namespace Polly.Website.Controllers
             Error
         }
 
-#endregion
+        #endregion
     }
 }

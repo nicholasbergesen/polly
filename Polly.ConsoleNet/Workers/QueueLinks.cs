@@ -3,7 +3,6 @@ using Polly.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +16,7 @@ namespace Polly.ConsoleNet
         const int BatchSize = 10000;
         public QueueLinks(IEnumerable<ILinkSource> sources,
              IDownloadQueueRepository repository)
-            :base()
+            : base()
         {
             _linkSources = sources;
             _repository = repository;

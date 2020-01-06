@@ -1,5 +1,4 @@
-﻿using Polly.Data;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Polly.Domain
 {

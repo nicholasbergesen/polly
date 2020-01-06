@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Polly.Data;
 using Polly.Domain;
-using Polly.Website.Models;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Polly.Website
 {
@@ -49,7 +44,7 @@ namespace Polly.Website
         {
         }
 
-        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 
+        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
             var manager = new ApplicationUserManager(new UserStore<User, Role, long, UserLogin, UserRole, UserClaim>(context.Get<PollyDbContext>()));
             // Configure validation logic for usernames
@@ -90,7 +85,7 @@ namespace Polly.Website
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
             {
-                manager.UserTokenProvider = 
+                manager.UserTokenProvider =
                     new DataProtectorTokenProvider<User, long>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
