@@ -30,7 +30,7 @@ namespace Polly.Domain
                     if (!response.IsSuccessStatusCode)
                     {
                         await Data.DataAccess.LogError(new Exception(response.ToString()));
-                        return response.ToString();
+                        return null;
                     }
                     response.EnsureSuccessStatusCode();
 

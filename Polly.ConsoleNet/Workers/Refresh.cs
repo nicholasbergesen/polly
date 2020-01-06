@@ -152,7 +152,7 @@ namespace Polly.ConsoleNet
 
             if (productDownload.Price != price)
             {
-                await DataAccess.SaveAsync(new PriceHistory(productDownload.Price, productDownload.PriceId, price, originalPrice) { ProductId = productDownload.Id })
+                await DataAccess.SaveAsync(new PriceHistory(productDownload.Id, productDownload.Price, productDownload.PriceId, price, originalPrice))
                     .ConfigureAwait(false);
                 return;
             }

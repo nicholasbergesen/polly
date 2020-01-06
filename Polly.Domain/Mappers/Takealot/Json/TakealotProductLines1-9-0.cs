@@ -198,7 +198,7 @@ namespace Polly.Domain
         {
             public IList<Entry> entries { get; set; }
             public IList<AppEntry> app_entries { get; set; }
-            public int promotion_id { get; set; }
+            public int? promotion_id { get; set; }
         }
 
         public class Views

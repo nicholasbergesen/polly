@@ -12,7 +12,7 @@ namespace Polly.Data
     {
         public PriceHistory()
         {
-            if (TimeStamp == default(DateTime))
+            if (TimeStamp == default)
                 TimeStamp = DateTime.Now;
         }
 
@@ -20,12 +20,31 @@ namespace Polly.Data
         {
             ProductId = product.Id;
 
-            if (TimeStamp == default(DateTime))
+            if (TimeStamp == default)
+                TimeStamp = DateTime.Now;
+        }
+
+        public PriceHistory(long productId, decimal price, decimal? originalPrice = null)
+        {
+            ProductId = productId;
+            Price = price;
+            OriginalPrice = originalPrice;
+
+            if (OriginalPrice.HasValue && OriginalPrice > 0)
+            {
+                DiscountAmount = OriginalPrice - Price;
+                DiscountPercentage = DiscountAmount / OriginalPrice * 100;
+            }
+
+            if (TimeStamp == default)
                 TimeStamp = DateTime.Now;
         }
 
         public PriceHistory(PriceHistory previousPriceHistory, decimal price, decimal? originalPrice = null)
         {
+            if (previousPriceHistory == null)
+                throw new ArgumentNullException(nameof(previousPriceHistory));
+
             Price = price;
             OriginalPrice = originalPrice;
 
@@ -35,18 +54,16 @@ namespace Polly.Data
                 DiscountPercentage = DiscountAmount / OriginalPrice * 100;
             }
 
-            if (previousPriceHistory != null)
-            {
-                PreviousPriceHistoryId = previousPriceHistory.Id;
-                PriceChangeAmount = Price - previousPriceHistory.Price;
-                PriceChangePercent = PriceChangeAmount / previousPriceHistory.Price * 100;
-            }
+            PreviousPriceHistoryId = previousPriceHistory.Id;
+            PriceChangeAmount = Price - previousPriceHistory.Price;
+            PriceChangePercent = PriceChangeAmount / previousPriceHistory.Price * 100;
+            ProductId = previousPriceHistory.ProductId;
 
-            if (TimeStamp == default(DateTime))
+            if (TimeStamp == default)
                 TimeStamp = DateTime.Now;
         }
 
-        public PriceHistory(decimal previousPrice, long previousId, decimal price, decimal? originalPrice = null)
+        public PriceHistory(long productId, decimal previousPrice, long previousId, decimal price, decimal? originalPrice = null)
         {
             Price = price;
             OriginalPrice = originalPrice;
@@ -57,6 +74,7 @@ namespace Polly.Data
                 DiscountPercentage = DiscountAmount / OriginalPrice * 100;
             }
 
+            ProductId = productId;
             PreviousPriceHistoryId = previousId;
             PriceChangeAmount = Price - previousPrice;
             PriceChangePercent = PriceChangeAmount / previousPrice * 100;

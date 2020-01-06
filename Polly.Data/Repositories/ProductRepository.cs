@@ -26,13 +26,6 @@ namespace Polly.Data
                 else
                     context.Entry(product).State = EntityState.Modified;
 
-                foreach (PriceHistory priceHistory in product.PriceHistory)
-                {
-                    if (priceHistory.Id == default)
-                        context.PriceHistory.Add(priceHistory);
-                    else
-                        context.Entry(priceHistory).State = EntityState.Unchanged;
-                }
 
                 await context.SaveChangesAsync();
             }

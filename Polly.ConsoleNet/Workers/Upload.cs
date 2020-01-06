@@ -15,19 +15,22 @@ using System.Threading.Tasks;
 
 namespace Polly.ConsoleNet
 {
-    public class Upload : SimpleWorker
+    public class Upload : SimpleWorker, IDisposable
     {
         readonly IDownloader _downloader;
         readonly ITakealotMapper _takealotMapper;
         private StreamWriter _doneTxt;
+        private readonly BlockingCollection<string> _doneQueue;
 
         public Upload(IDownloader downloader, ITakealotMapper takealotMapper)
         {
             ServicePointManager.DefaultConnectionLimit = 150;
             _downloader = downloader;
             _takealotMapper = takealotMapper;
+            _doneQueue = new BlockingCollection<string>(new ConcurrentQueue<string>());
         }
 
+        private Task _writeToDoTask;
         protected override async Task DoWorkInternalAsync(CancellationToken token)
         {
             int count = 0;
@@ -38,6 +41,7 @@ namespace Polly.ConsoleNet
             List<Task> tasks = new List<Task>();
             var startTime = DateTime.Now;
             int progressLock = 0;
+            _writeToDoTask = Task.Run(WriteToDo);
 
             for (int i = 0; i < Settings.Default.ThreadCount; i++)
             {
@@ -51,7 +55,7 @@ namespace Polly.ConsoleNet
                         if (string.IsNullOrWhiteSpace(httpResponse))
                         {
                             Interlocked.Increment(ref count);
-                            await TryWrite(url);
+                            _doneQueue.Add(url);
                             continue;
                         }
 
@@ -59,7 +63,7 @@ namespace Polly.ConsoleNet
                         {
                             Interlocked.Increment(ref count);
                             TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
-                            await _takealotMapper.MapAndSaveFullAsync(jsonObject);
+                            await _takealotMapper.MapAndSaveJsonAsync(jsonObject);
                         }
                         catch (System.Data.Entity.Core.EntityException)
                         {
@@ -68,11 +72,11 @@ namespace Polly.ConsoleNet
                         }
                         catch(JsonReaderException e)
                         {
-                            await TryWrite(url + "," + e.Message);
+                            _doneQueue.Add(url + "," + e.Message);
                             continue;
                         }
 
-                        await TryWrite(url);
+                        _doneQueue.Add(url);
                         if (0 == Interlocked.Exchange(ref progressLock, 1))
                         {
                             RaiseOnProgress(count, total, startTime);
@@ -82,7 +86,6 @@ namespace Polly.ConsoleNet
                         if (token.IsCancellationRequested)
                             break;
                     }
-                    count++;
                 })
                 .ContinueWith(ctask =>
                 {
@@ -92,9 +95,12 @@ namespace Polly.ConsoleNet
                     Console.WriteLine($"A task ended unexpectedly:{ctask.Exception.ToString()}");
                 }, TaskContinuationOptions.OnlyOnFaulted));
             }
+
             try
             {
                 await Task.WhenAll(tasks);
+                _doneQueue.CompleteAdding();
+                await _writeToDoTask;
             }
             finally
             {
@@ -103,21 +109,13 @@ namespace Polly.ConsoleNet
             }
         }
 
-        public async Task TryWrite(string text, int count = 0)
+        public async Task WriteToDo()
         {
-            if (count > 0)
-                await Task.Delay(100 * count);
-
-            if (count == 4)
-                throw new Exception("Max write attempt reached for done.txt");
-
-            try
+            while(!_doneQueue.IsCompleted)
             {
+                var text = _doneQueue.Take();
                 await _doneTxt.WriteLineAsync(text);
-            }
-            catch (InvalidOperationException)
-            {
-                await TryWrite(text, ++count);
+                await _doneTxt.FlushAsync();
             }
         }
 
@@ -156,6 +154,13 @@ namespace Polly.ConsoleNet
         public override string ToString()
         {
             return "Upload";
+        }
+
+        public void Dispose()
+        {
+            _doneTxt.Close();
+            _doneTxt.Dispose();
+            _downloader.Dispose();
         }
     }
 }

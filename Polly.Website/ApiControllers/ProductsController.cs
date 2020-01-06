@@ -97,7 +97,7 @@ namespace Polly.Website.Controllers
                 if (productdb != null)
                 {
                     var lastPrice = productdb.PriceHistory.Last();
-                    if (lastPrice.Price != currentPrice)
+                    if (lastPrice.Price.ToString("0.##") != currentPrice.ToString("0.##"))
                     {
                         productdb.PriceHistory.Add(new PriceHistory(lastPrice, currentPrice) { ProductId = productdb.Id });
                         productdb.LastChecked = DateTime.Now;
@@ -105,7 +105,7 @@ namespace Polly.Website.Controllers
                     }
 
                     var thirtyoneDays = DateTime.Today.Subtract(TimeSpan.FromDays(31));
-                    var recentPrices = productdb.PriceHistory.Where(x => thirtyoneDays < x.TimeStamp && x.Price != currentPrice);
+                    var recentPrices = productdb.PriceHistory.Where(x => thirtyoneDays < x.TimeStamp && x.Price.ToString("0.##") != currentPrice.ToString("0.##"));
 
                     returnPrice = new ApiProd() { Url = "https://priceboar.com/Home/Details/" + productdb.Id, Status = Status.Complete };
                     if (!recentPrices.Any())
@@ -147,7 +147,7 @@ namespace Polly.Website.Controllers
             if (takealotJson == null)
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
 
-            var productInternal = await _takealotMapper.MapAndSaveFullAsync(takealotJson);
+            var productInternal = await _takealotMapper.MapAndSaveJsonAsync(takealotJson);
             var returnPrice = new ApiProd() { Price = 0, Url = "https://priceboar.com/Home/Details/" + productInternal.Id, Status = Status.Complete };
 
             if (productPrices.ContainsKey(productInternal.UniqueIdentifier))

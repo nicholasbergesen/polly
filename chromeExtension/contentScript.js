@@ -1,4 +1,4 @@
-const apiUrl = "https://priceboar.com/api/products/";
+const apiUrl = "https://nicholasb.ddns.net/api/products/";
 
 $(function () {
     setTimeout(() => {

@@ -24,8 +24,8 @@ namespace Polly.ConsoleNet
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            source.Cancel();
             e.Cancel = true;
+            source.Cancel();
         }
 
         private static readonly Container _container;

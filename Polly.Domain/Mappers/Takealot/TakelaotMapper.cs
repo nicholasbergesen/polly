@@ -22,28 +22,20 @@ namespace Polly.Domain
 
         }
 
-        public async Task<Data.Product> MapAndSaveAsync(string json)
+        public async Task<Data.Product> MapAndSaveStringAsync(string json)
         {
-            if (TryDeserialize(json, out TakealotJson takealotJson) && IsValid(takealotJson))
-            {
-                var product = await MapInternal(takealotJson);
+            if (TryDeserialize(json, out TakealotJson takealotJson))
+                return await MapAndSaveJsonAsync(takealotJson);
 
-                await _productRepository.SaveAsync(product);
-
-                return product;
-            }
-            else
-                return default;
+            return default;
         }
 
-        public async Task<Data.Product> MapAndSaveFullAsync(TakealotJson json)
+        public async Task<Data.Product> MapAndSaveJsonAsync(TakealotJson json)
         {
             if (IsValid(json))
-            {
                 return await MapInternal(json);
-            }
-            else
-                return default;
+
+            return default;
         }
 
         protected override async Task<Data.Product> MapInternal(TakealotJson takealotObject)
@@ -61,9 +53,13 @@ namespace Polly.Domain
             bool isNew = product == null;
             HashSet<int> categoryIds = new HashSet<int>();
 
+            bool remapPropertyColumns = isNew || string.IsNullOrWhiteSpace(product.Title);
+
             if (isNew)
-            {
                 product = new Data.Product();
+
+            if (remapPropertyColumns)
+            {
                 product.UniqueIdentifier = uniqueIdentifier;
                 product.Breadcrumb = takealotObject.breadcrumbs?.items.Select(x => x.name).Aggregate((i, j) => i + "," + j);
                 product.Title = takealotObject.title;
@@ -72,7 +68,7 @@ namespace Polly.Domain
                     product.Image = takealotObject.gallery.images[0].Replace("{size}", "pdpxl");
                 product.Url = takealotObject.desktop_href;
                 product.Category = takealotObject.data_layer.categoryname?.Select(x => x).Aggregate((i, j) => i + "," + j);
-                if (product.Category != null)
+                if (!string.IsNullOrEmpty(product.Category))
                 {
                     var categories = product.Category.Split(',');
                     foreach (string description in categories)
@@ -89,8 +85,8 @@ namespace Polly.Domain
 
             if (isNew)
             {
-                await _productRepository.SaveAsync(product);//to get productId
-                await _priceHistoryRepository.SaveAsync(new PriceHistory(null, price, originalPrice) { ProductId = product.Id });
+                await _productRepository.SaveAsync(product);//save first to get productId
+                await _priceHistoryRepository.SaveAsync(new PriceHistory(product.Id, price, originalPrice));
                 await _productCategoryRepository.SaveAsync(categoryIds.Select(x => new ProductCategory() { CategoryId = x, ProductId = product.Id }));
             }
             else
@@ -98,11 +94,9 @@ namespace Polly.Domain
                 var lastPrice = await _priceHistoryRepository.FetchLastPriceForProductId(product.Id);
                 if (price != lastPrice?.Price)
                     await _priceHistoryRepository.SaveAsync(new PriceHistory(lastPrice, price, originalPrice) { ProductId = product.Id });
-                else
-                    return product;
 
                 //temporaroty until all products have categories
-                if(!await _productCategoryRepository.HasCategories(product.Id))
+                if (!await _productCategoryRepository.HasCategories(product.Id))
                     await _productCategoryRepository.SaveAsync(categoryIds.Select(x => new ProductCategory() { CategoryId = x, ProductId = product.Id }));
 
                 await _productRepository.SaveAsync(product);
