@@ -202,10 +202,17 @@ namespace Polly.Website.Controllers
 
         [HttpGet]
         [Route("clearCache")]
-        public IHttpActionResult ClearCache()
+        public string ClearCache()
         {
-            TopTenCache.ClearCache();
-            return Ok();
+            try
+            {
+                TopTenCache.ClearCache();
+                return "cache cleared";
+            }
+            catch(Exception e)
+            {
+                return e.ToString();
+            }
         }
 
         private static class Status
