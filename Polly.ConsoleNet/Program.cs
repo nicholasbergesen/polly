@@ -29,9 +29,9 @@ namespace Polly.ConsoleNet
         {
             { 1, new QueueLinks(new List<ILinkSource>()
                 {
-                    new TakealotRobots(),
+                    new LootRobots(),
+                    //new TakealotRobots(),
                     //new RefreshDatabase(),
-                    //new LootRobots(),
                 },
                 new Data.DownloadQueueFileRepository())
             },
@@ -42,7 +42,8 @@ namespace Polly.ConsoleNet
                 new Data.DownloadQueueFileRepository())
             },
             { 3, _container.GetInstance<Upload>() },
-            { 4, _container.GetInstance<Compress>() }
+            { 4, _container.GetInstance<Compress>() },
+            { 5, new Test() }
             //{ 1, _container.GetInstance<QueueTakealotLinks>() },
             //{ 2, _container.GetInstance<QueueLootLinks>() },
             //{ 2, _container.GetInstance<DownloadFromQueue>() },
@@ -69,6 +70,7 @@ namespace Polly.ConsoleNet
             Console.WriteLine("2.Queue links (database only).");
             Console.WriteLine("3.Upload from queue.");
             Console.WriteLine("4.Clean product descriptions.");
+            Console.WriteLine("5.Test.");
 
             if (int.TryParse(Console.ReadLine(), out int menuOption)
                 && menuOption > 0

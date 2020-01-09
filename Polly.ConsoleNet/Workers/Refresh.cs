@@ -71,7 +71,6 @@ namespace Polly.ConsoleNet
 
                         try
                         {
-                            //81976 with null url but has unique code.
                             if (string.IsNullOrWhiteSpace(productDownload.Url))
                             {
                                 ++count;

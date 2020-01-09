@@ -16,14 +16,16 @@ namespace Polly.ConsoleNet
     {
         readonly IDownloader _downloader;
         readonly ITakealotMapper _takealotMapper;
+        readonly ILootMapper _lootMapper;
         private StreamWriter _doneTxt;
         private readonly BlockingCollection<string> _doneQueue;
 
-        public Upload(IDownloader downloader, ITakealotMapper takealotMapper)
+        public Upload(IDownloader downloader, ITakealotMapper takealotMapper, ILootMapper lootMapper)
         {
             ServicePointManager.DefaultConnectionLimit = 150;
             _downloader = downloader;
             _takealotMapper = takealotMapper;
+            _lootMapper = lootMapper;
             _doneQueue = new BlockingCollection<string>(new ConcurrentQueue<string>());
         }
 
@@ -47,6 +49,7 @@ namespace Polly.ConsoleNet
                     while (toDo.TryDequeue(out string line))
                     {
                         var items = line.Split(',');
+                        var website = int.Parse(items[0]);
                         var url = items[1];
                         var httpResponse = await _downloader.DownloadAsync(url);
                         if (string.IsNullOrWhiteSpace(httpResponse))
@@ -56,21 +59,44 @@ namespace Polly.ConsoleNet
                             continue;
                         }
 
-                        try
+                        Interlocked.Increment(ref count);
+
+                        if (website == 1)
                         {
-                            Interlocked.Increment(ref count);
-                            TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
-                            await _takealotMapper.MapAndSaveJsonAsync(jsonObject);
+                            try
+                            {
+                                TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
+                                await _takealotMapper.MapAndSaveJsonAsync(jsonObject);
+                            }
+                            catch (System.Data.Entity.Core.EntityException)
+                            {
+                                toDo.Enqueue(line);
+                                Interlocked.Decrement(ref count);
+                            }
+                            catch (JsonReaderException e)
+                            {
+                                _doneQueue.Add(url + "," + e.Message);
+                                continue;
+                            }
                         }
-                        catch (System.Data.Entity.Core.EntityException)
+                        else// if(website == 2)
                         {
-                            toDo.Enqueue(line);
-                            Interlocked.Decrement(ref count);
-                        }
-                        catch (JsonReaderException e)
-                        {
-                            _doneQueue.Add(url + "," + e.Message);
-                            continue;
+                            try
+                            {
+                                TakealotJson jsonObject = JsonConvert.DeserializeObject<TakealotJson>(httpResponse);
+                                await _takealotMapper.MapAndSaveJsonAsync(jsonObject);
+                            }
+                            catch (System.Data.Entity.Core.EntityException)
+                            {
+                                toDo.Enqueue(line);
+                                Interlocked.Decrement(ref count);
+                            }
+                            catch (JsonReaderException e)
+                            {
+                                _doneQueue.Add(url + "," + e.Message);
+                                continue;
+                            }
+                            //handle loot
                         }
 
                         _doneQueue.Add(url);

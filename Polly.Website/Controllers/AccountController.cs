@@ -115,7 +115,7 @@ namespace Polly.Website.Controllers
                     return Json(new { success = false, message = @"<h4 class=""alert-heading"">Thank you for registering with PriceBoar</h4>
                                                                 <br/>
                                                                 <div>
-                                                                    <h4>You're only 2 steps away from complting registration!</h4>
+                                                                    <h4>You're only 2 steps away from compelting registration!</h4>
                                                                     <ol>
                                                                         <li>Check your mail box to confirm your e-mail.</li>
                                                                         <li>Once confirmed, an admin will active your account.</li>
@@ -127,7 +127,7 @@ namespace Polly.Website.Controllers
                 return Json(new { success = false, message = @"<h4 class=""alert-heading"">Thank you for registering with PriceBoar</h4>
                                                                 <br/>
                                                                 <div>
-                                                                    <h4>You're only 2 steps away from complting registration!</h4>
+                                                                    <h4>You're only 2 steps away from compelting registration!</h4>
                                                                     <ol>
                                                                         <li>Check your mail box to confirm your e-mail.</li>
                                                                         <li>Once confirmed, an admin will active your account.</li>

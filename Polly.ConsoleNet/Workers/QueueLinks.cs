@@ -27,15 +27,6 @@ namespace Polly.ConsoleNet
             Console.WriteLine("Loading existing queue items...");
             _inQueue = _repository.GetExistingItems();
             Console.WriteLine("Loading existing queue items complete.");
-            //if (_inQueue.Count > 100000)
-            //{
-            //    Console.WriteLine($"The queue has {_inQueue.Count}, please clear these items before adding more");
-            //    return Task.FromResult(0);
-            //}
-            //else
-            //{
-            //    Console.WriteLine();
-            //}
 
             int total = 0;
             foreach (var linkSource in _linkSources)
@@ -54,7 +45,7 @@ namespace Polly.ConsoleNet
                         break;
 
                     if (linkSource is RobotsBase)//doesn't batch, always loads all items
-                        continue;
+                        break;
 
                     nextBatch = await linkSource.GetNextBatchAsync(BatchSize);
                 }

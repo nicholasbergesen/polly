@@ -13,4 +13,7 @@ namespace Polly.Domain
     {
     }
 
+    public interface ILootMapper : IMapper 
+    {
+    }
 }

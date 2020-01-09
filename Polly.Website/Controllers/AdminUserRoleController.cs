@@ -136,7 +136,7 @@ namespace Polly.Website.Controllers
                 if (!user.IsEnabled && adminUserRoleView.IsEnabled)
                     await Domain.Emailer.Send(new Domain.Emailer.EmailContext()
                     {
-                        Body = "<p>Welcome to PriceBoar</p><p>Please login on the <a href='https://priceboar.com'>PriceBoar</a> website to make use of all available features, including the <a href='https://chrome.google.com/webstore/detail/priceboar/mlodibghfmpfnnljfeljekfhagogpkdd'>chrome extension</a>.</p><p>Kind Regards</p><p>PriceBoar</p>",
+                        Body = "<p>Welcome to PriceBoar</p><p>You can now login to the <a href='https://priceboar.com'>PriceBoar</a> website.</p><p>Kind Regards</p><p>PriceBoar</p>",
                         Subject = "Priceboar account activated!",
                         To = user.Email
                     });

@@ -16,24 +16,13 @@ namespace Polly.Domain
         protected abstract string BuildDownloadUrl(string loc);
         protected abstract Func<tUrl, bool> FilterProducts();
         protected int Start = 0;
-        private readonly List<string> _sitemapUrls = new List<string>();
-        private readonly object _collectionLock = new object();
+        private readonly HashSet<string> _sitemapUrls = new HashSet<string>();
 
 
         protected async Task<IList<string>> GetSitemapLinks(int batchSize)
         {
-            //if (!_downloadRunnung)
-            //    DownloadTask = DownloadFromRobots();
-
-            //while(_sitemapUrls.Count < (Start + batchSize) && !DownloadTask.IsCompleted)
-            //    await Task.Delay(100);
-
             await DownloadFromRobots();
             return _sitemapUrls.ToList();
-            //lock (_collectionLock)
-            //{
-            //    return _sitemapUrls.Skip(Start).Take(batchSize).ToList();
-            //}
         }
 
         protected async Task<IEnumerable<DownloadQueueRepositoryItem>> GetNextBatchInternalAsync(int batchSize)
@@ -55,7 +44,6 @@ namespace Polly.Domain
             };
 
             await robots.LoadAsync();
-            robots.OnProgress += Robots_OnProgress;
             var sitemaps = await robots.GetSitemapIndexesAsync();
 
             foreach (var sitemap in sitemaps)
@@ -65,17 +53,11 @@ namespace Polly.Domain
 
                 foreach (tUrl websiteLink in filteredList)
                 {
-                    lock (_collectionLock)
-                    {
-                        _sitemapUrls.Add(BuildDownloadUrl(websiteLink.loc));
-                    }
+                    _sitemapUrls.Add(BuildDownloadUrl(websiteLink.loc));
                 }
-            }
-        }
 
-        private void Robots_OnProgress(object sender, RobotsSharpParser.ProgressEventArgs e)
-        {
-            Console.WriteLine(e.ProgressMessage);
+                Console.WriteLine($"{filteredList.Count()} added to {_sitemapUrls.Count}");
+            }
         }
     }
 }

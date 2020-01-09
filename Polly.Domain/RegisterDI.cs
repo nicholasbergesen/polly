@@ -10,11 +10,13 @@ namespace Polly.Domain
             {
                 container.Register<IDownloader, TakealotDownloader>();
                 container.Register<ITakealotMapper, TakelaotMapper>();
+                container.Register<ILootMapper, LootMapper>();
             }
             else
             {
                 container.Register<IDownloader, TakealotDownloader>(lifestyle);
                 container.Register<ITakealotMapper, TakelaotMapper>(lifestyle);
+                container.Register<ILootMapper, LootMapper>(lifestyle);
             }
         }
     }
