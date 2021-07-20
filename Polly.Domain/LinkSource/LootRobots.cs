@@ -20,7 +20,7 @@ namespace Polly.Domain
             return loc;
         }
 
-        protected override Func<tUrl, bool> FilterProducts()
+        protected override Func<Url, bool> FilterProducts()
         {
             return x => { return x.loc.StartsWith("https://www.loot.co.za/product/"); };
         }

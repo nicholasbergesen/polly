@@ -22,7 +22,7 @@ namespace Polly.Domain
             return string.Concat(TakealotApi, loc.Substring(lastindex, loc.Length - lastindex), "?platform=desktop");
         }
 
-        protected override Func<tUrl, bool> FilterProducts()
+        protected override Func<Url, bool> FilterProducts()
         {
             return x => IsProduct(x.loc);
         }
