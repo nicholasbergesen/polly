@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29102.190
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.Data", "Polly.Data\Polly.Data.csproj", "{DFBDFF1C-89F7-49BD-87D3-23BC33B2E2BF}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.ConsoleNet", "Polly.ConsoleNet\Polly.ConsoleNet.csproj", "{E8DFF4C3-4B3D-4DDB-9FA8-2F571BE6C60C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.Domain", "Polly.Domain\Polly.Domain.csproj", "{96BF6E62-A695-4965-90A4-F898D35F9C00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polly.Website.Core", "Polly.Website.Core\Polly.Website.Core.csproj", "{21FB7DF8-DAB7-4DA7-B16C-5D74CB281E5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{96BF6E62-A695-4965-90A4-F898D35F9C00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96BF6E62-A695-4965-90A4-F898D35F9C00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96BF6E62-A695-4965-90A4-F898D35F9C00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21FB7DF8-DAB7-4DA7-B16C-5D74CB281E5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21FB7DF8-DAB7-4DA7-B16C-5D74CB281E5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21FB7DF8-DAB7-4DA7-B16C-5D74CB281E5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21FB7DF8-DAB7-4DA7-B16C-5D74CB281E5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
