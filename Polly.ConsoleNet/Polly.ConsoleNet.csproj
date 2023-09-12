@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Polly.ConsoleNet</RootNamespace>
     <AssemblyName>Polly.ConsoleNet</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -104,9 +104,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Polly.Data\Polly.Data.csproj">
+    <ProjectReference Include="..\Polly.Data\Polly.Data.Old.csproj">
       <Project>{dfbdff1c-89f7-49bd-87d3-23bc33b2e2bf}</Project>
-      <Name>Polly.Data</Name>
+      <Name>Polly.Data.Old</Name>
     </ProjectReference>
     <ProjectReference Include="..\Polly.Domain\Polly.Domain.csproj">
       <Project>{96bf6e62-a695-4965-90a4-f898d35f9c00}</Project>
