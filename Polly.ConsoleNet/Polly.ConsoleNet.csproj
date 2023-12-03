@@ -108,10 +108,6 @@
       <Project>{dfbdff1c-89f7-49bd-87d3-23bc33b2e2bf}</Project>
       <Name>Polly.Data.Old</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Polly.Domain\Polly.Domain.csproj">
-      <Project>{96bf6e62-a695-4965-90a4-f898d35f9c00}</Project>
-      <Name>Polly.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7">

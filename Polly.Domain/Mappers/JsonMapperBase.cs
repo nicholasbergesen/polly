@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Polly.Domain
 {
@@ -14,7 +14,7 @@ namespace Polly.Domain
             {
                 jsonObject = JsonConvert.DeserializeObject<T>(jsonString);
             }
-            catch (JsonException)
+            catch (Newtonsoft.Json.JsonException)
             {
                 jsonObject = default;
                 return false;

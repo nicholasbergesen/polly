@@ -6,6 +6,6 @@ namespace Polly.Domain
 {
     public interface ILinkSource
     {
-        Task<IEnumerable<DownloadQueueRepositoryItem>> GetNextBatchAsync(int batchSize);
+        Task<IEnumerable<DownloadQueueRepositoryItem>> GetNextBatchAsync(int batchSize); 
     }
 }

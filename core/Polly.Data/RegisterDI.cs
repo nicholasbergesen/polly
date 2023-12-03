@@ -4,7 +4,7 @@ namespace Polly.Data
 {
     public static class RegisterDI
     {
-        public static void Register(Container container, ScopedLifestyle lifestyle = null)
+        public static void Register(Container container, ScopedLifestyle? lifestyle = null)
         {
             if (lifestyle == default)
             {
@@ -14,6 +14,7 @@ namespace Polly.Data
                 container.Register<IPriceHistoryRepository, PriceHistoryRepository>();
                 container.Register<ICategoryRepository, CategoryRepository>();
                 container.Register<IProductCategoryRepository, ProductCategoryRepository>();
+                container.Register<IDataAccess, DataAccess>();
 
             }
             else
@@ -24,6 +25,7 @@ namespace Polly.Data
                 container.Register<IPriceHistoryRepository, PriceHistoryRepository>(lifestyle);
                 container.Register<ICategoryRepository, CategoryRepository>(lifestyle);
                 container.Register<IProductCategoryRepository, ProductCategoryRepository>(lifestyle);
+                container.Register<IDataAccess, DataAccess>(lifestyle);
             }
         }
     }

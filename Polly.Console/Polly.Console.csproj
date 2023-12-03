@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SimpleInjector" Version="5.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\RobotsParser\Nick.RobotsParser\Nick.RobotsParser.csproj" />
+    <ProjectReference Include="..\core\Polly.Data\Polly.Data.csproj" />
+    <ProjectReference Include="..\Polly.Domain\Polly.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

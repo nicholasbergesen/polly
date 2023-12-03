@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Polly.Data
 {
+    [Index(nameof(UniqueIdentifier), "IX_Product_UniqueIdentifier", IsUnique = true)]
+    [Index(nameof(Url), "IX_Product_URL", IsUnique = true)]
+    [Index(nameof(LastChecked), "IX_Product_LastChecked", IsUnique = true)]
+    [Index(nameof(Title), "IX_Product_Title", IsUnique = true)]
     public class Product
     {
         public Product()
@@ -16,16 +18,15 @@ namespace Polly.Data
         [Key]
         public long Id { get; set; }
 
-        [Index(name: "IX_Product_UniqueIdentifier", IsUnique = true), MaxLength(80)]
+        [MaxLength(80)]
         public string UniqueIdentifier { get; set; }
 
-        [Index("IX_Product_URL"), DataType(DataType.Url), MaxLength(850)]
+        [MaxLength(850)]
         public string Url { get; set; }
 
-        [Index("IX_Product_LastChecked")]
         public DateTime LastChecked { get; set; }
 
-        [Index("IX_Product_Title"), MaxLength(500)]
+        [MaxLength(500)]
         public string Title { get; set; }
 
         [DataType(DataType.Html)]

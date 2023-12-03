@@ -1,27 +1,18 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Polly.Data
 {
-    public class Role : IdentityRole<long, UserRole>
+    public class Role : IdentityRole<long>
     {
         public Role() { }
     }
 
-    public class User : IdentityUser<long, UserLogin, UserRole, UserClaim>
+    public class User : IdentityUser<long>
     {
         public User()
         {
-        }
-
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User, long> manager)
-        {
-            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
-            // Add custom user claims here
-            return userIdentity;
         }
 
         public bool IsEnabled { get; set; }

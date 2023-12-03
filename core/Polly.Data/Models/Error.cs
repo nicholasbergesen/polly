@@ -7,16 +7,16 @@ namespace Polly.Data
     {
         public Error()
         {
-            if (TimeStamp == default(DateTime))
+            if (TimeStamp == default)
                 TimeStamp = DateTime.Now;
         }
 
         public Error(Exception exception)
         {
-            if (exception is AggregateException agg && agg.InnerExceptions != null)
+            if (exception is AggregateException agg && agg?.InnerExceptions != null)
             {
-                StackTrace = agg.InnerException.StackTrace;
-                Message = agg.InnerException.Message;
+                StackTrace = agg?.InnerException?.StackTrace;
+                Message = agg?.InnerException?.Message;
             }
             else
             {
@@ -35,8 +35,8 @@ namespace Polly.Data
         public DateTime TimeStamp { get; set; }
 
         [MaxLength(8000)]
-        public string StackTrace { get; set; }
+        public string? StackTrace { get; set; }
         [MaxLength(8000)]
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }

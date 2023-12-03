@@ -1,4 +1,4 @@
-﻿using Polly.Domain;
+﻿using Polly.Data;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
@@ -27,15 +27,18 @@ namespace Polly.ConsoleNet
         private static readonly Container _container;
         private static Dictionary<int, IAsyncWorker> MenuItems => new Dictionary<int, IAsyncWorker>()
         {
-            { 1, new QueueLinks(new List<ILinkSource>()
+            { 1,
+                new QueueLinks(new List<ILinkSource>()
                 {
                     //new LootRobots(),
-                    new TakealotRobots(),
+                    //new TakealotRobots(),
                     //new RefreshDatabase(),
+                    new TakealotUrlList()
                 },
-                new Data.DownloadQueueFileRepository())
+                new Data.DownloadQueueFileRepository());
             },
-            { 2, new QueueLinks(new List<ILinkSource>()
+            { 2, 
+                new QueueLinks(new List<ILinkSource>()
                 {
                     new RefreshDatabase()
                 },

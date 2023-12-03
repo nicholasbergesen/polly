@@ -1,27 +1,13 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
-using System.Data.Entity;
-using System.Data.Entity.ModelConfiguration.Conventions;
-using System.Data.Entity.SqlServer;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Polly.Data
 {
-    [DbConfigurationType(typeof(MyConfiguration))]
-    public class PollyDbContext : IdentityDbContext<User, Role, long, UserLogin, UserRole, UserClaim>
+    public class PollyDbContext : IdentityDbContext<User, Role, long>
     {
-        static PollyDbContext()
+        public PollyDbContext(DbContextOptions<PollyDbContext> options)
+           : base(options)
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<PollyDbContext, Migrations.Configuration>());
-        }
-
-        public static PollyDbContext Create()
-        {
-            return new PollyDbContext();
-        }
-
-        public PollyDbContext()
-            : base("DefaultConnection")
-        {
-            Configuration.LazyLoadingEnabled = false;
         }
 
         public DbSet<Website> Website { get; set; }
@@ -32,19 +18,9 @@ namespace Polly.Data
         public DbSet<ProductCategory> ProductCategory { get; set; }
         public DbSet<Error> Error { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            base.OnModelCreating(modelBuilder);
-        }
-    }
-
-    //https://docs.microsoft.com/en-gb/ef/ef6/fundamentals/connection-resiliency/retry-logic?redirectedfrom=MSDN
-    public class MyConfiguration : DbConfiguration
-    {
-        public MyConfiguration()
-        {
-            SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
+            base.OnModelCreating(builder);
         }
     }
 }

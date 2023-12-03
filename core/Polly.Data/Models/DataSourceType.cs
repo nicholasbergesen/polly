@@ -12,6 +12,6 @@ namespace Polly.Data
     {
         [Key]
         public DataSourceTypeEnum Id { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

@@ -15,14 +15,14 @@ namespace Polly.Domain
             return await GetNextBatchInternalAsync(batchSize);
         }
 
-        protected override string BuildDownloadUrl(string loc)
+        public override string BuildDownloadUrl(string loc)
         {
             return loc;
         }
 
-        protected override Func<Url, bool> FilterProducts()
+        public override Func<string, bool> FilterProducts()
         {
-            return x => { return x.loc.StartsWith("https://www.loot.co.za/product/"); };
+            return x => { return x.StartsWith("https://www.loot.co.za/product/"); };
         }
     }
 }
