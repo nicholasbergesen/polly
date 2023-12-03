@@ -30,7 +30,9 @@ namespace Polly.Console.Workers
 
                 foreach (var url in await robots.GetIndexUrls(index)) 
                 {
-                    int lastindex = url.LastIndexOf('/');
+                        private const string TakealotApi = "https://api.takealot.com/rest/v-1-11-0/product-details";
+
+                        int lastindex = url.LastIndexOf('/');
                     urls.Add(string.Concat(TakealotApi, url.Substring(lastindex, url.Length - lastindex), "?platform=desktop&display_credit=true"));
                 }
 
